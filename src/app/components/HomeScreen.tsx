@@ -9,6 +9,8 @@ import { Link } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { BottomNav } from "./BottomNav";
 import { usePostsCtx } from "../PostsContext";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../../lib/supabase";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -31,6 +33,19 @@ interface Story {
   likedByMe?: boolean;
   timestamp?: string;
   isMyStory?: boolean;
+}
+
+interface FeedPost {
+  id: string;
+  authorName: string;
+  authorUsername: string;
+  authorAvatar: string;
+  content: string;
+  image?: string;
+  views: number;
+  likes: number;
+  comments: number;
+  created_at: string;
 }
 
 interface CommentType {
@@ -931,25 +946,33 @@ function SponsoredPostCard({ post }: { post: typeof SPONSORED_POSTS[0] }) {
 
 // ─── Post Card ────────────────────────────────────────────────────────────────
 
-const POST_DATA = {
+const POST_DATA: FeedPost = {
   id: "post-jess-1",
   authorName: "Jessica Smith",
   authorUsername: "jess_smith",
   authorAvatar: "https://images.unsplash.com/photo-1708098746991-ad0a97313727?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=200",
+  content: "Just wrapped up midterms! 🎉 The campus vibe is amazing today. Anyone down for a study group later? #CampusLife #Midterms",
+  image: "https://images.unsplash.com/photo-1606761568499-6d2451b23c66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800",
+  views: 4200,
+  likes: 1200,
+  comments: 148,
+  created_at: new Date().toISOString(),
 };
 
-export function PostCard({ postId = POST_DATA.id }: { postId?: string }) {
+export function PostCard({ post, postId = POST_DATA.id }: { post?: FeedPost; postId?: string }) {
   const { likedIds, savedIds, toggleLike, toggleSave } = usePostsCtx();
-  const isLiked = likedIds.has(postId);
-  const isSaved = savedIds.has(postId);
+  const id = post?.id ?? postId;
+  const isLiked = likedIds.has(id);
+  const isSaved = savedIds.has(id);
   const [isReposted, setIsReposted] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showCommentModal, setShowCommentModal] = useState(false);
-  const [likeCount, setLikeCount] = useState(1200);
+  const [likeCount, setLikeCount] = useState(post?.likes ?? 1200);
   const [repostCount, setRepostCount] = useState(12);
+  const currentPost = post ?? POST_DATA;
 
   const handleLike = () => {
-    toggleLike(postId);
+    toggleLike(id);
     setLikeCount((c) => (isLiked ? c - 1 : c + 1));
   };
 
@@ -963,19 +986,19 @@ export function PostCard({ postId = POST_DATA.id }: { postId?: string }) {
       <div className="bg-card px-4 py-5 border-b border-border flex flex-col gap-3 text-card-foreground">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link to={`/profile/${POST_DATA.authorUsername}`} className="shrink-0">
-              <img src={POST_DATA.authorAvatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity" />
+            <Link to={`/profile/${currentPost.authorUsername}`} className="shrink-0">
+              <img src={currentPost.authorAvatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity" />
             </Link>
             <div>
               <div className="flex items-center gap-1">
-                <Link to={`/profile/${POST_DATA.authorUsername}`} className="hover:underline">
-                  <span className="font-bold text-foreground text-sm">{POST_DATA.authorName}</span>
+                <Link to={`/profile/${currentPost.authorUsername}`} className="hover:underline">
+                  <span className="font-bold text-foreground text-sm">{currentPost.authorName}</span>
                 </Link>
                 <svg className="w-3.5 h-3.5 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                 </svg>
               </div>
-              <span className="text-muted-foreground text-xs">@{POST_DATA.authorUsername} • 2h</span>
+              <span className="text-muted-foreground text-xs">@{currentPost.authorUsername} • 2h</span>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -988,17 +1011,19 @@ export function PostCard({ postId = POST_DATA.id }: { postId?: string }) {
           </div>
         </div>
 
-        <Link to="/post/123" className="block cursor-pointer">
-          <p className="text-sm text-foreground/90 leading-relaxed">
-            Just wrapped up midterms! 🎉 The campus vibe is amazing today. Anyone down for a study group later? #CampusLife #Midterms
-          </p>
-          <div className="mt-3 rounded-2xl overflow-hidden border border-border">
-            <img
-              src="https://images.unsplash.com/photo-1606761568499-6d2451b23c66?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=800"
-              alt="Campus"
-              className="w-full h-56 object-cover"
-            />
-          </div>
+<Link to={`/post/${currentPost.id}`} className="block cursor-pointer">
+            <p className="text-sm text-foreground/90 leading-relaxed">
+              {currentPost.content}
+            </p>
+            {currentPost.image ? (
+              <div className="mt-3 rounded-2xl overflow-hidden border border-border">
+                <img
+                  src={currentPost.image}
+                  alt="Post image"
+                  className="w-full h-56 object-cover"
+                />
+              </div>
+            ) : null}
         </Link>
 
         <div className="flex items-center justify-between mt-1 text-muted-foreground pt-1">
@@ -1023,7 +1048,7 @@ export function PostCard({ postId = POST_DATA.id }: { postId?: string }) {
             </motion.button>
           </div>
           <div className="flex items-center gap-3">
-            <motion.button whileTap={{ scale: 0.9 }} onClick={() => toggleSave(postId)} className={`transition-colors ${isSaved ? "text-yellow-500" : "hover:text-yellow-500"}`}>
+            <motion.button whileTap={{ scale: 0.9 }} onClick={() => toggleSave(id)} className={`transition-colors ${isSaved ? "text-yellow-500" : "hover:text-yellow-500"}`}>
               <motion.div animate={isSaved ? { scale: [1, 1.3, 1] } : {}} transition={{ duration: 0.25 }}>
                 <Bookmark className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
               </motion.div>
@@ -1065,6 +1090,7 @@ const NAV_SECTIONS: { key: NavSection; label: string; Icon: React.ElementType }[
 type TabType = "campus" | "trending" | "new";
 
 export function HomeScreen() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>("campus");
   const [activeSection, setActiveSection] = useState<NavSection>("home");
   const [touchStart, setTouchStart] = useState<number | null>(null);
@@ -1074,6 +1100,8 @@ export function HomeScreen() {
   const [showCreateStatus, setShowCreateStatus] = useState(false);
   const [viewingStoryIndex, setViewingStoryIndex] = useState<number | null>(null);
   const [stories, setStories] = useState<Story[]>(INITIAL_STORIES);
+  const [feedPosts, setFeedPosts] = useState<FeedPost[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
   const tabsRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastScrollY = useRef(0);
@@ -1082,6 +1110,42 @@ export function HomeScreen() {
   const tabLabels: Record<TabType, string> = { campus: "Campus", trending: "Trending", new: "New" };
 
   const viewableStories = stories.filter((s) => !s.type);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const loadFeed = async () => {
+      setLoadingPosts(true);
+      const { data, error } = await supabase
+        .from("posts")
+        .select("id, author_name, author_username, author_avatar, content, image, views, likes, comments, created_at")
+        .order("created_at", { ascending: false })
+        .limit(15);
+
+      if (error) {
+        console.error("Failed to load posts from Supabase:", error.message);
+        setFeedPosts([]);
+      } else if (data) {
+        setFeedPosts(
+          data.map((row) => ({
+            id: row.id,
+            authorName: row.author_name,
+            authorUsername: row.author_username,
+            authorAvatar: row.author_avatar,
+            content: row.content,
+            image: row.image,
+            views: row.views ?? 0,
+            likes: row.likes ?? 0,
+            comments: row.comments ?? 0,
+            created_at: row.created_at,
+          }))
+        );
+      }
+      setLoadingPosts(false);
+    };
+
+    loadFeed();
+  }, [user]);
 
   const handlePostStatus = (storyData: Omit<Story, "id" | "isMyStory" | "views" | "timestamp">) => {
     const newStory: Story = {
@@ -1221,7 +1285,11 @@ export function HomeScreen() {
               transition={{ duration: 0.18 }}
               className="bg-muted/20 flex flex-col gap-2"
             >
-              <PostCard postId={`${activeTab}-post-1`} />
+              {feedPosts.length > 0 ? (
+                feedPosts.map((post) => <PostCard key={post.id} post={post} />)
+              ) : (
+                <PostCard postId={`${activeTab}-post-1`} />
+              )}
               <SponsoredPostCard post={SPONSORED_POSTS[0]} />
               <PostCard postId={`${activeTab}-post-2`} />
               <PostCard postId={`${activeTab}-post-3`} />

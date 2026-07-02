@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { UserProfile } from "./UserProfile";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../../lib/supabase";
 import {
   Search, Edit2, ChevronLeft, Phone, Video, Info,
   Smile, Paperclip, Mic, Send, Camera, FileText,
@@ -979,10 +981,11 @@ interface ChatViewProps {
   onOpenGroupInfo: () => void;
   onUpdateMessages: (msgs: IMessage[]) => void;
   onUpdateChat: (chat: IChat) => void;
+  onSyncMessage?: (chatId: string, msg: IMessage) => void;
   allChats: IChat[];
 }
 
-function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInfo, onUpdateMessages, onUpdateChat, allChats }: ChatViewProps) {
+function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInfo, onUpdateMessages, onUpdateChat, onSyncMessage, allChats }: ChatViewProps) {
   const [contextMsg, setContextMsg] = useState<IMessage | null>(null);
   const [replyTo, setReplyTo] = useState<IMessage | null>(null);
   const [showForward, setShowForward] = useState(false);
@@ -1012,6 +1015,7 @@ function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInf
   const addMessage = (msg: IMessage) => {
     onUpdateMessages([...messages, msg]);
     onUpdateChat({ ...chat, lastMessage: msg.type === "text" ? msg.content : `📎 ${msg.type}`, lastTime: "now", unreadCount: 0 });
+    if (onSyncMessage) onSyncMessage(chat.id, msg);
   };
 
   const handleSendText = (text: string) => {
@@ -1714,6 +1718,7 @@ function UserProfileView({ user, isFollowing, onToggleFollow, onBack, onMessage 
 // ─── Main MessagesScreen ──────────────────────────────────────────────────────
 
 export function MessagesScreen() {
+  const { user } = useAuth();
   const [stack, setStack] = useState<ScreenView[]>([{ view: "list" }]);
   const [chats, setChats] = useState<IChat[]>(INITIAL_CHATS);
   const [messages, setMessages] = useState<Record<string, IMessage[]>>(INITIAL_MESSAGES);
@@ -1721,6 +1726,106 @@ export function MessagesScreen() {
   const [followingIds, setFollowingIds] = useState<string[]>(["u1", "u4"]);
   const prevLen = useRef(1);
   const [direction, setDirection] = useState(1);
+  const authUserId = user?.id;
+
+  useEffect(() => {
+    if (!authUserId) return;
+
+    const loadMessages = async () => {
+      const { data: chatData, error: chatError } = await supabase.from("chats").select("*").order("updated_at", { ascending: false }).limit(30);
+      const { data: msgData, error: msgError } = await supabase.from("messages").select("*");
+
+      if (!chatError && Array.isArray(chatData)) {
+        setChats(chatData.map((row: any) => ({
+          id: row.id,
+          type: row.type,
+          name: row.name,
+          avatar: row.avatar,
+          verified: row.verified,
+          streak: row.streak,
+          unreadCount: row.unread_count,
+          lastMessage: row.last_message,
+          lastTime: row.last_time,
+          userId: row.user_id,
+          members: row.members,
+          description: row.description,
+        })));
+      }
+
+      if (!msgError && Array.isArray(msgData)) {
+        const grouped = msgData.reduce((acc: Record<string, IMessage[]>, row: any) => {
+          const chatId = row.chat_id;
+          const senderId = row.sender_id === authUserId ? ME : row.sender_id;
+          const msg: IMessage = {
+            id: row.id,
+            senderId,
+            type: row.type,
+            content: row.content,
+            timestamp: row.timestamp,
+            reactions: row.reactions ?? [],
+            pinned: row.pinned ?? false,
+            replyToId: row.reply_to_id ?? undefined,
+            voiceDuration: row.voice_duration ?? undefined,
+            pollQuestion: row.poll_question ?? undefined,
+            pollOptions: row.poll_options ?? undefined,
+            fileName: row.file_name ?? undefined,
+            fileSize: row.file_size ?? undefined,
+            contactName: row.contact_name ?? undefined,
+            contactPhone: row.contact_phone ?? undefined,
+            gifUrl: row.gif_url ?? undefined,
+          };
+          acc[chatId] = acc[chatId] ? [...acc[chatId], msg] : [msg];
+          return acc;
+        }, {});
+        setMessages((prev) => ({ ...prev, ...grouped }));
+      }
+    };
+
+    loadMessages().catch((error) => console.error("Failed to load chat data from Supabase:", error));
+  }, [authUserId]);
+
+  const syncMessageToSupabase = async (chatId: string, msg: IMessage) => {
+    if (!authUserId) return;
+
+    const { error } = await supabase.from("messages").upsert({
+      id: msg.id,
+      chat_id: chatId,
+      sender_id: authUserId,
+      type: msg.type,
+      content: msg.content,
+      timestamp: msg.timestamp,
+      reply_to_id: msg.replyToId,
+      pinned: msg.pinned,
+      reactions: msg.reactions,
+    });
+
+    if (error) {
+      console.error("Failed to sync message to Supabase:", error.message);
+    }
+  };
+
+  const syncChatToSupabase = async (chat: IChat) => {
+    if (!authUserId) return;
+
+    const { error } = await supabase.from("chats").upsert({
+      id: chat.id,
+      type: chat.type,
+      name: chat.name,
+      avatar: chat.avatar,
+      verified: chat.verified,
+      streak: chat.streak,
+      unread_count: chat.unreadCount,
+      last_message: chat.lastMessage,
+      last_time: chat.lastTime,
+      user_id: chat.userId,
+      members: chat.members,
+      description: chat.description,
+    });
+
+    if (error) {
+      console.error("Failed to sync chat to Supabase:", error.message);
+    }
+  };
 
   const push = useCallback((s: ScreenView) => {
     setDirection(1);
@@ -1795,7 +1900,11 @@ export function MessagesScreen() {
           onViewProfile={userId => push({ view: "profile", userId })}
           onOpenGroupInfo={() => push({ view: "group-info", chatId: v.chatId })}
           onUpdateMessages={msgs => updateMessages(v.chatId, msgs)}
-          onUpdateChat={updateChat}
+          onUpdateChat={updated => {
+            updateChat(updated);
+            syncChatToSupabase(updated).catch(console.error);
+          }}
+          onSyncMessage={syncMessageToSupabase}
           allChats={chats}
         />
       );

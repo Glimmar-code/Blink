@@ -1,19 +1,30 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
+import { useAuth } from "../context/AuthContext";
 
 export function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { signIn, signUp, authError, loading } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLogin) {
-      // If signing up, show onboarding
+
+    if (isLogin) {
+      const success = await signIn(email.trim(), password);
+      if (success) {
+        navigate("/home");
+      }
+      return;
+    }
+
+    const success = await signUp(email.trim(), password);
+    if (success) {
       navigate("/onboarding");
-    } else {
-      navigate("/home");
     }
   };
 
@@ -52,6 +63,8 @@ export function AuthScreen() {
             <input
               type="email"
               placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
               required
             />
@@ -61,6 +74,8 @@ export function AuthScreen() {
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
               required
             />
@@ -94,9 +109,14 @@ export function AuthScreen() {
           <button
             type="submit"
             className="w-full bg-black text-white font-semibold py-4 rounded-xl mt-4 active:scale-[0.98] transition-transform"
+            disabled={loading}
           >
-            {isLogin ? "Login" : "Sign Up"}
+            {loading ? "Working…" : isLogin ? "Login" : "Sign Up"}
           </button>
+
+          {authError ? (
+            <p className="mt-3 text-sm text-red-600">{authError}</p>
+          ) : null}
         </form>
 
         <div className="my-8 flex items-center gap-4">

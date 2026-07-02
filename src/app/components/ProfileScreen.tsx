@@ -5,6 +5,7 @@ import { BottomNav } from "./BottomNav";
 import { PostCard } from "./HomeScreen";
 // 1. Imported the separate EditProfileModal component
 import { EditProfileModal } from "./EditProfileModal";
+import { useAuth } from "../context/AuthContext";
 
 /** Animates a number from 0 up to `value` once `start` flips true. */
 function useCountUp(value: number, start: boolean, duration = 1100) {
@@ -161,28 +162,41 @@ export function ProfileScreen() {
 
   // Fully connected responsive profile token infrastructure states
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [profileName, setProfileName] = useState("Marcus Johnson");
-  const [profileLocation, setProfileLocation] = useState("Lagos, Nigeria");
-  const [profileUsername, setProfileUsername] = useState("marcus_j");
-  const [profileBio, setProfileBio] = useState("Computer Science undergraduate passionate about tech, creative designs, and soccer.");
-  const [profileUniversity, setProfileUniversity] = useState("University of Lagos (UNILAG)");
-  const [profileDepartment, setProfileDepartment] = useState("Computer Science");
-  const [profileLevel, setProfileLevel] = useState("400L");
-  const [profileGender, setProfileGender] = useState("Male");
-  const [profileRelationship, setProfileRelationship] = useState("Focusing on My Books");
-  const [profilePhone, setProfilePhone] = useState("");
-  const [profileHobbies, setProfileHobbies] = useState("Coding, Football, Gaming");
+  const { profile, updateProfile } = useAuth();
+
+  const [profileName, setProfileName] = useState(profile?.full_name ?? "Marcus Johnson");
+  const [profileLocation, setProfileLocation] = useState(profile?.relationship ?? "Lagos, Nigeria");
+  const [profileUsername, setProfileUsername] = useState(profile?.username ?? "marcus_j");
+  const [profileBio, setProfileBio] = useState(profile?.bio ?? "Computer Science undergraduate passionate about tech, creative designs, and soccer.");
+  const [profileUniversity, setProfileUniversity] = useState(profile?.university ?? "University of Lagos (UNILAG)");
+  const [profileDepartment, setProfileDepartment] = useState(profile?.department ?? "Computer Science");
+  const [profileLevel, setProfileLevel] = useState(profile?.level ?? "400L");
+  const [profileGender, setProfileGender] = useState(profile?.gender ?? "Male");
+  const [profileRelationship, setProfileRelationship] = useState(profile?.relationship ?? "Focusing on My Books");
+  const [profilePhone, setProfilePhone] = useState(profile?.phone ?? "");
+  const [profileHobbies, setProfileHobbies] = useState(profile?.hobbies ?? "Coding, Football, Gaming");
 
   const [profileCover, setProfileCover] = useState(
     "https://images.unsplash.com/photo-1562774053-701939374585?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwY2FtcHVzJTIwYmFja2dyb3VuZHxlbnwxfHx8fDE3ODI0NzIwOTl8MA&ixlib=rb-4.1.0&q=80&w=800"
   );
-  const [profileAvatar, setProfileAvatar] = useState(
-    "https://images.unsplash.com/photo-1544168190-79c17527004f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGNvbGxlZ2UlMjBzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzgyNDcyMDk0fDA&ixlib=rb-4.1.0&q=80&w=400"
-  );
+  const [profileAvatar, setProfileAvatar] = useState(profile?.avatar_url ?? "https://images.unsplash.com/photo-1544168190-79c17527004f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGNvbGxlZ2UlMjBzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzgyNDcyMDk0fDA&ixlib=rb-4.1.0&q=80&w=400");
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!profile) return;
+    setProfileName(profile.full_name || "Marcus Johnson");
+    setProfileLocation(profile.relationship || "Lagos, Nigeria");
+    setProfileUsername(profile.username || "marcus_j");
+    setProfileBio(profile.bio || "Computer Science undergraduate passionate about tech, creative designs, and soccer.");
+    setProfileUniversity(profile.university || "University of Lagos (UNILAG)");
+    setProfileDepartment(profile.department || "Computer Science");
+    setProfileLevel(profile.level || "400L");
+    setProfileGender(profile.gender || "Male");
+    setProfileRelationship(profile.relationship || "Focusing on My Books");
+    setProfilePhone(profile.phone || "");
+    setProfileHobbies(profile.hobbies || "Coding, Football, Gaming");
+    setProfileAvatar(profile.avatar_url || "https://images.unsplash.com/photo-1544168190-79c17527004f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx5b3VuZyUyMGNvbGxlZ2UlMjBzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzgyNDcyMDk0fDA&ixlib=rb-4.1.0&q=80&w=400");
+    setProfileCover(profile.cover_url || profileCover);
+  }, [profile]);
 
   useEffect(() => {
     const node = feedRef.current;
@@ -603,7 +617,7 @@ export function ProfileScreen() {
         currentPhone={profilePhone}
         currentHobbies={profileHobbies}
         currentBio={profileBio}
-        onSave={(updatedData) => {
+        onSave={async (updatedData) => {
           setProfileName(updatedData.name);
           setProfileUsername(updatedData.username);
           setProfileLocation(updatedData.location);
@@ -617,6 +631,21 @@ export function ProfileScreen() {
           setProfilePhone(updatedData.phone);
           setProfileHobbies(updatedData.hobbies);
           setProfileBio(updatedData.bio);
+
+          await updateProfile({
+            full_name: updatedData.name,
+            username: updatedData.username,
+            bio: updatedData.bio,
+            university: updatedData.university,
+            level: updatedData.level,
+            department: updatedData.department,
+            gender: updatedData.gender,
+            relationship: updatedData.relationship,
+            phone: updatedData.phone,
+            hobbies: updatedData.hobbies,
+            avatar_url: updatedData.avatar,
+            cover_url: updatedData.cover,
+          });
         }}
       />
 

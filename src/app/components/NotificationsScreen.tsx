@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router";
 import {
   Bell, Heart, MessageCircle, UserPlus, AtSign, Gift,
   RefreshCw, Eye, Users, Trophy, Check, ChevronRight,
@@ -508,8 +509,10 @@ export function NotificationsScreen() {
   const markAllRead = () => setAllNotifs((p) => p.map((n) => ({ ...n, read: true })));
   const markRead = (id: string) => setAllNotifs((p) => p.map((n) => n.id === id ? { ...n, read: true } : n));
 
+  const navigate = useNavigate();
   const handleNavigate = (path: string) => {
     setNavigatedTo(path);
+    navigate(path);
     setTimeout(() => setNavigatedTo(null), 2000);
   };
 

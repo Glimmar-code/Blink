@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { UserProfile } from "../components/UserProfile";
+import { supabase } from "../../lib/supabase";
 
 // Mock user registry — keyed by username
 const USER_DB: Record<string, {
@@ -119,10 +120,37 @@ function buildFallbackUser(username: string) {
 export function UserProfilePage() {
   const { username = "" } = useParams<{ username: string }>();
   const navigate = useNavigate();
-
-  const user = USER_DB[username] ?? buildFallbackUser(username);
-
+  const [user, setUser] = useState(() => USER_DB[username] ?? buildFallbackUser(username));
   const [isFollowing, setIsFollowing] = useState(false);
+
+  useEffect(() => {
+    if (!username) return;
+
+    const loadProfile = async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, username, full_name, avatar_url, bio, followers, following, relationship, university, level, department, gender")
+        .eq("username", username)
+        .single();
+
+      if (!error && data) {
+        setUser({
+          id: data.id,
+          name: data.full_name || username.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+          username: data.username,
+          avatar: data.avatar_url || `https://i.pravatar.cc/200?u=${username}`,
+          verified: null,
+          online: false,
+          lastSeen: "recently",
+          bio: data.bio || "",
+          followers: data.followers ?? 0,
+          following: data.following ?? 0,
+        });
+      }
+    };
+
+    loadProfile();
+  }, [username]);
 
   const handleMessage = () => {
     navigate(`/messages/${username}`);
