@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import { useState } from "react";
 import { Heart, MessageSquare, Repeat2, Share, MoreHorizontal } from "lucide-react";
 import type { Post } from "./types";
@@ -14,26 +15,26 @@ export function PostCard({ post, onGoToProfile }: { post: Post; onGoToProfile: (
   };
 
   return (
-    <div className="bg-card border-b border-border px-4 py-3">
-      <div className="flex gap-3">
+    <View className="bg-card border-b border-border px-4 py-3">
+      <View className="flex gap-3">
         <Avatar user={post.user} size="sm" onClick={() => onGoToProfile(post.user.id)} />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between">
-            <div
+        <View className="flex-1 min-w-0">
+          <View className="flex items-center justify-between">
+            <View
               className="flex items-center gap-1 cursor-pointer"
               onClick={() => onGoToProfile(post.user.id)}
             >
-              <span className="font-semibold text-sm text-foreground">
+              <Text className="font-semibold text-sm text-foreground">
                 {post.user.name}
-              </span>
-              <span className="text-muted-foreground text-xs ml-1">· {post.time}</span>
-            </div>
+              </Text>
+              <Text className="text-muted-foreground text-xs ml-1">· {post.time}</Text>
+            </View>
             <MoreHorizontal size={16} className="text-muted-foreground" />
-          </div>
-          <p className="text-foreground/90 text-sm mt-1 leading-relaxed">
+          </View>
+          <Text className="text-foreground/90 text-sm mt-1 leading-relaxed">
             {post.content}
-          </p>
-          <div className="flex items-center gap-5 mt-2.5">
+          </Text>
+          <View className="flex items-center gap-5 mt-2.5">
             <button
               onClick={toggleLike}
               className={`flex items-center gap-1 text-xs ${liked ? "text-rose-500" : "text-muted-foreground"}`}
@@ -52,9 +53,9 @@ export function PostCard({ post, onGoToProfile }: { post: Post; onGoToProfile: (
             <button className="flex items-center gap-1 text-xs text-muted-foreground ml-auto">
               <Share size={15} />
             </button>
-          </div>
-        </div>
-      </div>
-    </div>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }

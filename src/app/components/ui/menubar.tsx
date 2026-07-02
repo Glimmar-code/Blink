@@ -1,3 +1,4 @@
+import { Text } from "react-native";
 "use client";
 
 import * as React from "react";
@@ -127,11 +128,11 @@ function MenubarCheckboxItem({
       checked={checked}
       {...props}
     >
-      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+      <Text className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <MenubarPrimitive.ItemIndicator>
           <CheckIcon className="size-4" />
         </MenubarPrimitive.ItemIndicator>
-      </span>
+      </Text>
       {children}
     </MenubarPrimitive.CheckboxItem>
   );
@@ -151,11 +152,11 @@ function MenubarRadioItem({
       )}
       {...props}
     >
-      <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
+      <Text className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <MenubarPrimitive.ItemIndicator>
           <CircleIcon className="size-2 fill-current" />
         </MenubarPrimitive.ItemIndicator>
-      </span>
+      </Text>
       {children}
     </MenubarPrimitive.RadioItem>
   );
@@ -199,7 +200,7 @@ function MenubarShortcut({
   ...props
 }: React.ComponentProps<"span">) {
   return (
-    <span
+    <Text
       data-slot="menubar-shortcut"
       className={cn(
         "text-muted-foreground ml-auto text-xs tracking-widest",

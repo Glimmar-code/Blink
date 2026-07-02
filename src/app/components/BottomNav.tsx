@@ -1,3 +1,4 @@
+import { Text } from "react-native";
 import { Home, Search, Trophy, Bell, MessageCircle } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { motion } from "motion/react";
@@ -34,9 +35,9 @@ export function BottomNav() {
                 strokeWidth={isActive ? 2.5 : 2}
               />
             </motion.div>
-            <span className={`text-[10px] font-semibold transition-colors ${isActive ? "text-blue-600" : "text-muted-foreground"}`}>
+            <Text className={`text-[10px] font-semibold transition-colors ${isActive ? "text-blue-600" : "text-muted-foreground"}`}>
               {label}
-            </span>
+            </Text>
             {isActive && (
               <motion.span
                 layoutId="navDot"

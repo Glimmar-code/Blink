@@ -1,3 +1,4 @@
+import { View } from "react-native";
 import { Outlet, useLocation } from "react-router";
 import { BottomNav } from "../components/BottomNav";
 
@@ -9,16 +10,16 @@ export function MobileLayout() {
   const showBottomNav = mainPages.includes(location.pathname);
 
   return (
-    <div className="flex flex-col h-screen w-full max-w-md mx-auto bg-gray-50 overflow-hidden border-x border-gray-200 relative">
+    <View className="flex flex-col h-screen w-full max-w-md mx-auto bg-gray-50 overflow-hidden border-x border-gray-200 relative">
       
       {/* Scrollable Content Container */}
-      <div className="flex-1 overflow-y-auto w-full base-scroll-container">
+      <View className="flex-1 overflow-y-auto w-full base-scroll-container">
         <Outlet />
-      </div>
+      </View>
       
       {/* Pinned Bottom Navigation Bar */}
       {showBottomNav && <BottomNav />}
       
-    </div>
+    </View>
   );
 }

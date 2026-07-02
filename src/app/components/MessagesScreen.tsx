@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { UserProfile } from "./UserProfile";
@@ -203,15 +204,15 @@ function VerifiedBadge({ type }: { type: VerifiedType }) {
 
 function Avatar({ src, name, size = 48, online }: { src: string; name: string; size?: number; online?: boolean }) {
   return (
-    <div className="relative shrink-0" style={{ width: size, height: size }}>
+    <View className="relative shrink-0" style={{ width: size, height: size }}>
       <img src={src} alt={name} className="rounded-full object-cover w-full h-full border-2 border-white shadow-sm" />
       {online && (
-        <span className="absolute bottom-0 right-0 flex" style={{ width: Math.max(10, size * 0.22), height: Math.max(10, size * 0.22) }}>
-          <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
-          <span className="relative inline-flex w-full h-full bg-green-500 border-2 border-white rounded-full" />
-        </span>
+        <Text className="absolute bottom-0 right-0 flex" style={{ width: Math.max(10, size * 0.22), height: Math.max(10, size * 0.22) }}>
+          <Text className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
+          <Text className="relative inline-flex w-full h-full bg-green-500 border-2 border-white rounded-full" />
+        </Text>
       )}
-    </div>
+    </View>
   );
 }
 
@@ -253,7 +254,7 @@ function ContextMenuOverlay({ msg, isMine, isPinned, pinnedCount, onClose, onRea
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <View className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
       <motion.div
         className="relative bg-white rounded-t-3xl shadow-2xl pb-6"
@@ -264,17 +265,17 @@ function ContextMenuOverlay({ msg, isMine, isPinned, pinnedCount, onClose, onRea
         onClick={e => e.stopPropagation()}
       >
         {/* Drag handle */}
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-10 h-1 bg-gray-200 rounded-full" />
-        </div>
+        <View className="flex justify-center pt-3 pb-2">
+          <View className="w-10 h-1 bg-gray-200 rounded-full" />
+        </View>
 
         {/* Message preview */}
-        <div className="mx-4 mb-4 p-3 bg-gray-50 rounded-2xl border border-gray-100">
-          <p className="text-xs font-semibold text-gray-500 mb-1">{isMine ? "You" : senderName}</p>
-          <p className="text-sm text-gray-800 line-clamp-2">
+        <View className="mx-4 mb-4 p-3 bg-gray-50 rounded-2xl border border-gray-100">
+          <Text className="text-xs font-semibold text-gray-500 mb-1">{isMine ? "You" : senderName}</Text>
+          <Text className="text-sm text-gray-800 line-clamp-2">
             {msg.type === "text" ? msg.content : msg.type === "voice" ? "🎤 Voice note" : msg.type === "image" ? "📷 Photo" : msg.type === "poll" ? `📊 ${msg.pollQuestion}` : msg.type === "file" ? `📎 ${msg.fileName}` : msg.content}
-          </p>
-        </div>
+          </Text>
+        </View>
 
         {/* Emoji reactions */}
         <AnimatePresence mode="wait">
@@ -286,7 +287,7 @@ function ContextMenuOverlay({ msg, isMine, isPinned, pinnedCount, onClose, onRea
               exit={{ opacity: 0, height: 0 }}
               className="px-4 mb-4"
             >
-              <div className="grid grid-cols-10 gap-1 max-h-44 overflow-y-auto py-2">
+              <View className="grid grid-cols-10 gap-1 max-h-44 overflow-y-auto py-2">
                 {ALL_EMOJIS.map((em, i) => (
                   <motion.button
                     key={i}
@@ -297,7 +298,7 @@ function ContextMenuOverlay({ msg, isMine, isPinned, pinnedCount, onClose, onRea
                     {em}
                   </motion.button>
                 ))}
-              </div>
+              </View>
             </motion.div>
           ) : (
             <motion.div key="quick" className="flex items-center gap-3 px-4 mb-4">
@@ -331,7 +332,7 @@ function ContextMenuOverlay({ msg, isMine, isPinned, pinnedCount, onClose, onRea
         </AnimatePresence>
 
         {/* Actions */}
-        <div className="px-4 grid grid-cols-4 gap-2">
+        <View className="px-4 grid grid-cols-4 gap-2">
           {actions.map(({ icon: Icon, label, action, color, disabled }, i) => (
             <motion.button
               key={label}
@@ -344,10 +345,10 @@ function ContextMenuOverlay({ msg, isMine, isPinned, pinnedCount, onClose, onRea
               className={`flex flex-col items-center gap-1.5 p-3 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-colors ${disabled ? "opacity-30" : ""} ${color}`}
             >
               <Icon className="w-5 h-5" />
-              <span className="text-[10px] font-semibold">{label}</span>
+              <Text className="text-[10px] font-semibold">{label}</Text>
             </motion.button>
           ))}
-        </div>
+        </View>
       </motion.div>
     </motion.div>
   );
@@ -362,41 +363,41 @@ function ForwardModal({ chats, onForward, onClose }: { chats: IChat[]; onForward
 
   return (
     <motion.div className="fixed inset-0 z-50 flex flex-col justify-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <View className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <motion.div
         className="relative bg-white rounded-t-3xl shadow-2xl max-h-[75vh] flex flex-col"
         initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 26, stiffness: 300 }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-center pt-3 pb-2"><div className="w-10 h-1 bg-gray-200 rounded-full" /></div>
-        <div className="px-4 pb-3 flex items-center justify-between">
+        <View className="flex justify-center pt-3 pb-2"><View className="w-10 h-1 bg-gray-200 rounded-full" /></View>
+        <View className="px-4 pb-3 flex items-center justify-between">
           <h3 className="font-bold text-gray-900 text-lg">Forward to</h3>
           <button onClick={onClose} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"><X className="w-4 h-4 text-gray-600" /></button>
-        </div>
-        <div className="px-4 pb-3">
-          <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2">
+        </View>
+        <View className="px-4 pb-3">
+          <View className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2">
             <Search className="w-4 h-4 text-gray-400 shrink-0" />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search chats..." className="bg-transparent text-sm flex-1 outline-none text-gray-800 placeholder-gray-400" />
-          </div>
-        </div>
-        <div className="overflow-y-auto flex-1 px-4 pb-3 flex flex-col gap-2">
+          </View>
+        </View>
+        <View className="overflow-y-auto flex-1 px-4 pb-3 flex flex-col gap-2">
           {filtered.map(chat => (
             <button key={chat.id} onClick={() => setSelected(chat.id === selected ? null : chat.id)}
               className={`flex items-center gap-3 p-3 rounded-2xl transition-all ${selected === chat.id ? "bg-blue-50 border border-blue-200" : "hover:bg-gray-50"}`}>
               <img src={chat.avatar} alt={chat.name} className="w-10 h-10 rounded-full object-cover shrink-0" />
-              <div className="flex-1 min-w-0 text-left">
-                <div className="flex items-center gap-1">
-                  <p className="font-semibold text-sm text-gray-900 truncate">{chat.name}</p>
+              <View className="flex-1 min-w-0 text-left">
+                <View className="flex items-center gap-1">
+                  <Text className="font-semibold text-sm text-gray-900 truncate">{chat.name}</Text>
                   <VerifiedBadge type={chat.verified ?? null} />
-                </div>
-                <p className="text-xs text-gray-400 truncate">{chat.lastMessage}</p>
-              </div>
-              {selected === chat.id && <div className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-white" /></div>}
+                </View>
+                <Text className="text-xs text-gray-400 truncate">{chat.lastMessage}</Text>
+              </View>
+              {selected === chat.id && <View className="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center shrink-0"><Check className="w-3 h-3 text-white" /></View>}
             </button>
           ))}
-        </div>
-        <div className="px-4 pb-6 pt-2">
+        </View>
+        <View className="px-4 pb-6 pt-2">
           <motion.button
             whileTap={{ scale: 0.97 }}
             disabled={!selected}
@@ -405,7 +406,7 @@ function ForwardModal({ chats, onForward, onClose }: { chats: IChat[]; onForward
           >
             Send
           </motion.button>
-        </div>
+        </View>
       </motion.div>
     </motion.div>
   );
@@ -419,29 +420,29 @@ function PollCreator({ onSend, onClose }: { onSend: (question: string, options: 
 
   return (
     <motion.div className="fixed inset-0 z-50 flex flex-col justify-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <View className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <motion.div
         className="relative bg-white rounded-t-3xl shadow-2xl"
         initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 26, stiffness: 300 }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-center pt-3 pb-2"><div className="w-10 h-1 bg-gray-200 rounded-full" /></div>
-        <div className="px-4 pb-4">
-          <div className="flex items-center justify-between mb-4">
+        <View className="flex justify-center pt-3 pb-2"><View className="w-10 h-1 bg-gray-200 rounded-full" /></View>
+        <View className="px-4 pb-4">
+          <View className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-gray-900 text-lg">Create Poll</h3>
             <button onClick={onClose} className="p-2 rounded-full bg-gray-100"><X className="w-4 h-4 text-gray-600" /></button>
-          </div>
+          </View>
           <input value={question} onChange={e => setQuestion(e.target.value)} placeholder="Ask a question..." className="w-full p-3 bg-gray-50 rounded-xl text-sm outline-none border border-gray-200 mb-3" />
-          <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Options</p>
-          <div className="flex flex-col gap-2 mb-3">
+          <Text className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">Options</Text>
+          <View className="flex flex-col gap-2 mb-3">
             {options.map((opt, i) => (
-              <div key={i} className="flex items-center gap-2">
+              <View key={i} className="flex items-center gap-2">
                 <input value={opt} onChange={e => { const n = [...options]; n[i] = e.target.value; setOptions(n); }} placeholder={`Option ${i + 1}`} className="flex-1 p-3 bg-gray-50 rounded-xl text-sm outline-none border border-gray-200" />
                 {options.length > 2 && <button onClick={() => setOptions(options.filter((_, j) => j !== i))} className="p-1.5 rounded-full bg-gray-100 hover:bg-red-50"><X className="w-3.5 h-3.5 text-gray-500" /></button>}
-              </div>
+              </View>
             ))}
-          </div>
+          </View>
           {options.length < 4 && (
             <button onClick={() => setOptions([...options, ""])} className="flex items-center gap-2 text-blue-600 text-sm font-semibold mb-4">
               <Plus className="w-4 h-4" /> Add option
@@ -455,7 +456,7 @@ function PollCreator({ onSend, onClose }: { onSend: (question: string, options: 
           >
             Create Poll
           </motion.button>
-        </div>
+        </View>
       </motion.div>
     </motion.div>
   );
@@ -466,29 +467,29 @@ function PollCreator({ onSend, onClose }: { onSend: (question: string, options: 
 function GifPicker({ onSelect, onClose }: { onSelect: (url: string) => void; onClose: () => void }) {
   return (
     <motion.div className="fixed inset-0 z-50 flex flex-col justify-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <View className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <motion.div
         className="relative bg-white rounded-t-3xl shadow-2xl"
         initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 26, stiffness: 300 }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-center pt-3 pb-2"><div className="w-10 h-1 bg-gray-200 rounded-full" /></div>
-        <div className="px-4 pb-6">
-          <div className="flex items-center justify-between mb-3">
+        <View className="flex justify-center pt-3 pb-2"><View className="w-10 h-1 bg-gray-200 rounded-full" /></View>
+        <View className="px-4 pb-6">
+          <View className="flex items-center justify-between mb-3">
             <h3 className="font-bold text-gray-900 text-lg">GIFs</h3>
             <button onClick={onClose} className="p-2 rounded-full bg-gray-100"><X className="w-4 h-4 text-gray-600" /></button>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
+          </View>
+          <View className="grid grid-cols-2 gap-2">
             {GIF_URLS.map((url, i) => (
               <motion.button key={i} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => { onSelect(url); onClose(); }}
                 className="relative rounded-xl overflow-hidden aspect-video bg-gray-100">
                 <img src={url} alt="gif" className="w-full h-full object-cover" />
-                <div className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">GIF</div>
+                <View className="absolute bottom-1.5 right-1.5 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">GIF</View>
               </motion.button>
             ))}
-          </div>
-        </div>
+          </View>
+        </View>
       </motion.div>
     </motion.div>
   );
@@ -499,30 +500,30 @@ function GifPicker({ onSelect, onClose }: { onSelect: (url: string) => void; onC
 function ContactPicker({ users, onSelect, onClose }: { users: IUser[]; onSelect: (user: IUser) => void; onClose: () => void }) {
   return (
     <motion.div className="fixed inset-0 z-50 flex flex-col justify-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}>
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+      <View className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
       <motion.div
         className="relative bg-white rounded-t-3xl shadow-2xl max-h-[60vh] flex flex-col"
         initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 26, stiffness: 300 }}
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-center pt-3 pb-2"><div className="w-10 h-1 bg-gray-200 rounded-full" /></div>
-        <div className="px-4 pb-2 flex items-center justify-between">
+        <View className="flex justify-center pt-3 pb-2"><View className="w-10 h-1 bg-gray-200 rounded-full" /></View>
+        <View className="px-4 pb-2 flex items-center justify-between">
           <h3 className="font-bold text-gray-900 text-lg">Send Contact</h3>
           <button onClick={onClose} className="p-2 rounded-full bg-gray-100"><X className="w-4 h-4 text-gray-600" /></button>
-        </div>
-        <div className="overflow-y-auto flex-1 px-4 pb-6 flex flex-col gap-2">
+        </View>
+        <View className="overflow-y-auto flex-1 px-4 pb-6 flex flex-col gap-2">
           {users.map(user => (
             <button key={user.id} onClick={() => { onSelect(user); onClose(); }}
               className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 transition-colors text-left">
               <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm text-gray-900">{user.name}</p>
-                <p className="text-xs text-gray-400">@{user.username}</p>
-              </div>
+              <View className="flex-1 min-w-0">
+                <Text className="font-semibold text-sm text-gray-900">{user.name}</Text>
+                <Text className="text-xs text-gray-400">@{user.username}</Text>
+              </View>
             </button>
           ))}
-        </div>
+        </View>
       </motion.div>
     </motion.div>
   );
@@ -569,7 +570,7 @@ function MessageBubble({ msg, isMine, senderAvatar, senderName, replyToMsg, onLo
   const totalReactions = msg.reactions.reduce((s, r) => s + r.users.length, 0);
 
   return (
-    <div className={`flex gap-2 mb-1 ${isMine ? "flex-row-reverse" : "flex-row"} items-end`}>
+    <View className={`flex gap-2 mb-1 ${isMine ? "flex-row-reverse" : "flex-row"} items-end`}>
       {!isMine && isGroup && senderAvatar && (
         <img src={senderAvatar} alt={senderName} className="w-6 h-6 rounded-full object-cover shrink-0 mb-4" />
       )}
@@ -592,15 +593,15 @@ function MessageBubble({ msg, isMine, senderAvatar, senderName, replyToMsg, onLo
         className={`flex flex-col max-w-[72%] cursor-pointer select-none ${isMine ? "items-end" : "items-start"}`}
       >
         {!isMine && isGroup && senderName && (
-          <p className="text-[10px] font-bold text-blue-600 mb-1 ml-1">{senderName}</p>
+          <Text className="text-[10px] font-bold text-blue-600 mb-1 ml-1">{senderName}</Text>
         )}
 
         {/* Reply preview */}
         {replyToMsg && (
-          <div className={`mb-1 px-3 py-1.5 rounded-xl border-l-4 border-blue-400 bg-gray-100 text-xs text-gray-500 max-w-full ${isMine ? "items-end" : ""}`}>
-            <p className="font-semibold text-blue-600 text-[10px]">{replyToMsg.senderId === ME ? "You" : senderName}</p>
-            <p className="truncate">{replyToMsg.type === "text" ? replyToMsg.content : `📎 ${replyToMsg.type}`}</p>
-          </div>
+          <View className={`mb-1 px-3 py-1.5 rounded-xl border-l-4 border-blue-400 bg-gray-100 text-xs text-gray-500 max-w-full ${isMine ? "items-end" : ""}`}>
+            <Text className="font-semibold text-blue-600 text-[10px]">{replyToMsg.senderId === ME ? "You" : senderName}</Text>
+            <Text className="truncate">{replyToMsg.type === "text" ? replyToMsg.content : `📎 ${replyToMsg.type}`}</Text>
+          </View>
         )}
 
         {/* Bubble */}
@@ -615,65 +616,65 @@ function MessageBubble({ msg, isMine, senderAvatar, senderName, replyToMsg, onLo
           } ${msg.type === "image" || msg.type === "gif" ? "p-0" : "px-3.5 py-2.5"}`}
         >
           {msg.pinned && (
-            <div className={`flex items-center gap-1 text-[9px] font-bold mb-1 ${isMine ? "text-blue-200" : "text-amber-500"}`}>
+            <View className={`flex items-center gap-1 text-[9px] font-bold mb-1 ${isMine ? "text-blue-200" : "text-amber-500"}`}>
               <Pin className="w-2.5 h-2.5" /> Pinned
-            </div>
+            </View>
           )}
 
-          {msg.type === "text" && <p className="text-sm leading-relaxed break-words">{msg.content}</p>}
+          {msg.type === "text" && <Text className="text-sm leading-relaxed break-words">{msg.content}</Text>}
 
           {(msg.type === "image" || msg.type === "gif") && (
-            <div className="relative">
+            <View className="relative">
               <img src={msg.gifUrl || msg.content} alt="media" className="max-w-full rounded-2xl max-h-52 object-cover" />
-              {msg.type === "gif" && <div className="absolute bottom-2 left-2 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">GIF</div>}
-            </div>
+              {msg.type === "gif" && <View className="absolute bottom-2 left-2 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">GIF</View>}
+            </View>
           )}
 
           {msg.type === "voice" && (
-            <div className="flex items-center gap-3 min-w-[160px]">
+            <View className="flex items-center gap-3 min-w-[160px]">
               <button className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${isMine ? "bg-blue-400" : "bg-blue-50"}`}>
                 <Play className={`w-4 h-4 ${isMine ? "text-white" : "text-blue-600"}`} />
               </button>
-              <div className="flex-1 flex items-center gap-0.5">
+              <View className="flex-1 flex items-center gap-0.5">
                 {Array.from({ length: 20 }).map((_, i) => (
-                  <div key={i} className={`rounded-full flex-1 ${isMine ? "bg-blue-300" : "bg-blue-200"}`}
+                  <View key={i} className={`rounded-full flex-1 ${isMine ? "bg-blue-300" : "bg-blue-200"}`}
                     style={{ height: `${8 + Math.sin(i * 0.8) * 6 + Math.random() * 4}px` }} />
                 ))}
-              </div>
-              <span className={`text-[10px] shrink-0 ${isMine ? "text-blue-200" : "text-gray-400"}`}>{msg.voiceDuration}s</span>
-            </div>
+              </View>
+              <Text className={`text-[10px] shrink-0 ${isMine ? "text-blue-200" : "text-gray-400"}`}>{msg.voiceDuration}s</Text>
+            </View>
           )}
 
           {msg.type === "file" && (
-            <div className="flex items-center gap-2.5">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isMine ? "bg-blue-400" : "bg-blue-50"}`}>
+            <View className="flex items-center gap-2.5">
+              <View className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${isMine ? "bg-blue-400" : "bg-blue-50"}`}>
                 <FileText className={`w-4 h-4 ${isMine ? "text-white" : "text-blue-600"}`} />
-              </div>
-              <div>
-                <p className="text-sm font-medium leading-tight">{msg.fileName}</p>
-                <p className={`text-[10px] ${isMine ? "text-blue-200" : "text-gray-400"}`}>{msg.fileSize}</p>
-              </div>
-            </div>
+              </View>
+              <View>
+                <Text className="text-sm font-medium leading-tight">{msg.fileName}</Text>
+                <Text className={`text-[10px] ${isMine ? "text-blue-200" : "text-gray-400"}`}>{msg.fileSize}</Text>
+              </View>
+            </View>
           )}
 
           {msg.type === "contact" && (
-            <div className="flex items-center gap-2.5">
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${isMine ? "bg-blue-400" : "bg-gray-100"}`}>
+            <View className="flex items-center gap-2.5">
+              <View className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${isMine ? "bg-blue-400" : "bg-gray-100"}`}>
                 <UserCheck className={`w-4 h-4 ${isMine ? "text-white" : "text-gray-600"}`} />
-              </div>
-              <div>
-                <p className="text-sm font-semibold">{msg.contactName}</p>
-                <p className={`text-[10px] ${isMine ? "text-blue-200" : "text-gray-400"}`}>{msg.contactPhone}</p>
-              </div>
-            </div>
+              </View>
+              <View>
+                <Text className="text-sm font-semibold">{msg.contactName}</Text>
+                <Text className={`text-[10px] ${isMine ? "text-blue-200" : "text-gray-400"}`}>{msg.contactPhone}</Text>
+              </View>
+            </View>
           )}
 
           {msg.type === "poll" && msg.pollOptions && (
-            <div className="min-w-[200px]">
-              <div className="flex items-center gap-1.5 mb-2">
+            <View className="min-w-[200px]">
+              <View className="flex items-center gap-1.5 mb-2">
                 <BarChart2 className={`w-4 h-4 ${isMine ? "text-blue-200" : "text-blue-500"}`} />
-                <p className="font-semibold text-sm">{msg.pollQuestion}</p>
-              </div>
+                <Text className="font-semibold text-sm">{msg.pollQuestion}</Text>
+              </View>
               {msg.pollOptions.map((opt, i) => {
                 const total = msg.pollOptions!.reduce((s, o) => s + o.votes, 0);
                 const pct = total > 0 ? Math.round((opt.votes / total) * 100) : 0;
@@ -684,39 +685,39 @@ function MessageBubble({ msg, isMine, senderAvatar, senderName, replyToMsg, onLo
                     className={`w-full mb-1.5 p-2.5 rounded-xl border text-left relative overflow-hidden transition-all ${
                       voted ? (isMine ? "border-blue-300 bg-blue-400/20" : "border-blue-400 bg-blue-50") : (isMine ? "border-blue-400/30 bg-blue-400/10" : "border-gray-100 bg-gray-50")
                     }`}>
-                    <div className="absolute left-0 top-0 bottom-0 bg-blue-500/10 transition-all" style={{ width: `${pct}%` }} />
-                    <div className="relative flex items-center justify-between">
-                      <span className="text-xs font-medium">{opt.text}</span>
-                      <span className="text-xs font-bold opacity-60">{pct}%</span>
-                    </div>
+                    <View className="absolute left-0 top-0 bottom-0 bg-blue-500/10 transition-all" style={{ width: `${pct}%` }} />
+                    <View className="relative flex items-center justify-between">
+                      <Text className="text-xs font-medium">{opt.text}</Text>
+                      <Text className="text-xs font-bold opacity-60">{pct}%</Text>
+                    </View>
                   </motion.button>
                 );
               })}
-              <p className={`text-[10px] mt-1 ${isMine ? "text-blue-200" : "text-gray-400"}`}>{msg.pollOptions.reduce((s, o) => s + o.votes, 0)} votes</p>
-            </div>
+              <Text className={`text-[10px] mt-1 ${isMine ? "text-blue-200" : "text-gray-400"}`}>{msg.pollOptions.reduce((s, o) => s + o.votes, 0)} votes</Text>
+            </View>
           )}
 
           {/* Timestamp + read status */}
-          <div className={`flex items-center gap-1 mt-1 ${isMine ? "justify-end" : "justify-start"}`}>
-            <span className={`text-[10px] ${isMine ? "text-blue-200" : "text-gray-400"}`}>{msg.timestamp}</span>
+          <View className={`flex items-center gap-1 mt-1 ${isMine ? "justify-end" : "justify-start"}`}>
+            <Text className={`text-[10px] ${isMine ? "text-blue-200" : "text-gray-400"}`}>{msg.timestamp}</Text>
             {isMine && <CheckCheck className="w-3 h-3 text-blue-200" />}
-          </div>
+          </View>
         </motion.div>
 
         {/* Reactions */}
         {totalReactions > 0 && (
-          <div className={`flex flex-wrap gap-1 mt-1 ${isMine ? "justify-end" : "justify-start"}`}>
+          <View className={`flex flex-wrap gap-1 mt-1 ${isMine ? "justify-end" : "justify-start"}`}>
             {msg.reactions.map(r => r.users.length > 0 && (
               <motion.div key={r.emoji} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 className="flex items-center gap-0.5 bg-white border border-gray-200 rounded-full px-1.5 py-0.5 shadow-sm">
-                <span className="text-xs">{r.emoji}</span>
-                {r.users.length > 1 && <span className="text-[10px] font-bold text-gray-600">{r.users.length}</span>}
+                <Text className="text-xs">{r.emoji}</Text>
+                {r.users.length > 1 && <Text className="text-[10px] font-bold text-gray-600">{r.users.length}</Text>}
               </motion.div>
             ))}
-          </div>
+          </View>
         )}
       </motion.div>
-    </div>
+    </View>
   );
 }
 
@@ -766,16 +767,16 @@ function ChatInputBar({ replyTo, onClearReply, onSend, onSendVoice, onSendGif, o
   ];
 
   return (
-    <div className="bg-white border-t border-gray-100 px-3 py-2 shrink-0">
+    <View className="bg-white border-t border-gray-100 px-3 py-2 shrink-0">
       <AnimatePresence>
         {replyTo && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
             className="flex items-center gap-2 mb-2 px-3 py-2 bg-blue-50 rounded-xl border-l-4 border-blue-400">
             <Reply className="w-4 h-4 text-blue-500 shrink-0" />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-bold text-blue-600">{replyToSenderName || "You"}</p>
-              <p className="text-xs text-gray-600 truncate">{replyTo.type === "text" ? replyTo.content : replyTo.type}</p>
-            </div>
+            <View className="flex-1 min-w-0">
+              <Text className="text-[10px] font-bold text-blue-600">{replyToSenderName || "You"}</Text>
+              <Text className="text-xs text-gray-600 truncate">{replyTo.type === "text" ? replyTo.content : replyTo.type}</Text>
+            </View>
             <button onClick={onClearReply} className="p-1 rounded-full hover:bg-blue-100 transition-colors"><X className="w-3.5 h-3.5 text-gray-500" /></button>
           </motion.div>
         )}
@@ -789,10 +790,10 @@ function ChatInputBar({ replyTo, onClearReply, onSend, onSendVoice, onSendGif, o
               <motion.button key={label} initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ delay: i * 0.04, type: "spring" }}
                 whileTap={{ scale: 0.88 }} onClick={() => { action(); setShowAttach(false); }}
                 className="flex flex-col items-center gap-1">
-                <div className={`w-11 h-11 rounded-2xl ${color} flex items-center justify-center shadow-sm`}>
+                <View className={`w-11 h-11 rounded-2xl ${color} flex items-center justify-center shadow-sm`}>
                   <Icon className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-[9px] font-semibold text-gray-500">{label}</span>
+                </View>
+                <Text className="text-[9px] font-semibold text-gray-500">{label}</Text>
               </motion.button>
             ))}
           </motion.div>
@@ -800,29 +801,29 @@ function ChatInputBar({ replyTo, onClearReply, onSend, onSendVoice, onSendGif, o
       </AnimatePresence>
 
       {isRecording ? (
-        <div className="flex items-center gap-3 py-1">
+        <View className="flex items-center gap-3 py-1">
           <button onClick={() => { setIsRecording(false); if (recordInterval.current) clearInterval(recordInterval.current); setRecordSecs(0); }}
             className="p-2.5 rounded-full bg-gray-100 text-gray-500"><X className="w-4 h-4" /></button>
-          <div className="flex-1 flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
-            <div className="flex-1 flex items-center gap-0.5">
+          <View className="flex-1 flex items-center gap-2">
+            <Text className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
+            <View className="flex-1 flex items-center gap-0.5">
               {Array.from({ length: 30 }).map((_, i) => (
-                <div key={i} className="flex-1 bg-blue-400 rounded-full animate-pulse" style={{ height: `${6 + Math.sin(i * 0.7 + Date.now() / 300) * 5}px`, animationDelay: `${i * 50}ms` }} />
+                <View key={i} className="flex-1 bg-blue-400 rounded-full animate-pulse" style={{ height: `${6 + Math.sin(i * 0.7 + Date.now() / 300) * 5}px`, animationDelay: `${i * 50}ms` }} />
               ))}
-            </div>
-            <span className="text-sm font-mono text-red-500 font-bold">{String(Math.floor(recordSecs / 60)).padStart(2, "0")}:{String(recordSecs % 60).padStart(2, "0")}</span>
-          </div>
+            </View>
+            <Text className="text-sm font-mono text-red-500 font-bold">{String(Math.floor(recordSecs / 60)).padStart(2, "0")}:{String(recordSecs % 60).padStart(2, "0")}</Text>
+          </View>
           <motion.button whileTap={{ scale: 0.92 }} onClick={stopRecording}
             className="p-2.5 rounded-full bg-blue-600 text-white shadow-md"><Send className="w-4 h-4" /></motion.button>
-        </div>
+        </View>
       ) : (
-        <div className="flex items-center gap-2">
+        <View className="flex items-center gap-2">
           <motion.button whileTap={{ scale: 0.88 }} onClick={() => { setShowAttach(a => !a); setShowEmoji(false); }}
             className={`p-2.5 rounded-full transition-colors ${showAttach ? "bg-blue-100 text-blue-600" : "bg-gray-100 text-gray-500 hover:bg-gray-200"}`}>
             <Paperclip className="w-4.5 h-4.5" />
           </motion.button>
 
-          <div className="flex-1 flex items-center gap-1 bg-gray-100 rounded-2xl px-3 py-2">
+          <View className="flex-1 flex items-center gap-1 bg-gray-100 rounded-2xl px-3 py-2">
             <input
               value={text} onChange={e => setText(e.target.value)}
               onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey && text.trim()) { onSend(text.trim()); setText(""); } }}
@@ -833,7 +834,7 @@ function ChatInputBar({ replyTo, onClearReply, onSend, onSendVoice, onSendGif, o
               className={`p-1 rounded-full transition-colors ${showEmoji ? "text-blue-600" : "text-gray-400 hover:text-gray-600"}`}>
               <Smile className="w-4.5 h-4.5" />
             </motion.button>
-          </div>
+          </View>
 
           {text.trim() ? (
             <motion.button whileTap={{ scale: 0.88 }} onClick={() => { onSend(text.trim()); setText(""); }}
@@ -846,7 +847,7 @@ function ChatInputBar({ replyTo, onClearReply, onSend, onSendVoice, onSendGif, o
               <Mic className="w-5 h-5" />
             </motion.button>
           )}
-        </div>
+        </View>
       )}
 
       {/* Inline emoji picker */}
@@ -854,18 +855,18 @@ function ChatInputBar({ replyTo, onClearReply, onSend, onSendVoice, onSendGif, o
         {showEmoji && (
           <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden mt-2">
-            <div className="grid grid-cols-10 gap-1 max-h-36 overflow-y-auto">
+            <View className="grid grid-cols-10 gap-1 max-h-36 overflow-y-auto">
               {ALL_EMOJIS.map((em, i) => (
                 <button key={i} onClick={() => setText(t => t + em)}
                   className="text-xl h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
                   {em}
                 </button>
               ))}
-            </div>
+            </View>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </View>
   );
 }
 
@@ -876,25 +877,25 @@ function MessagesListView({ chats, onOpenChat, onCreateGroup }: { chats: IChat[]
   const filtered = chats.filter(c => c.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
+    <View className="flex flex-col h-full bg-gray-50">
       {/* Header */}
-      <div className="bg-white px-4 pt-10 pb-3 shadow-sm shrink-0">
-        <div className="flex items-center justify-between mb-3">
+      <View className="bg-white px-4 pt-10 pb-3 shadow-sm shrink-0">
+        <View className="flex items-center justify-between mb-3">
           <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
           <motion.button whileTap={{ scale: 0.88 }} onClick={onCreateGroup}
             className="p-2.5 bg-blue-600 rounded-2xl text-white shadow-sm hover:bg-blue-700 transition-colors">
             <Edit2 className="w-4.5 h-4.5" />
           </motion.button>
-        </div>
-        <div className="flex items-center gap-2 bg-gray-100 rounded-2xl px-3 py-2.5">
+        </View>
+        <View className="flex items-center gap-2 bg-gray-100 rounded-2xl px-3 py-2.5">
           <Search className="w-4 h-4 text-gray-400 shrink-0" />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search messages..." className="bg-transparent text-sm flex-1 outline-none text-gray-800 placeholder-gray-400" />
-        </div>
-      </div>
+        </View>
+      </View>
 
       {/* Chat list */}
-      <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        <div className="px-3 pt-2 pb-20">
+      <View className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <View className="px-3 pt-2 pb-20">
           {filtered.map((chat, i) => (
             <motion.button
               key={chat.id}
@@ -905,48 +906,48 @@ function MessagesListView({ chats, onOpenChat, onCreateGroup }: { chats: IChat[]
               onClick={() => onOpenChat(chat.id)}
               className="w-full flex items-center gap-3 p-3 rounded-2xl mb-1 bg-white hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100 hover:shadow-sm"
             >
-              <div className="relative shrink-0">
+              <View className="relative shrink-0">
                 <img src={chat.avatar} alt={chat.name} className="w-14 h-14 rounded-full object-cover border-2 border-white shadow-sm" />
                 {chat.type === "group" && (
-                  <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center border-2 border-white">
+                  <View className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center border-2 border-white">
                     <Users className="w-2.5 h-2.5 text-white" />
-                  </div>
+                  </View>
                 )}
                 {chat.type === "dm" && chat.streak > 0 && (
-                  <div className="absolute -bottom-1 -right-1 bg-white rounded-full px-1 py-0.5 border border-orange-100 shadow-sm">
-                    <span className="text-[9px] font-bold text-orange-500">🔥{chat.streak}</span>
-                  </div>
+                  <View className="absolute -bottom-1 -right-1 bg-white rounded-full px-1 py-0.5 border border-orange-100 shadow-sm">
+                    <Text className="text-[9px] font-bold text-orange-500">🔥{chat.streak}</Text>
+                  </View>
                 )}
-              </div>
+              </View>
 
-              <div className="flex-1 min-w-0 text-left">
-                <div className="flex items-center justify-between mb-0.5">
-                  <div className="flex items-center gap-1 min-w-0">
-                    <span className={`font-semibold text-sm truncate ${chat.unreadCount > 0 ? "text-gray-900" : "text-gray-700"}`}>{chat.name}</span>
+              <View className="flex-1 min-w-0 text-left">
+                <View className="flex items-center justify-between mb-0.5">
+                  <View className="flex items-center gap-1 min-w-0">
+                    <Text className={`font-semibold text-sm truncate ${chat.unreadCount > 0 ? "text-gray-900" : "text-gray-700"}`}>{chat.name}</Text>
                     <VerifiedBadge type={chat.verified ?? null} />
-                  </div>
-                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                  </View>
+                  <View className="flex items-center gap-1.5 shrink-0 ml-2">
                     {chat.streak > 0 && chat.type === "group" && (
-                      <span className="text-[9px] font-bold text-orange-500">🔥{chat.streak}</span>
+                      <Text className="text-[9px] font-bold text-orange-500">🔥{chat.streak}</Text>
                     )}
-                    <span className="text-[10px] text-gray-400">{chat.lastTime}</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <p className={`text-xs truncate flex-1 ${chat.unreadCount > 0 ? "text-gray-800 font-medium" : "text-gray-400"}`}>{chat.lastMessage}</p>
+                    <Text className="text-[10px] text-gray-400">{chat.lastTime}</Text>
+                  </View>
+                </View>
+                <View className="flex items-center justify-between">
+                  <Text className={`text-xs truncate flex-1 ${chat.unreadCount > 0 ? "text-gray-800 font-medium" : "text-gray-400"}`}>{chat.lastMessage}</Text>
                   {chat.unreadCount > 0 && (
                     <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 400 }}
                       className="ml-2 min-w-[20px] h-5 bg-blue-600 rounded-full flex items-center justify-center shrink-0 px-1.5">
-                      <span className="text-[10px] font-bold text-white">{chat.unreadCount}</span>
+                      <Text className="text-[10px] font-bold text-white">{chat.unreadCount}</Text>
                     </motion.div>
                   )}
-                </div>
-              </div>
+                </View>
+              </View>
             </motion.button>
           ))}
-        </div>
-      </div>
-    </div>
+        </View>
+      </View>
+    </View>
   );
 }
 
@@ -962,10 +963,10 @@ function PinnedBanner({ pinned, allMsgs, onNavigate }: { pinned: string[]; allMs
       onClick={onNavigate}
       className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border-b border-amber-100 w-full text-left hover:bg-amber-100 transition-colors">
       <Pin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-      <div className="flex-1 min-w-0">
-        <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Pinned · {pinnedMsgs.length} message{pinnedMsgs.length > 1 ? "s" : ""}</p>
-        <p className="text-xs text-gray-700 truncate">{first.type === "text" ? first.content : `📎 ${first.type}`}</p>
-      </div>
+      <View className="flex-1 min-w-0">
+        <Text className="text-[10px] font-bold text-amber-600 uppercase tracking-wide">Pinned · {pinnedMsgs.length} message{pinnedMsgs.length > 1 ? "s" : ""}</Text>
+        <Text className="text-xs text-gray-700 truncate">{first.type === "text" ? first.content : `📎 ${first.type}`}</Text>
+      </View>
       <ChevronRight className="w-3.5 h-3.5 text-amber-500 shrink-0" />
     </motion.button>
   );
@@ -1095,10 +1096,10 @@ function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInf
   return (
     <>
 
-    <div className="flex flex-col h-full bg-gray-50">
+    <View className="flex flex-col h-full bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-100 shrink-0">
-        <div className="flex items-center gap-3 px-3 py-3">
+      <View className="bg-white border-b border-gray-100 shrink-0">
+        <View className="flex items-center gap-3 px-3 py-3">
           <motion.button whileTap={{ scale: 0.88 }} onClick={onBack}
             className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
             <ChevronLeft className="w-5 h-5 text-gray-700" />
@@ -1108,26 +1109,26 @@ function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInf
             onClick={() => chat.type === "dm" && chat.userId ? onViewProfile(chat.userId) : onOpenGroupInfo()}
             className="flex items-center gap-2.5 flex-1 min-w-0 hover:opacity-80 transition-opacity"
           >
-            <div className="relative shrink-0">
+            <View className="relative shrink-0">
               <img src={chat.avatar} alt={chat.name} className="w-9 h-9 rounded-full object-cover" />
               {chatUser?.online && (
-                <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full" />
+                <Text className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full" />
               )}
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1">
-                <p className="font-bold text-sm text-gray-900 truncate">{chat.name}</p>
+            </View>
+            <View className="min-w-0">
+              <View className="flex items-center gap-1">
+                <Text className="font-bold text-sm text-gray-900 truncate">{chat.name}</Text>
                 <VerifiedBadge type={chat.verified ?? null} />
-              </div>
-              <p className="text-[10px] text-gray-400">
+              </View>
+              <Text className="text-[10px] text-gray-400">
                 {chat.type === "group"
                   ? `${chat.members?.length} members`
                   : chatUser?.online ? "Online" : chatUser?.lastSeen}
-              </p>
-            </div>
+              </Text>
+            </View>
           </button>
 
-          <div className="flex items-center gap-1">
+          <View className="flex items-center gap-1">
             {chat.type === "dm" && (
               <>
                 <motion.button whileTap={{ scale: 0.88 }} className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-600">
@@ -1142,39 +1143,39 @@ function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInf
               className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-600">
               <Info className="w-4.5 h-4.5" />
             </motion.button>
-          </div>
-        </div>
+          </View>
+        </View>
 
         <PinnedBanner pinned={pinnedIds} allMsgs={messages} onNavigate={() => setShowPinnedList(true)} />
-      </div>
+      </View>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <View ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {/* Pinned messages list modal */}
         <AnimatePresence>
           {showPinnedList && (
             <motion.div className="fixed inset-0 z-40 flex flex-col justify-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowPinnedList(false)}>
-              <div className="absolute inset-0 bg-black/40" />
+              <View className="absolute inset-0 bg-black/40" />
               <motion.div className="relative bg-white rounded-t-3xl max-h-[60vh] flex flex-col"
                 initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 26, stiffness: 300 }}
                 onClick={e => e.stopPropagation()}>
-                <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100">
+                <View className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100">
                   <h3 className="font-bold text-gray-900">Pinned Messages</h3>
                   <button onClick={() => setShowPinnedList(false)} className="p-2 rounded-full bg-gray-100"><X className="w-4 h-4" /></button>
-                </div>
-                <div className="overflow-y-auto px-4 pb-6 pt-2 flex flex-col gap-3">
+                </View>
+                <View className="overflow-y-auto px-4 pb-6 pt-2 flex flex-col gap-3">
                   {messages.filter(m => pinnedIds.includes(m.id)).map(m => (
-                    <div key={m.id} className="flex items-start gap-2 p-3 bg-amber-50 rounded-2xl border border-amber-100">
+                    <View key={m.id} className="flex items-start gap-2 p-3 bg-amber-50 rounded-2xl border border-amber-100">
                       <Pin className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                      <div>
-                        <p className="text-xs font-bold text-gray-600 mb-0.5">{senderName(m.senderId)}</p>
-                        <p className="text-sm text-gray-800">{m.type === "text" ? m.content : `📎 ${m.type}`}</p>
-                        <p className="text-[10px] text-gray-400 mt-1">{m.timestamp}</p>
-                      </div>
-                    </div>
+                      <View>
+                        <Text className="text-xs font-bold text-gray-600 mb-0.5">{senderName(m.senderId)}</Text>
+                        <Text className="text-sm text-gray-800">{m.type === "text" ? m.content : `📎 ${m.type}`}</Text>
+                        <Text className="text-[10px] text-gray-400 mt-1">{m.timestamp}</Text>
+                      </View>
+                    </View>
                   ))}
-                </div>
+                </View>
               </motion.div>
             </motion.div>
           )}
@@ -1189,13 +1190,13 @@ function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInf
           const showDate = i === 0 || messages[i - 1].timestamp !== msg.timestamp;
 
           return (
-            <div key={msg.id}>
+            <View key={msg.id}>
               {showDate && i > 0 && (
-                <div className="flex items-center gap-2 my-3">
-                  <div className="flex-1 h-px bg-gray-200" />
-                  <span className="text-[10px] text-gray-400 font-medium px-2">{msg.timestamp}</span>
-                  <div className="flex-1 h-px bg-gray-200" />
-                </div>
+                <View className="flex items-center gap-2 my-3">
+                  <View className="flex-1 h-px bg-gray-200" />
+                  <Text className="text-[10px] text-gray-400 font-medium px-2">{msg.timestamp}</Text>
+                  <View className="flex-1 h-px bg-gray-200" />
+                </View>
               )}
               <MessageBubble
                 msg={msg}
@@ -1208,13 +1209,13 @@ function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInf
                 isGroup={chat.type === "group"}
                 onVotePoll={handleVotePoll}
               />
-            </div>
+            </View>
             
           );
         })}
 
-        <div className="h-4" />
-      </div>
+        <View className="h-4" />
+      </View>
 
       {/* Input */}
       <ChatInputBar
@@ -1268,7 +1269,7 @@ function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInf
           <ContactPicker users={users} onSelect={u => addMessage(mkMsg(genId(), ME, "contact", "", "now", { contactName: u.name, contactPhone: `@${u.username}` }))} onClose={() => setShowContact(false)} />
         )}
       </AnimatePresence>
-    </div>
+    </View>
                     </>
 
   );
@@ -1325,26 +1326,26 @@ function GroupInfoScreen({ chat, users, onBack, onViewProfile, onUpdateChat, onD
   const canDelete = isOwner && members.length <= 1;
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
-      <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shrink-0">
+    <View className="flex flex-col h-full bg-gray-50">
+      <View className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shrink-0">
         <motion.button whileTap={{ scale: 0.88 }} onClick={onBack} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
           <ChevronLeft className="w-5 h-5 text-gray-700" />
         </motion.button>
         <h2 className="font-bold text-gray-900 flex-1">Group Info</h2>
-      </div>
+      </View>
 
-      <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-6">
+      <View className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-6">
         {/* Group header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white m-4 rounded-3xl p-5 flex flex-col items-center border border-gray-100 shadow-sm">
           <img src={chat.avatar} alt={chat.name} className="w-20 h-20 rounded-full object-cover mb-3 border-4 border-white shadow-md" />
           <h2 className="font-bold text-xl text-gray-900 mb-1">{chat.name}</h2>
-          {chat.description && <p className="text-sm text-gray-500 text-center">{chat.description}</p>}
-          <p className="text-xs text-gray-400 mt-1">{members.length} members · 🔥{chat.streak} day streak</p>
+          {chat.description && <Text className="text-sm text-gray-500 text-center">{chat.description}</Text>}
+          <Text className="text-xs text-gray-400 mt-1">{members.length} members · 🔥{chat.streak} day streak</Text>
         </motion.div>
 
         {/* Members */}
-        <div className="mx-4 mb-4">
-          <div className="flex items-center justify-between mb-2">
+        <View className="mx-4 mb-4">
+          <View className="flex items-center justify-between mb-2">
             <h3 className="font-bold text-sm text-gray-700 uppercase tracking-wide">Members ({members.length})</h3>
             {isAdmin && (
               <motion.button whileTap={{ scale: 0.88 }} onClick={() => setShowAddMember(true)}
@@ -1352,8 +1353,8 @@ function GroupInfoScreen({ chat, users, onBack, onViewProfile, onUpdateChat, onD
                 <UserPlus className="w-3.5 h-3.5" /> Add
               </motion.button>
             )}
-          </div>
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+          </View>
+          <View className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
             {members.map((member, i) => {
               const user = getUser(member.userId);
               if (!user) return null;
@@ -1366,16 +1367,16 @@ function GroupInfoScreen({ chat, users, onBack, onViewProfile, onUpdateChat, onD
                   <button onClick={() => !isMe && onViewProfile(member.userId)} className="shrink-0">
                     <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
                   </button>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <p className="font-semibold text-sm text-gray-900 truncate">{user.name}</p>
+                  <View className="flex-1 min-w-0">
+                    <View className="flex items-center gap-1.5">
+                      <Text className="font-semibold text-sm text-gray-900 truncate">{user.name}</Text>
                       {roleIcon(member.role)}
                       {"verified" in user && user.verified && <VerifiedBadge type={user.verified} />}
-                    </div>
-                    <p className="text-xs text-gray-400 capitalize">{member.role}</p>
-                  </div>
+                    </View>
+                    <Text className="text-xs text-gray-400 capitalize">{member.role}</Text>
+                  </View>
                   {canManage && (
-                    <div className="flex items-center gap-1">
+                    <View className="flex items-center gap-1">
                       {member.role === "member" && (
                         <motion.button whileTap={{ scale: 0.88 }} onClick={() => updateRole(member.userId, "admin")}
                           className="p-1.5 rounded-xl bg-blue-50 text-blue-600 text-xs font-semibold hover:bg-blue-100 transition-colors">
@@ -1392,100 +1393,100 @@ function GroupInfoScreen({ chat, users, onBack, onViewProfile, onUpdateChat, onD
                         className="p-1.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors">
                         <X className="w-3.5 h-3.5" />
                       </motion.button>
-                    </div>
+                    </View>
                   )}
                 </motion.div>
               );
             })}
-          </div>
-        </div>
+          </View>
+        </View>
 
         {/* Owner actions */}
         {isOwner && (
-          <div className="mx-4 mb-4 flex flex-col gap-2">
+          <View className="mx-4 mb-4 flex flex-col gap-2">
             {members.filter(m => m.userId !== ME).length > 0 && (
               <motion.button whileTap={{ scale: 0.97 }} onClick={() => setShowTransfer(true)}
                 className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:bg-gray-50 transition-colors">
-                <div className="w-9 h-9 bg-amber-100 rounded-2xl flex items-center justify-center">
+                <View className="w-9 h-9 bg-amber-100 rounded-2xl flex items-center justify-center">
                   <Crown className="w-4.5 h-4.5 text-amber-600" />
-                </div>
-                <div className="text-left">
-                  <p className="font-semibold text-sm text-gray-900">Transfer Ownership</p>
-                  <p className="text-xs text-gray-400">Pass owner rights to a member</p>
-                </div>
+                </View>
+                <View className="text-left">
+                  <Text className="font-semibold text-sm text-gray-900">Transfer Ownership</Text>
+                  <Text className="text-xs text-gray-400">Pass owner rights to a member</Text>
+                </View>
               </motion.button>
             )}
             <motion.button whileTap={{ scale: 0.97 }}
               onClick={() => canDelete ? setShowConfirmDelete(true) : alert("You can only delete the group when you're the last member")}
               className={`flex items-center gap-3 p-4 rounded-2xl border shadow-sm transition-colors ${canDelete ? "bg-red-50 border-red-100 hover:bg-red-100" : "bg-gray-50 border-gray-100 opacity-50"}`}>
-              <div className="w-9 h-9 bg-red-100 rounded-2xl flex items-center justify-center">
+              <View className="w-9 h-9 bg-red-100 rounded-2xl flex items-center justify-center">
                 <Trash2 className="w-4.5 h-4.5 text-red-500" />
-              </div>
-              <div className="text-left">
-                <p className="font-semibold text-sm text-red-600">Delete Group</p>
-                <p className="text-xs text-gray-400">{canDelete ? "Permanently delete this group" : "Remove all members first"}</p>
-              </div>
+              </View>
+              <View className="text-left">
+                <Text className="font-semibold text-sm text-red-600">Delete Group</Text>
+                <Text className="text-xs text-gray-400">{canDelete ? "Permanently delete this group" : "Remove all members first"}</Text>
+              </View>
             </motion.button>
-          </div>
+          </View>
         )}
 
         {!isOwner && (
-          <div className="mx-4 mb-4">
+          <View className="mx-4 mb-4">
             <motion.button whileTap={{ scale: 0.97 }}
               onClick={() => { removeMember(ME); onBack(); }}
               className="flex items-center gap-3 p-4 bg-red-50 rounded-2xl border border-red-100 hover:bg-red-100 transition-colors w-full">
-              <div className="w-9 h-9 bg-red-100 rounded-2xl flex items-center justify-center">
+              <View className="w-9 h-9 bg-red-100 rounded-2xl flex items-center justify-center">
                 <X className="w-4.5 h-4.5 text-red-500" />
-              </div>
-              <p className="font-semibold text-sm text-red-600">Leave Group</p>
+              </View>
+              <Text className="font-semibold text-sm text-red-600">Leave Group</Text>
             </motion.button>
-          </div>
+          </View>
         )}
-      </div>
+      </View>
 
       {/* Add member sheet */}
       <AnimatePresence>
         {showAddMember && (
           <motion.div className="fixed inset-0 z-50 flex flex-col justify-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowAddMember(false)}>
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+            <View className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
             <motion.div className="relative bg-white rounded-t-3xl max-h-[65vh] flex flex-col shadow-2xl"
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}>
-              <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100">
+              <View className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100">
                 <h3 className="font-bold text-gray-900">Add Members</h3>
                 <button onClick={() => setShowAddMember(false)} className="p-2 rounded-full bg-gray-100"><X className="w-4 h-4" /></button>
-              </div>
-              <div className="overflow-y-auto flex-1 px-4 pb-6 pt-2">
+              </View>
+              <View className="overflow-y-auto flex-1 px-4 pb-6 pt-2">
                 {nonMembers.length === 0 ? (
-                  <p className="text-center text-gray-400 text-sm py-8">All users are already members</p>
+                  <Text className="text-center text-gray-400 text-sm py-8">All users are already members</Text>
                 ) : nonMembers.map(user => (
                   <button key={user.id} onClick={() => { addMember(user.id); setShowAddMember(false); }}
                     className="flex items-center gap-3 p-3 rounded-2xl hover:bg-gray-50 w-full transition-colors mb-1">
                     <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
-                    <div className="flex-1 min-w-0 text-left">
-                      <p className="font-semibold text-sm text-gray-900">{user.name}</p>
-                      <p className="text-xs text-gray-400">@{user.username}</p>
-                    </div>
-                    <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
+                    <View className="flex-1 min-w-0 text-left">
+                      <Text className="font-semibold text-sm text-gray-900">{user.name}</Text>
+                      <Text className="text-xs text-gray-400">@{user.username}</Text>
+                    </View>
+                    <View className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center shrink-0">
                       <Plus className="w-3.5 h-3.5 text-white" />
-                    </div>
+                    </View>
                   </button>
                 ))}
-              </div>
+              </View>
             </motion.div>
           </motion.div>
         )}
         {showTransfer && (
           <motion.div className="fixed inset-0 z-50 flex flex-col justify-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowTransfer(false)}>
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+            <View className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
             <motion.div className="relative bg-white rounded-t-3xl max-h-[60vh] flex flex-col shadow-2xl"
               initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 26, stiffness: 300 }}
               onClick={e => e.stopPropagation()}>
-              <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100">
+              <View className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-gray-100">
                 <h3 className="font-bold text-gray-900">Transfer Ownership</h3>
                 <button onClick={() => setShowTransfer(false)} className="p-2 rounded-full bg-gray-100"><X className="w-4 h-4" /></button>
-              </div>
-              <div className="overflow-y-auto flex-1 px-4 pb-6 pt-2">
+              </View>
+              <View className="overflow-y-auto flex-1 px-4 pb-6 pt-2">
                 {members.filter(m => m.userId !== ME).map(member => {
                   const user = getUser(member.userId);
                   if (!user) return null;
@@ -1495,39 +1496,39 @@ function GroupInfoScreen({ chat, users, onBack, onViewProfile, onUpdateChat, onD
                       setShowTransfer(false);
                     }} className="flex items-center gap-3 p-3 rounded-2xl hover:bg-amber-50 w-full transition-colors mb-1">
                       <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full object-cover" />
-                      <div className="flex-1 min-w-0 text-left">
-                        <p className="font-semibold text-sm text-gray-900">{user.name}</p>
-                        <p className="text-xs text-gray-400 capitalize">{member.role}</p>
-                      </div>
+                      <View className="flex-1 min-w-0 text-left">
+                        <Text className="font-semibold text-sm text-gray-900">{user.name}</Text>
+                        <Text className="text-xs text-gray-400 capitalize">{member.role}</Text>
+                      </View>
                       <Crown className="w-4.5 h-4.5 text-amber-500 shrink-0" />
                     </button>
                   );
                 })}
-              </div>
+              </View>
             </motion.div>
           </motion.div>
         )}
         {showConfirmDelete && (
           <motion.div className="fixed inset-0 z-50 flex items-center justify-center px-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowConfirmDelete(false)}>
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+            <View className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
             <motion.div className="relative bg-white rounded-3xl p-6 shadow-2xl w-full max-w-sm"
               initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
               onClick={e => e.stopPropagation()}>
-              <div className="w-14 h-14 bg-red-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
+              <View className="w-14 h-14 bg-red-100 rounded-3xl flex items-center justify-center mx-auto mb-4">
                 <Trash2 className="w-7 h-7 text-red-500" />
-              </div>
+              </View>
               <h3 className="font-bold text-lg text-gray-900 text-center mb-2">Delete Group?</h3>
-              <p className="text-sm text-gray-500 text-center mb-6">This action cannot be undone. The group and all its messages will be permanently deleted.</p>
-              <div className="flex gap-3">
+              <Text className="text-sm text-gray-500 text-center mb-6">This action cannot be undone. The group and all its messages will be permanently deleted.</Text>
+              <View className="flex gap-3">
                 <button onClick={() => setShowConfirmDelete(false)} className="flex-1 py-3 bg-gray-100 rounded-2xl font-semibold text-gray-700 hover:bg-gray-200 transition-colors">Cancel</button>
                 <motion.button whileTap={{ scale: 0.97 }} onClick={() => { onDeleteGroup(); }} className="flex-1 py-3 bg-red-500 rounded-2xl font-semibold text-white hover:bg-red-600 transition-colors">Delete</motion.button>
-              </div>
+              </View>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </View>
   );
 }
 
@@ -1541,8 +1542,8 @@ function CreateGroupScreen({ users, onBack, onCreate }: { users: IUser[]; onBack
   const toggle = (id: string) => setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
 
   return (
-    <div className="flex flex-col h-full bg-gray-50">
-      <div className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shrink-0">
+    <View className="flex flex-col h-full bg-gray-50">
+      <View className="bg-white border-b border-gray-100 px-4 py-3 flex items-center gap-3 shrink-0">
         <motion.button whileTap={{ scale: 0.88 }} onClick={onBack} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
           <ChevronLeft className="w-5 h-5 text-gray-700" />
         </motion.button>
@@ -1553,72 +1554,72 @@ function CreateGroupScreen({ users, onBack, onCreate }: { users: IUser[]; onBack
           className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded-xl disabled:opacity-40 hover:bg-blue-700 transition-colors">
           Create
         </motion.button>
-      </div>
+      </View>
 
-      <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        <div className="p-4">
+      <View className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <View className="p-4">
           {/* Group name */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 mb-4">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
+          <View className="bg-white rounded-3xl border border-gray-100 shadow-sm p-5 mb-4">
+            <View className="flex items-center gap-4 mb-4">
+              <View className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
                 <Users className="w-8 h-8 text-blue-500" />
-              </div>
-              <div className="flex-1">
+              </View>
+              <View className="flex-1">
                 <input value={name} onChange={e => setName(e.target.value)} placeholder="Group name" className="w-full text-base font-semibold text-gray-900 outline-none border-b border-gray-200 pb-1 mb-2 placeholder-gray-400 bg-transparent" />
                 <input value={desc} onChange={e => setDesc(e.target.value)} placeholder="Group description (optional)" className="w-full text-sm text-gray-600 outline-none placeholder-gray-400 bg-transparent" />
-              </div>
-            </div>
-          </div>
+              </View>
+            </View>
+          </View>
 
           {/* Selected members preview */}
           {selected.length > 0 && (
-            <div className="flex gap-2 mb-4 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
+            <View className="flex gap-2 mb-4 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
               {selected.map(id => {
                 const user = users.find(u => u.id === id);
                 if (!user) return null;
                 return (
                   <motion.button key={id} initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
                     onClick={() => toggle(id)} className="flex flex-col items-center gap-1 shrink-0">
-                    <div className="relative">
+                    <View className="relative">
                       <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-full object-cover" />
-                      <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white">
+                      <View className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white">
                         <X className="w-2 h-2 text-white" />
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-gray-600 font-medium max-w-[48px] truncate">{user.name.split(" ")[0]}</p>
+                      </View>
+                    </View>
+                    <Text className="text-[10px] text-gray-600 font-medium max-w-[48px] truncate">{user.name.split(" ")[0]}</Text>
                   </motion.button>
                 );
               })}
-            </div>
+            </View>
           )}
 
           {/* User list */}
           <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Add Members</h3>
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+          <View className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
             {users.map((user, i) => (
               <motion.button key={user.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.04 }}
                 whileTap={{ scale: 0.98 }} onClick={() => toggle(user.id)}
                 className={`flex items-center gap-3 px-4 py-3 w-full text-left transition-colors ${i < users.length - 1 ? "border-b border-gray-50" : ""} ${selected.includes(user.id) ? "bg-blue-50" : "hover:bg-gray-50"}`}>
-                <div className="relative shrink-0">
+                <View className="relative shrink-0">
                   <img src={user.avatar} alt={user.name} className="w-11 h-11 rounded-full object-cover" />
-                  {user.online && <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full" />}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1">
-                    <p className="font-semibold text-sm text-gray-900 truncate">{user.name}</p>
+                  {user.online && <Text className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full" />}
+                </View>
+                <View className="flex-1 min-w-0">
+                  <View className="flex items-center gap-1">
+                    <Text className="font-semibold text-sm text-gray-900 truncate">{user.name}</Text>
                     <VerifiedBadge type={user.verified} />
-                  </div>
-                  <p className="text-xs text-gray-400">@{user.username}</p>
-                </div>
-                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selected.includes(user.id) ? "bg-blue-600 border-blue-600" : "border-gray-300"}`}>
+                  </View>
+                  <Text className="text-xs text-gray-400">@{user.username}</Text>
+                </View>
+                <View className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${selected.includes(user.id) ? "bg-blue-600 border-blue-600" : "border-gray-300"}`}>
                   {selected.includes(user.id) && <Check className="w-3.5 h-3.5 text-white" />}
-                </div>
+                </View>
               </motion.button>
             ))}
-          </div>
-        </div>
-      </div>
-    </div>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }
 
@@ -1633,66 +1634,66 @@ function UserProfileView({ user, isFollowing, onToggleFollow, onBack, onMessage 
   const posts = Array.from({ length: 9 }, (_, i) => `https://images.unsplash.com/photo-${["1516912481808-3406841bd33c", "1541961017774-22349e4a1262", "1574158622682-e40e69881006", "1543852786-1cf6624b9987", "1545389336-cf090694435e", "1549049950-48d5887197a0", "1516912481808-3406841bd33c", "1587300003388-59208cc962cb", "1606216794074-735e91aa2c92"][i]}?w=200&h=200&fit=crop`);
 
   return (
-    <div className="flex flex-col h-full bg-white">
-      <div className="flex items-center px-4 py-3 border-b border-gray-100 shrink-0">
+    <View className="flex flex-col h-full bg-white">
+      <View className="flex items-center px-4 py-3 border-b border-gray-100 shrink-0">
         <motion.button whileTap={{ scale: 0.88 }} onClick={onBack} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
           <ChevronLeft className="w-5 h-5 text-gray-700" />
         </motion.button>
         <h2 className="flex-1 text-center font-bold text-gray-900">Profile</h2>
-        <div className="w-9 h-9" />
-      </div>
+        <View className="w-9 h-9" />
+      </View>
 
-      <div className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <View className="flex-1 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {/* Header */}
-        <div className="relative h-36 bg-gradient-to-br from-blue-500 to-purple-600">
-          <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent" />
+        <View className="relative h-36 bg-gradient-to-br from-blue-500 to-purple-600">
+          <View className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent" />
           {/* Avatar */}
-          <div className="absolute -bottom-12 left-5">
+          <View className="absolute -bottom-12 left-5">
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}>
-              <div className="relative">
+              <View className="relative">
                 <img src={user.avatar} alt={user.name} className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg" />
                 {user.online && (
-                  <span className="absolute bottom-1 right-1 flex w-4 h-4">
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
-                    <span className="relative w-4 h-4 bg-green-500 border-2 border-white rounded-full inline-flex" />
-                  </span>
+                  <Text className="absolute bottom-1 right-1 flex w-4 h-4">
+                    <Text className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
+                    <Text className="relative w-4 h-4 bg-green-500 border-2 border-white rounded-full inline-flex" />
+                  </Text>
                 )}
-              </div>
+              </View>
             </motion.div>
-          </div>
-        </div>
+          </View>
+        </View>
 
-        <div className="px-5 mt-16 mb-6">
+        <View className="px-5 mt-16 mb-6">
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: mounted ? 1 : 0, y: mounted ? 0 : 15 }} transition={{ delay: 0.2 }}>
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-1.5 mb-0.5">
+            <View className="flex items-start justify-between gap-3">
+              <View>
+                <View className="flex items-center gap-1.5 mb-0.5">
                   <h1 className="text-xl font-bold text-gray-900">{user.name}</h1>
                   <VerifiedBadge type={user.verified} />
-                </div>
-                <p className="text-gray-400 text-sm">@{user.username}</p>
-                {user.bio && <p className="text-sm text-gray-600 mt-2 leading-relaxed max-w-xs">{user.bio}</p>}
+                </View>
+                <Text className="text-gray-400 text-sm">@{user.username}</Text>
+                {user.bio && <Text className="text-sm text-gray-600 mt-2 leading-relaxed max-w-xs">{user.bio}</Text>}
                 {!user.online && (
-                  <p className="text-xs text-gray-400 mt-1.5 flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-gray-300 rounded-full inline-block" />
+                  <Text className="text-xs text-gray-400 mt-1.5 flex items-center gap-1">
+                    <Text className="w-1.5 h-1.5 bg-gray-300 rounded-full inline-block" />
                     Last seen {user.lastSeen}
-                  </p>
+                  </Text>
                 )}
-              </div>
-            </div>
+              </View>
+            </View>
 
             {/* Stats */}
-            <div className="flex gap-6 mt-4 mb-5">
+            <View className="flex gap-6 mt-4 mb-5">
               {[{ label: "Followers", value: user.followers.toLocaleString() }, { label: "Following", value: user.following.toLocaleString() }].map(stat => (
-                <div key={stat.label} className="flex flex-col items-center">
-                  <span className="font-bold text-lg text-gray-900">{stat.value}</span>
-                  <span className="text-xs text-gray-400 font-medium">{stat.label}</span>
-                </div>
+                <View key={stat.label} className="flex flex-col items-center">
+                  <Text className="font-bold text-lg text-gray-900">{stat.value}</Text>
+                  <Text className="text-xs text-gray-400 font-medium">{stat.label}</Text>
+                </View>
               ))}
-            </div>
+            </View>
 
             {/* Action buttons */}
-            <div className="flex gap-2">
+            <View className="flex gap-2">
               <motion.button whileTap={{ scale: 0.96 }} onClick={onToggleFollow}
                 className={`flex-1 py-3 rounded-2xl font-bold text-sm transition-all ${isFollowing ? "bg-gray-100 text-gray-700 hover:bg-gray-200" : "bg-blue-600 text-white hover:bg-blue-700 shadow-md"}`}>
                 {isFollowing ? "Following" : "Follow"}
@@ -1701,23 +1702,23 @@ function UserProfileView({ user, isFollowing, onToggleFollow, onBack, onMessage 
                 className="flex-1 py-3 rounded-2xl font-bold text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors flex items-center justify-center gap-1.5">
                 <ChevronRight className="w-4 h-4" /> Message
               </motion.button>
-            </div>
+            </View>
           </motion.div>
-        </div>
+        </View>
 
         {/* Posts grid */}
-        <div className="border-t border-gray-100">
-          <div className="grid grid-cols-3 gap-0.5">
+        <View className="border-t border-gray-100">
+          <View className="grid grid-cols-3 gap-0.5">
             {posts.map((url, i) => (
               <motion.div key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.05 + i * 0.04 }}
                 className="aspect-square bg-gray-100 overflow-hidden">
                 <img src={url} alt={`post ${i}`} className="w-full h-full object-cover hover:opacity-90 transition-opacity" />
               </motion.div>
             ))}
-          </div>
-        </div>
-      </div>
-    </div>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }
 
@@ -2004,7 +2005,7 @@ export function MessagesScreen() {
   return (
                   <>
 
-    <div className="w-full h-full flex flex-col bg-gray-50 relative overflow-hidden font-[Plus_Jakarta_Sans,system-ui,sans-serif]">
+    <View className="w-full h-full flex flex-col bg-gray-50 relative overflow-hidden font-[Plus_Jakarta_Sans,system-ui,sans-serif]">
       <style>{`
         @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
         .animate-ping { animation: ping 1s cubic-bezier(0,0,0.2,1) infinite; }
@@ -2023,7 +2024,7 @@ export function MessagesScreen() {
           {renderScreen()}
         </motion.div>
       </AnimatePresence>
-    </div>
+    </View>
                   <BottomNav />
               </>
 
@@ -2033,10 +2034,10 @@ export function MessagesScreen() {
 export default function App() {
   return (
     
-    <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
-      <div className="w-full max-w-[430px] h-[880px] max-h-screen bg-white rounded-[48px] overflow-hidden shadow-2xl border border-gray-200 relative" style={{ boxShadow: "0 40px 80px rgba(0,0,0,0.25), inset 0 0 0 1px rgba(255,255,255,0.1)" }}>
+    <View className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
+      <View className="w-full max-w-[430px] h-[880px] max-h-screen bg-white rounded-[48px] overflow-hidden shadow-2xl border border-gray-200 relative" style={{ boxShadow: "0 40px 80px rgba(0,0,0,0.25), inset 0 0 0 1px rgba(255,255,255,0.1)" }}>
         <MessagesScreen />
-      </div>
-    </div>
+      </View>
+    </View>
   );
 }

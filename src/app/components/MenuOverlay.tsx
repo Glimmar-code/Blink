@@ -1,5 +1,7 @@
+import { View, Text } from "react-native";
 import { useState, useEffect } from "react";
-import { X, User, Crown, Coins, Users, Settings, ArrowLeft, Sun, Moon, Monitor } from "lucide-react";
+import { X, User, Crown, Coins, Users, Settings, ArrowLeft, Sun, Moon, Monitor, LogOut } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router";
 import { HomeScreen } from "./HomeScreen";
 
@@ -8,6 +10,7 @@ type ThemeMode = "light" | "dark" | "system";
 export function MenuOverlay() {
   const navigate = useNavigate();
   const [showSettings, setShowSettings] = useState(false);
+  const { signOut } = useAuth();
   
   // Default fallback changed from "system" to "dark"
   const [theme, setTheme] = useState<ThemeMode>(() => {
@@ -41,44 +44,45 @@ export function MenuOverlay() {
     { icon: Coins, label: "Earn Coin", path: "#" },
     { icon: Users, label: "Community", path: "#" },
     { icon: Settings, label: "Settings", path: "trigger-settings" },
+    { icon: LogOut, label: "Log out", path: "logout" },
   ];
 
   return (
-    <div className="relative h-full w-full bg-background text-foreground">
+    <View className="relative h-full w-full bg-background text-foreground">
       <HomeScreen />
       
       {/* Full-screen Overlay responding natively to current theme colors */}
-      <div className="absolute inset-0 bg-background/95 text-foreground z-50 backdrop-blur-md animate-in fade-in duration-200">
+      <View className="absolute inset-0 bg-background/95 text-foreground z-50 backdrop-blur-md animate-in fade-in duration-200">
         
         {showSettings ? (
           /* --- SETTINGS OVERLAY VIEW --- */
           <>
-            <div className="flex items-center justify-between p-6">
+            <View className="flex items-center justify-between p-6">
               <button 
                 onClick={() => setShowSettings(false)} 
                 className="w-10 h-10 bg-muted rounded-full flex items-center justify-center hover:bg-muted/80 transition-colors"
               >
                 <ArrowLeft className="w-6 h-6" />
               </button>
-              <span className="text-xl font-bold">Settings</span>
-              <div className="w-10" />
-            </div>
+              <Text className="text-xl font-bold">Settings</Text>
+              <View className="w-10" />
+            </View>
 
-            <div className="flex flex-col gap-2 px-8 mt-4">
-              <p className="text-muted-foreground text-sm font-semibold uppercase tracking-wider mb-2 px-2">App Theme</p>
+            <View className="flex flex-col gap-2 px-8 mt-4">
+              <Text className="text-muted-foreground text-sm font-semibold uppercase tracking-wider mb-2 px-2">App Theme</Text>
               
               {/* Light Mode Option */}
               <button
                 onClick={() => handleThemeChange("light")}
                 className={`flex items-center justify-between py-5 rounded-2xl px-4 transition-colors group ${theme === "light" ? "bg-muted" : "hover:bg-muted/50"}`}
               >
-                <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-accent transition-colors">
+                <View className="flex items-center gap-6">
+                  <View className="w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-accent transition-colors">
                     <Sun className="w-6 h-6" />
-                  </div>
-                  <span className="text-2xl font-bold tracking-tight">Light Mode</span>
-                </div>
-                {theme === "light" && <div className="w-3 h-3 bg-primary rounded-full" />}
+                  </View>
+                  <Text className="text-2xl font-bold tracking-tight">Light Mode</Text>
+                </View>
+                {theme === "light" && <View className="w-3 h-3 bg-primary rounded-full" />}
               </button>
 
               {/* Dark Mode Option */}
@@ -86,13 +90,13 @@ export function MenuOverlay() {
                 onClick={() => handleThemeChange("dark")}
                 className={`flex items-center justify-between py-5 rounded-2xl px-4 transition-colors group ${theme === "dark" ? "bg-muted" : "hover:bg-muted/50"}`}
               >
-                <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-accent transition-colors">
+                <View className="flex items-center gap-6">
+                  <View className="w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-accent transition-colors">
                     <Moon className="w-6 h-6" />
-                  </div>
-                  <span className="text-2xl font-bold tracking-tight">Dark Mode</span>
-                </div>
-                {theme === "dark" && <div className="w-3 h-3 bg-primary rounded-full" />}
+                  </View>
+                  <Text className="text-2xl font-bold tracking-tight">Dark Mode</Text>
+                </View>
+                {theme === "dark" && <View className="w-3 h-3 bg-primary rounded-full" />}
               </button>
 
               {/* Device Default Option */}
@@ -100,38 +104,64 @@ export function MenuOverlay() {
                 onClick={() => handleThemeChange("system")}
                 className={`flex items-center justify-between py-5 rounded-2xl px-4 transition-colors group ${theme === "system" ? "bg-muted" : "hover:bg-muted/50"}`}
               >
-                <div className="flex items-center gap-6">
-                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-accent transition-colors">
+                <View className="flex items-center gap-6">
+                  <View className="w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-accent transition-colors">
                     <Monitor className="w-6 h-6" />
-                  </div>
-                  <span className="text-2xl font-bold tracking-tight">Device Default</span>
-                </div>
-                {theme === "system" && <div className="w-3 h-3 bg-primary rounded-full" />}
+                  </View>
+                  <Text className="text-2xl font-bold tracking-tight">Device Default</Text>
+                </View>
+                {theme === "system" && <View className="w-3 h-3 bg-primary rounded-full" />}
               </button>
-            </div>
+
+              {/* Logout Option - visible under Settings */}
+              <button
+                onClick={async () => {
+                  await signOut();
+                  navigate("/auth");
+                }}
+                className="flex items-center justify-between py-5 rounded-2xl px-4 transition-colors group hover:bg-muted/50 mt-4"
+              >
+                <View className="flex items-center gap-6">
+                  <View className="w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-accent transition-colors">
+                    <LogOut className="w-6 h-6" />
+                  </View>
+                  <Text className="text-2xl font-bold tracking-tight">Log out</Text>
+                </View>
+                <View className="text-sm text-red-400 font-semibold">Sign out</View>
+              </button>
+            </View>
           </>
         ) : (
           /* --- MAIN MENU VIEW --- */
           <>
-            <div className="flex justify-end p-6">
+            <View className="flex justify-end p-6">
               <button 
                 onClick={() => navigate(-1)} 
                 className="w-10 h-10 bg-muted rounded-full flex items-center justify-center hover:bg-muted/80 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
-            </div>
+            </View>
 
-            <div className="flex flex-col gap-2 px-8 mt-4">
+            <View className="flex flex-col gap-2 px-8 mt-4">
               {MENU_ITEMS.map((item, i) => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={i}
-                    onClick={() => {
+                    onClick={async () => {
                       if (item.path === "trigger-settings") {
                         setShowSettings(true);
-                      } else if (item.path !== "#") {
+                        return;
+                      }
+
+                      if (item.path === "logout") {
+                        await signOut();
+                        navigate("/auth");
+                        return;
+                      }
+
+                      if (item.path !== "#") {
                         navigate(item.path);
                       } else {
                         navigate(-1);
@@ -139,18 +169,18 @@ export function MenuOverlay() {
                     }}
                     className="flex items-center gap-6 py-5 hover:bg-muted/50 rounded-2xl px-4 transition-colors -mx-4 group"
                   >
-                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-accent transition-colors">
+                    <View className="w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-accent transition-colors">
                       <Icon className="w-6 h-6" />
-                    </div>
-                    <span className="text-2xl font-bold tracking-tight">{item.label}</span>
+                    </View>
+                    <Text className="text-2xl font-bold tracking-tight">{item.label}</Text>
                   </button>
                 );
               })}
-            </div>
+            </View>
           </>
         )}
         
-      </div>
-    </div>
+      </View>
+    </View>
   );
 }

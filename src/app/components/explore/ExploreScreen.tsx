@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Search, TrendingUp, Clock } from "lucide-react";
@@ -65,23 +66,23 @@ export function ExploreScreen() {
   return (
     <>
 
-    <div className="flex-1 bg-background flex flex-col pt-14 pb-20 h-full overflow-y-auto">
-      <div className="px-4 pt-4 pb-2">
+    <View className="flex-1 bg-background flex flex-col pt-14 pb-20 h-full overflow-y-auto">
+      <View className="px-4 pt-4 pb-2">
         <h1 className="text-2xl font-bold text-foreground">Explore</h1>
-      </div>
+      </View>
 
-      <div className="px-4 mt-1">
+      <View className="px-4 mt-1">
         <PartnerFinder onGoToProfile={goToProfile} onGoToDM={goToDM} />
-      </div>
+      </View>
 
-      <div className="px-4 mb-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+      <View className="px-4 mb-2">
+        <Text className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
           Discover
-        </p>
-      </div>
+        </Text>
+      </View>
 
-      <div className="px-4 mb-3">
-        <div className="relative">
+      <View className="px-4 mb-3">
+        <View className="relative">
           <Search
             size={16}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
@@ -93,12 +94,12 @@ export function ExploreScreen() {
             placeholder="Search posts, people, tags…"
             className="w-full bg-card border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-foreground placeholder-muted-foreground shadow-sm focus:outline-none focus:ring-2 focus:ring-foreground/10"
           />
-        </div>
-      </div>
+        </View>
+      </View>
 
       {activeTab !== "tags" && (
-        <div className="px-4 mb-3">
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+        <View className="px-4 mb-3">
+          <View className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
             {TAGS.slice(0, 6).map((tag) => (
               <button
                 key={tag.id}
@@ -108,20 +109,20 @@ export function ExploreScreen() {
                 }}
                 className="flex-shrink-0 flex items-center gap-1 bg-card border border-border rounded-full px-3 py-1.5 text-xs font-medium text-foreground/90 shadow-sm hover:bg-muted"
               >
-                <span className="text-muted-foreground">#</span>
+                <Text className="text-muted-foreground">#</Text>
                 {tag.name}
-                <span className="text-muted-foreground ml-0.5">
+                <Text className="text-muted-foreground ml-0.5">
                   {formatCount(tag.count)}
-                </span>
+                </Text>
               </button>
             ))}
-          </div>
-        </div>
+          </View>
+        </View>
       )}
 
-      <div className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-14 z-20">
-        <div className="flex items-center px-4">
-          <div className="flex flex-1">
+      <View className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-14 z-20">
+        <View className="flex items-center px-4">
+          <View className="flex flex-1">
             {tabs.map(({ key, label }) => (
               <button
                 key={key}
@@ -132,13 +133,13 @@ export function ExploreScreen() {
               >
                 {label}
                 {activeTab === key && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground rounded-full" />
+                  <Text className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground rounded-full" />
                 )}
               </button>
             ))}
-          </div>
+          </View>
           {activeTab !== "tags" && (
-            <div className="flex items-center bg-muted rounded-full p-0.5 ml-auto">
+            <View className="flex items-center bg-muted rounded-full p-0.5 ml-auto">
               <button
                 onClick={() => setSort("trending")}
                 className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
@@ -159,12 +160,12 @@ export function ExploreScreen() {
               >
                 <Clock size={11} /> Newest
               </button>
-            </div>
+            </View>
           )}
-        </div>
-      </div>
+        </View>
+      </View>
 
-      <div className="flex-1 bg-background">
+      <View className="flex-1 bg-background">
         {activeTab === "posts" &&
           (sortedPosts.length > 0 ? (
             sortedPosts.map((post) => (
@@ -194,8 +195,8 @@ export function ExploreScreen() {
             <EmptyState label="No tags found" />
           ))}
 
-      </div>
-    </div>
+      </View>
+    </View>
       <BottomNav />
 
     </>

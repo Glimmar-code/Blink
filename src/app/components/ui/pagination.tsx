@@ -1,3 +1,4 @@
+import { Text } from "react-native";
 import * as React from "react";
 import {
   ChevronLeftIcon,
@@ -77,7 +78,7 @@ function PaginationPrevious({
       {...props}
     >
       <ChevronLeftIcon />
-      <span className="hidden sm:block">Previous</span>
+      <Text className="hidden sm:block">Previous</Text>
     </PaginationLink>
   );
 }
@@ -93,7 +94,7 @@ function PaginationNext({
       className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
       {...props}
     >
-      <span className="hidden sm:block">Next</span>
+      <Text className="hidden sm:block">Next</Text>
       <ChevronRightIcon />
     </PaginationLink>
   );
@@ -104,15 +105,15 @@ function PaginationEllipsis({
   ...props
 }: React.ComponentProps<"span">) {
   return (
-    <span
+    <Text
       aria-hidden
       data-slot="pagination-ellipsis"
       className={cn("flex size-9 items-center justify-center", className)}
       {...props}
     >
       <MoreHorizontalIcon className="size-4" />
-      <span className="sr-only">More pages</span>
-    </span>
+      <Text className="sr-only">More pages</Text>
+    </Text>
   );
 }
 

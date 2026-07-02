@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import { useState, useRef, useEffect, useCallback } from "react";
 import {
   Plus, MoreVertical, MessageCircle, Heart, Share, Bookmark, Repeat2, Eye, Send,
@@ -211,9 +212,9 @@ function StoryProgressSegment({
   }, [paused, completed, duration]);
 
   return (
-    <div className="h-0.5 bg-white/30 rounded-full flex-1">
-      <div className="h-full bg-white rounded-full" style={{ width: `${progress}%` }} />
-    </div>
+    <View className="h-0.5 bg-white/30 rounded-full flex-1">
+      <View className="h-full bg-white rounded-full" style={{ width: `${progress}%` }} />
+    </View>
   );
 }
 
@@ -261,7 +262,7 @@ function StoryViewer({ stories, initialIndex, onClose, onLike, onDelete }: Story
       onPointerLeave={() => setPaused(false)}
     >
       {/* Progress bars */}
-      <div className="absolute top-3 left-3 right-3 z-20 flex gap-1">
+      <View className="absolute top-3 left-3 right-3 z-20 flex gap-1">
         {stories.map((_, i) => (
           <StoryProgressSegment
             key={`${index}-${i}`}
@@ -271,47 +272,47 @@ function StoryViewer({ stories, initialIndex, onClose, onLike, onDelete }: Story
             onComplete={i === index ? goNext : () => {}}
           />
         ))}
-      </div>
+      </View>
 
       {/* Header */}
-      <div className="absolute top-6 left-0 right-0 z-20 px-4 pt-4 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent pb-6">
+      <View className="absolute top-6 left-0 right-0 z-20 px-4 pt-4 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent pb-6">
         <Link to={`/profile/${story.username}`} className="flex items-center gap-3" onClick={onClose}>
           <img src={story.mediaUrl} alt={story.name} className="w-9 h-9 rounded-full border-2 border-white object-cover" />
-          <div>
-            <p className="text-white font-semibold text-sm leading-tight">{story.name}</p>
-            <p className="text-white/70 text-xs">{story.timestamp}</p>
-          </div>
+          <View>
+            <Text className="text-white font-semibold text-sm leading-tight">{story.name}</Text>
+            <Text className="text-white/70 text-xs">{story.timestamp}</Text>
+          </View>
         </Link>
-        <div className="flex items-center gap-2">
+        <View className="flex items-center gap-2">
           {paused ? <Pause className="w-5 h-5 text-white/80" /> : <Play className="w-5 h-5 text-white/80" />}
           <button onClick={onClose} className="p-1.5 hover:bg-white/10 rounded-full transition-colors">
             <X className="w-6 h-6 text-white" />
           </button>
-        </div>
-      </div>
+        </View>
+      </View>
 
       {/* Media Content */}
-      <div className="w-full h-full flex items-center justify-center">
+      <View className="w-full h-full flex items-center justify-center">
         {story.mediaType === "text" ? (
-          <div
+          <View
             className="w-full h-full flex flex-col items-center justify-center p-8 gap-4"
             style={{ background: story.bgColor || "linear-gradient(135deg, #667eea, #764ba2)" }}
           >
-            <p className="text-white text-2xl font-bold text-center leading-relaxed">{story.text}</p>
+            <Text className="text-white text-2xl font-bold text-center leading-relaxed">{story.text}</Text>
             {story.location && (
-              <div className="flex items-center gap-1 bg-black/30 px-3 py-1.5 rounded-full">
+              <View className="flex items-center gap-1 bg-black/30 px-3 py-1.5 rounded-full">
                 <MapPin className="w-3.5 h-3.5 text-white" />
-                <span className="text-white text-xs font-medium">{story.location}</span>
-              </div>
+                <Text className="text-white text-xs font-medium">{story.location}</Text>
+              </View>
             )}
             {story.tags && story.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 justify-center">
+              <View className="flex flex-wrap gap-1.5 justify-center">
                 {story.tags.map((t) => (
-                  <span key={t} className="bg-white/20 text-white text-xs px-2.5 py-1 rounded-full">#{t}</span>
+                  <Text key={t} className="bg-white/20 text-white text-xs px-2.5 py-1 rounded-full">#{t}</Text>
                 ))}
-              </div>
+              </View>
             )}
-          </div>
+          </View>
         ) : story.mediaType === "video" ? (
           <video
             ref={videoRef}
@@ -324,33 +325,33 @@ function StoryViewer({ stories, initialIndex, onClose, onLike, onDelete }: Story
         ) : (
           <img src={story.mediaUrl} alt={story.name} className="max-w-full max-h-full object-contain" />
         )}
-      </div>
+      </View>
 
       {/* Overlay extras (tags, location, link) */}
       {(story.location || story.tags?.length || story.link) && story.mediaType !== "text" && (
-        <div className="absolute bottom-24 left-4 z-20 flex flex-col gap-2">
+        <View className="absolute bottom-24 left-4 z-20 flex flex-col gap-2">
           {story.location && (
-            <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
+            <View className="flex items-center gap-1 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">
               <MapPin className="w-3.5 h-3.5 text-white" />
-              <span className="text-white text-xs">{story.location}</span>
-            </div>
+              <Text className="text-white text-xs">{story.location}</Text>
+            </View>
           )}
           {story.tags?.map((t) => (
-            <span key={t} className="bg-black/50 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full">#{t}</span>
+            <Text key={t} className="bg-black/50 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full">#{t}</Text>
           ))}
           {story.link && (
             <a href={story.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full" onClick={(e) => e.stopPropagation()}>
               <Link2 className="w-3.5 h-3.5 text-white" />
-              <span className="text-white text-xs truncate max-w-[150px]">{story.link}</span>
+              <Text className="text-white text-xs truncate max-w-[150px]">{story.link}</Text>
             </a>
           )}
-        </div>
+        </View>
       )}
 
       {/* Footer actions */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-black/60 to-transparent">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <View className="absolute bottom-0 left-0 right-0 z-20 p-4 bg-gradient-to-t from-black/60 to-transparent">
+        <View className="flex items-center justify-between">
+          <View className="flex items-center gap-4">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={(e) => { e.stopPropagation(); onLike(story.id); }}
@@ -359,13 +360,13 @@ function StoryViewer({ stories, initialIndex, onClose, onLike, onDelete }: Story
               onPointerUp={(e) => e.stopPropagation()}
             >
               <Heart className={`w-6 h-6 ${story.likedByMe ? "fill-red-500 text-red-500" : "text-white"}`} />
-              <span className="text-white font-semibold">{story.likes}</span>
+              <Text className="text-white font-semibold">{story.likes}</Text>
             </motion.button>
-            <div className="flex items-center gap-2">
+            <View className="flex items-center gap-2">
               <Eye className="w-5 h-5 text-white" />
-              <span className="text-white text-sm font-semibold">{story.views}</span>
-            </div>
-          </div>
+              <Text className="text-white text-sm font-semibold">{story.views}</Text>
+            </View>
+          </View>
           {story.isMyStory && (
             <motion.button
               whileTap={{ scale: 0.9 }}
@@ -377,8 +378,8 @@ function StoryViewer({ stories, initialIndex, onClose, onLike, onDelete }: Story
               <Trash2 className="w-5 h-5 text-red-400" />
             </motion.button>
           )}
-        </div>
-      </div>
+        </View>
+      </View>
 
       {/* Tap zones for prev/next */}
       <button
@@ -460,7 +461,7 @@ function CreateStoryModal({ onClose, onPost }: CreateStoryModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
+        <View className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
           <button onClick={onClose} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
             <X className="w-5 h-5 text-gray-600" />
           </button>
@@ -473,11 +474,11 @@ function CreateStoryModal({ onClose, onPost }: CreateStoryModalProps) {
           >
             Post
           </motion.button>
-        </div>
+        </View>
 
-        <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4 [&::-webkit-scrollbar]:hidden">
+        <View className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4 [&::-webkit-scrollbar]:hidden">
           {/* Type selector */}
-          <div className="flex gap-2 bg-gray-100 p-1 rounded-xl">
+          <View className="flex gap-2 bg-gray-100 p-1 rounded-xl">
             {(["image", "video", "text"] as const).map((t) => (
               <button
                 key={t}
@@ -492,12 +493,12 @@ function CreateStoryModal({ onClose, onPost }: CreateStoryModalProps) {
                 {t.charAt(0).toUpperCase() + t.slice(1)}
               </button>
             ))}
-          </div>
+          </View>
 
           {/* Media input */}
           {mediaType !== "text" ? (
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-xl">
+            <View className="flex flex-col gap-3">
+              <View className="flex items-center gap-3 p-4 bg-gray-50 border border-gray-200 rounded-xl">
                 {mediaType === "image" ? <ImageIcon className="w-5 h-5 text-gray-400 shrink-0" /> : <Video className="w-5 h-5 text-gray-400 shrink-0" />}
                 <input
                   type="url"
@@ -506,7 +507,7 @@ function CreateStoryModal({ onClose, onPost }: CreateStoryModalProps) {
                   placeholder={`Paste ${mediaType} URL...`}
                   className="flex-1 bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400"
                 />
-              </div>
+              </View>
               <AnimatePresence>
                 {mediaUrl && mediaType === "image" && (
                   <motion.div
@@ -519,10 +520,10 @@ function CreateStoryModal({ onClose, onPost }: CreateStoryModalProps) {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </View>
           ) : (
-            <div className="flex flex-col gap-3">
-              <div className="relative rounded-2xl overflow-hidden" style={{ background: bgColor, minHeight: 180 }}>
+            <View className="flex flex-col gap-3">
+              <View className="relative rounded-2xl overflow-hidden" style={{ background: bgColor, minHeight: 180 }}>
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
@@ -530,10 +531,10 @@ function CreateStoryModal({ onClose, onPost }: CreateStoryModalProps) {
                   maxLength={200}
                   className="w-full h-44 bg-transparent text-white placeholder-white/60 text-xl font-bold text-center p-6 outline-none resize-none"
                 />
-                <span className="absolute bottom-2 right-3 text-white/50 text-xs">{text.length}/200</span>
-              </div>
+                <Text className="absolute bottom-2 right-3 text-white/50 text-xs">{text.length}/200</Text>
+              </View>
               {/* Background picker */}
-              <div className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
+              <View className="flex gap-2 overflow-x-auto pb-1 [&::-webkit-scrollbar]:hidden">
                 {BG_GRADIENTS.map((g) => (
                   <button
                     key={g}
@@ -542,8 +543,8 @@ function CreateStoryModal({ onClose, onPost }: CreateStoryModalProps) {
                     style={{ background: g }}
                   />
                 ))}
-              </div>
-            </div>
+              </View>
+            </View>
           )}
 
           {/* Extras toggle */}
@@ -569,7 +570,7 @@ function CreateStoryModal({ onClose, onPost }: CreateStoryModalProps) {
                   { icon: AtSign, placeholder: "@mention someone", value: mention, setter: setMention, label: "Mention" },
                   { icon: Link2, placeholder: "https://link.com", value: link, setter: setLink, label: "Link" },
                 ].map(({ icon: Icon, placeholder, value, setter, label }) => (
-                  <div key={label} className="flex items-center gap-3 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl">
+                  <View key={label} className="flex items-center gap-3 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl">
                     <Icon className="w-4 h-4 text-gray-400 shrink-0" />
                     <input
                       type="text"
@@ -578,12 +579,12 @@ function CreateStoryModal({ onClose, onPost }: CreateStoryModalProps) {
                       placeholder={placeholder}
                       className="flex-1 bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400"
                     />
-                  </div>
+                  </View>
                 ))}
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </View>
       </motion.div>
     </motion.div>
   );
@@ -634,26 +635,26 @@ function CommentItem({ comment, depth = 0, onUpdate }: CommentItemProps) {
       animate={{ opacity: 1, y: 0 }}
       className={depth > 0 ? "ml-10 mt-2" : ""}
     >
-      <div className="flex gap-3">
+      <View className="flex gap-3">
         <Link to={`/profile/${comment.authorUsername}`} className="shrink-0">
           <img src={comment.authorAvatar} alt={comment.authorName} className="w-9 h-9 rounded-full object-cover hover:opacity-80 transition-opacity" />
         </Link>
-        <div className="flex-1 min-w-0">
-          <div className="bg-gray-50 rounded-2xl px-4 py-2.5">
+        <View className="flex-1 min-w-0">
+          <View className="bg-gray-50 rounded-2xl px-4 py-2.5">
             <Link to={`/profile/${comment.authorUsername}`} className="hover:underline">
-              <span className="font-semibold text-sm text-gray-900">{comment.authorName}</span>
+              <Text className="font-semibold text-sm text-gray-900">{comment.authorName}</Text>
             </Link>
-            <p className="text-sm text-gray-700 mt-0.5 leading-relaxed">{comment.text}</p>
-          </div>
-          <div className="flex items-center gap-4 mt-1.5 px-1">
-            <span className="text-xs text-gray-400">{comment.timestamp}</span>
+            <Text className="text-sm text-gray-700 mt-0.5 leading-relaxed">{comment.text}</Text>
+          </View>
+          <View className="flex items-center gap-4 mt-1.5 px-1">
+            <Text className="text-xs text-gray-400">{comment.timestamp}</Text>
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={toggleLike}
               className={`flex items-center gap-1 text-xs font-semibold transition-colors ${comment.likedByMe ? "text-red-500" : "text-gray-400 hover:text-gray-600"}`}
             >
               <Heart className={`w-3.5 h-3.5 ${comment.likedByMe ? "fill-current" : ""}`} />
-              {comment.likes > 0 && <span>{comment.likes}</span>}
+              {comment.likes > 0 && <Text>{comment.likes}</Text>}
             </motion.button>
             {depth === 0 && (
               <button
@@ -663,7 +664,7 @@ function CommentItem({ comment, depth = 0, onUpdate }: CommentItemProps) {
                 Reply
               </button>
             )}
-          </div>
+          </View>
 
           {/* Reply input */}
           <AnimatePresence>
@@ -728,8 +729,8 @@ function CommentItem({ comment, depth = 0, onUpdate }: CommentItemProps) {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
-      </div>
+        </View>
+      </View>
     </motion.div>
   );
 }
@@ -784,27 +785,27 @@ function CommentModal({ onClose, postId }: CommentModalProps) {
         className="w-full max-w-md bg-white rounded-t-3xl shadow-2xl max-h-[80vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
+        <View className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
           <h3 className="font-bold text-gray-900 text-lg">Comments ({comments.length})</h3>
           <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
             <X className="w-5 h-5 text-gray-500" />
           </button>
-        </div>
+        </View>
 
-        <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4 [&::-webkit-scrollbar]:hidden">
+        <View className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-4 [&::-webkit-scrollbar]:hidden">
           {comments.map((c, i) => (
             <CommentItem key={c.id} comment={c} onUpdate={(updated) => updateComment(i, updated)} />
           ))}
-        </div>
+        </View>
 
-        <div className="px-5 py-4 border-t border-gray-100 shrink-0">
-          <div className="flex items-center gap-3">
+        <View className="px-5 py-4 border-t border-gray-100 shrink-0">
+          <View className="flex items-center gap-3">
             <img
               src="https://images.unsplash.com/photo-1544168190-79c17527004f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=40"
               alt="Me"
               className="w-9 h-9 rounded-full object-cover shrink-0"
             />
-            <div className="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 focus-within:border-blue-400 transition-colors">
+            <View className="flex-1 flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 focus-within:border-blue-400 transition-colors">
               <input
                 type="text"
                 value={newComment}
@@ -821,9 +822,9 @@ function CommentModal({ onClose, postId }: CommentModalProps) {
               >
                 Post
               </motion.button>
-            </div>
-          </div>
-        </div>
+            </View>
+          </View>
+        </View>
       </motion.div>
     </motion.div>
   );
@@ -849,7 +850,7 @@ function ShareModal({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="font-bold text-gray-900 text-lg text-center">Share Post</h3>
-        <div className="grid grid-cols-4 gap-4">
+        <View className="grid grid-cols-4 gap-4">
           {[
             { label: "Message", bg: "bg-blue-100", color: "text-blue-600", icon: <Send className="w-5 h-5" /> },
             { label: "WhatsApp", bg: "bg-green-100", color: "text-green-600", icon: <MessageCircle className="w-5 h-5" /> },
@@ -857,11 +858,11 @@ function ShareModal({ onClose }: { onClose: () => void }) {
             { label: "More", bg: "bg-purple-100", color: "text-purple-600", icon: <MoreVertical className="w-5 h-5" /> },
           ].map(({ label, bg, color, icon }) => (
             <button key={label} className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-gray-50 transition-colors">
-              <div className={`w-12 h-12 rounded-full ${bg} ${color} flex items-center justify-center`}>{icon}</div>
-              <span className="text-xs text-gray-600">{label}</span>
+              <View className={`w-12 h-12 rounded-full ${bg} ${color} flex items-center justify-center`}>{icon}</View>
+              <Text className="text-xs text-gray-600">{label}</Text>
             </button>
           ))}
-        </div>
+        </View>
         <button onClick={onClose} className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-colors">
           Cancel
         </button>
@@ -885,28 +886,28 @@ function SponsoredPostCard({ post }: { post: typeof SPONSORED_POSTS[0] }) {
 
   return (
     <>
-      <div className="bg-card px-4 py-5 border-b border-border flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <View className="bg-card px-4 py-5 border-b border-border flex flex-col gap-3">
+        <View className="flex items-center justify-between">
+          <View className="flex items-center gap-3">
             <img src={post.brandAvatar} alt={post.brandName} className="w-10 h-10 rounded-full object-cover" />
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-bold text-foreground text-sm">{post.brandName}</span>
-                <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Sponsored</span>
-              </div>
-              <span className="text-muted-foreground text-xs">{post.brandHandle}</span>
-            </div>
-          </div>
+            <View>
+              <View className="flex items-center gap-2">
+                <Text className="font-bold text-foreground text-sm">{post.brandName}</Text>
+                <Text className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Sponsored</Text>
+              </View>
+              <Text className="text-muted-foreground text-xs">{post.brandHandle}</Text>
+            </View>
+          </View>
           <button className="text-muted-foreground hover:text-foreground transition-colors">
             <MoreVertical className="w-5 h-5" />
           </button>
-        </div>
+        </View>
 
-        <p className="text-sm text-foreground/90 leading-relaxed">{post.content}</p>
+        <Text className="text-sm text-foreground/90 leading-relaxed">{post.content}</Text>
 
-        <div className="rounded-2xl overflow-hidden border border-border">
+        <View className="rounded-2xl overflow-hidden border border-border">
           <img src={post.image} alt="Sponsored" className="w-full h-52 object-cover" />
-        </div>
+        </View>
 
         <motion.button
           whileTap={{ scale: 0.97 }}
@@ -915,12 +916,12 @@ function SponsoredPostCard({ post }: { post: typeof SPONSORED_POSTS[0] }) {
           {post.cta}
         </motion.button>
 
-        <div className="flex items-center justify-between text-muted-foreground pt-1">
-          <div className="flex items-center gap-5">
-            <span className="flex items-center gap-1.5 text-xs">
+        <View className="flex items-center justify-between text-muted-foreground pt-1">
+          <View className="flex items-center gap-5">
+            <Text className="flex items-center gap-1.5 text-xs">
               <Eye className="w-4 h-4" />
               {post.views.toLocaleString()}
-            </span>
+            </Text>
             <motion.button whileTap={{ scale: 0.9 }} onClick={handleLike} className={`flex items-center gap-1.5 text-xs transition-colors ${isLiked ? "text-red-500" : "hover:text-red-500"}`}>
               <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
               {likeCount.toLocaleString()}
@@ -929,12 +930,12 @@ function SponsoredPostCard({ post }: { post: typeof SPONSORED_POSTS[0] }) {
               <MessageCircle className="w-4 h-4" />
               {post.comments}
             </motion.button>
-          </div>
+          </View>
           <motion.button whileTap={{ scale: 0.9 }} onClick={() => setShowShareModal(true)} className="hover:text-foreground transition-colors">
             <Share className="w-4 h-4" />
           </motion.button>
-        </div>
-      </div>
+        </View>
+      </View>
 
       <AnimatePresence>
         {showShareModal && <ShareModal onClose={() => setShowShareModal(false)} />}
@@ -983,71 +984,71 @@ export function PostCard({ post, postId = POST_DATA.id }: { post?: FeedPost; pos
 
   return (
     <>
-      <div className="bg-card px-4 py-5 border-b border-border flex flex-col gap-3 text-card-foreground">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+      <View className="bg-card px-4 py-5 border-b border-border flex flex-col gap-3 text-card-foreground">
+        <View className="flex items-center justify-between">
+          <View className="flex items-center gap-3">
             <Link to={`/profile/${currentPost.authorUsername}`} className="shrink-0">
               <img src={currentPost.authorAvatar} alt="Avatar" className="w-10 h-10 rounded-full object-cover hover:opacity-80 transition-opacity" />
             </Link>
-            <div>
-              <div className="flex items-center gap-1">
+            <View>
+              <View className="flex items-center gap-1">
                 <Link to={`/profile/${currentPost.authorUsername}`} className="hover:underline">
-                  <span className="font-bold text-foreground text-sm">{currentPost.authorName}</span>
+                  <Text className="font-bold text-foreground text-sm">{currentPost.authorName}</Text>
                 </Link>
                 <svg className="w-3.5 h-3.5 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                 </svg>
-              </div>
-              <span className="text-muted-foreground text-xs">@{currentPost.authorUsername} • 2h</span>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
+              </View>
+              <Text className="text-muted-foreground text-xs">@{currentPost.authorUsername} • 2h</Text>
+            </View>
+          </View>
+          <View className="flex items-center gap-3">
             <motion.button whileTap={{ scale: 0.95 }} className="bg-foreground text-background text-xs font-semibold px-4 py-1.5 rounded-full hover:opacity-90 transition-opacity">
               Follow
             </motion.button>
             <button className="text-muted-foreground hover:text-foreground transition-colors">
               <MoreVertical className="w-5 h-5" />
             </button>
-          </div>
-        </div>
+          </View>
+        </View>
 
         <Link to={`/post/${currentPost.id}`} className="block cursor-pointer">
-            <p className="text-sm text-foreground/90 leading-relaxed">
+            <Text className="text-sm text-foreground/90 leading-relaxed">
               {currentPost.content}
-            </p>
+            </Text>
             {currentPost.image ? (
-              <div className="mt-3 rounded-2xl overflow-hidden border border-border">
+              <View className="mt-3 rounded-2xl overflow-hidden border border-border">
                 <img
                   src={currentPost.image}
                   alt="Post image"
                   className="w-full h-56 object-cover"
                 />
-              </div>
+              </View>
             ) : null}
         </Link>
 
-        <div className="flex items-center justify-between mt-1 text-muted-foreground pt-1">
-          <div className="flex items-center gap-5">
-            <span className="flex items-center gap-1.5 text-xs">
+        <View className="flex items-center justify-between mt-1 text-muted-foreground pt-1">
+          <View className="flex items-center gap-5">
+            <Text className="flex items-center gap-1.5 text-xs">
               <Eye className="w-5 h-5" />
               4,200
-            </span>
+            </Text>
             <motion.button whileTap={{ scale: 0.9 }} onClick={handleLike} className={`flex items-center gap-1.5 transition-colors ${isLiked ? "text-red-500" : "hover:text-red-500"}`}>
               <motion.div animate={isLiked ? { scale: [1, 1.4, 1] } : {}} transition={{ duration: 0.25 }}>
                 <Heart className={`w-4 h-4 ${isLiked ? "fill-current" : ""}`} />
               </motion.div>
-              <span className="text-xs font-medium">{likeCount.toLocaleString()}</span>
+              <Text className="text-xs font-medium">{likeCount.toLocaleString()}</Text>
             </motion.button>
             <motion.button whileTap={{ scale: 0.9 }} onClick={() => setShowCommentModal(true)} className="flex items-center gap-1.5 hover:text-blue-500 transition-colors">
               <MessageCircle className="w-4 h-4" />
-              <span className="text-xs font-medium">148</span>
+              <Text className="text-xs font-medium">148</Text>
             </motion.button>
             <motion.button whileTap={{ scale: 0.9 }} onClick={handleRepost} className={`flex items-center gap-1.5 transition-colors ${isReposted ? "text-green-500" : "hover:text-green-500"}`}>
               <Repeat2 className={`w-4 h-4 ${isReposted ? "fill-current" : ""}`} />
-              <span className="text-xs font-medium">{repostCount}</span>
+              <Text className="text-xs font-medium">{repostCount}</Text>
             </motion.button>
-          </div>
-          <div className="flex items-center gap-3">
+          </View>
+          <View className="flex items-center gap-3">
             <motion.button whileTap={{ scale: 0.9 }} onClick={() => toggleSave(id)} className={`transition-colors ${isSaved ? "text-yellow-500" : "hover:text-yellow-500"}`}>
               <motion.div animate={isSaved ? { scale: [1, 1.3, 1] } : {}} transition={{ duration: 0.25 }}>
                 <Bookmark className={`w-4 h-4 ${isSaved ? "fill-current" : ""}`} />
@@ -1059,9 +1060,9 @@ export function PostCard({ post, postId = POST_DATA.id }: { post?: FeedPost; pos
             <button className="hover:text-foreground transition-colors">
               <MoreVertical className="w-4 h-4" />
             </button>
-          </div>
-        </div>
-      </div>
+          </View>
+        </View>
+      </View>
 
       <AnimatePresence>
         {showShareModal && <ShareModal onClose={() => setShowShareModal(false)} />}
@@ -1224,8 +1225,8 @@ export function HomeScreen() {
           >
             {activeSection === "shop" ? "🛍️" : activeSection === "games" ? "🎮" : activeSection === "campus" ? "🎓" : activeSection === "events" ? "📅" : activeSection === "discover" ? "🏆" : "🔔"}
           </motion.div>
-          <p className="text-lg font-bold text-foreground">{labels[activeSection]}</p>
-          <p className="text-sm text-muted-foreground">Coming soon</p>
+          <Text className="text-lg font-bold text-foreground">{labels[activeSection]}</Text>
+          <Text className="text-sm text-muted-foreground">Coming soon</Text>
         </motion.div>
       );
     }
@@ -1233,7 +1234,7 @@ export function HomeScreen() {
     return (
       <>
         {/* Stories */}
-        <div className="px-4 py-4 flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <View className="px-4 py-4 flex gap-4 overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {stories.map((story) => (
             <motion.div
               key={story.id}
@@ -1242,30 +1243,30 @@ export function HomeScreen() {
               onClick={() => handleViewStory(story)}
             >
               {story.type === "add" ? (
-                <div className="w-16 h-16 rounded-full border-2 border-dashed border-border flex items-center justify-center bg-muted/50 hover:bg-muted transition-colors">
+                <View className="w-16 h-16 rounded-full border-2 border-dashed border-border flex items-center justify-center bg-muted/50 hover:bg-muted transition-colors">
                   <Plus className="w-6 h-6 text-muted-foreground" />
-                </div>
+                </View>
               ) : (
-                <div className={`w-16 h-16 rounded-full p-0.5 ${story.hasUnseen ? "bg-gradient-to-tr from-yellow-400 to-fuchsia-600" : "bg-muted"}`}>
+                <View className={`w-16 h-16 rounded-full p-0.5 ${story.hasUnseen ? "bg-gradient-to-tr from-yellow-400 to-fuchsia-600" : "bg-muted"}`}>
                   {story.mediaType === "text" ? (
-                    <div className="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-background" style={{ background: story.bgColor }}>
+                    <View className="w-full h-full rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-background" style={{ background: story.bgColor }}>
                       Aa
-                    </div>
+                    </View>
                   ) : (
                     <img src={story.mediaUrl} alt={story.name} className="w-full h-full rounded-full border-2 border-background object-cover hover:opacity-80 transition-opacity" />
                   )}
-                </div>
+                </View>
               )}
-              <span className="text-xs text-muted-foreground font-medium w-16 text-center truncate">
+              <Text className="text-xs text-muted-foreground font-medium w-16 text-center truncate">
                 {story.type === "add" ? "Add Story" : story.name}
-              </span>
+              </Text>
             </motion.div>
           ))}
-        </div>
+        </View>
 
         {/* Feed Tabs */}
-        <div ref={tabsRef} className="relative">
-          <div className="flex px-4 gap-6 border-b border-border">
+        <View ref={tabsRef} className="relative">
+          <View className="flex px-4 gap-6 border-b border-border">
             {tabs.map((tab) => (
               <button key={tab} onClick={() => setActiveTab(tab)} className={`pb-3 text-sm font-bold relative transition-colors ${activeTab === tab ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
                 {tabLabels[tab]}
@@ -1274,7 +1275,7 @@ export function HomeScreen() {
                 )}
               </button>
             ))}
-          </div>
+          </View>
 
           <AnimatePresence mode="wait">
             <motion.div
@@ -1296,39 +1297,39 @@ export function HomeScreen() {
               <SponsoredPostCard post={SPONSORED_POSTS[1]} />
             </motion.div>
           </AnimatePresence>
-        </div>
+        </View>
       </>
     );
   };
 
   return (
-    <div
+    <View
       className="flex flex-col h-full bg-background text-foreground relative"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
       {/* Top Bar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-10">
+      <View className="flex items-center justify-between px-4 py-3 bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-10">
         <Link to="/profile" className="flex items-center gap-2 cursor-pointer">
-          <div className="relative">
+          <View className="relative">
             <img src="https://images.unsplash.com/photo-1544168190-79c17527004f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=40" alt="Me" className="w-10 h-10 rounded-full object-cover border border-border" />
-            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1">
-              <span className="font-bold text-foreground text-sm">Marcus J.</span>
+            <View className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-background rounded-full" />
+          </View>
+          <View className="flex flex-col">
+            <View className="flex items-center gap-1">
+              <Text className="font-bold text-foreground text-sm">Marcus J.</Text>
               <svg className="w-3.5 h-3.5 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
               </svg>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">@marcus_j</span>
-              <div className="flex items-center gap-0.5 bg-orange-500/10 px-1.5 rounded-full">
-                <span className="text-[10px] font-bold text-orange-600">🔥 12</span>
-              </div>
-            </div>
-          </div>
+            </View>
+            <View className="flex items-center gap-2">
+              <Text className="text-xs text-muted-foreground">@marcus_j</Text>
+              <View className="flex items-center gap-0.5 bg-orange-500/10 px-1.5 rounded-full">
+                <Text className="text-[10px] font-bold text-orange-600">🔥 12</Text>
+              </View>
+            </View>
+          </View>
         </Link>
 
         <motion.h1
@@ -1339,7 +1340,7 @@ export function HomeScreen() {
           Blink
         </motion.h1>
 
-        <div className="flex items-center gap-3 ml-auto pl-4">
+        <View className="flex items-center gap-3 ml-auto pl-4">
           <button className="text-foreground/90 hover:text-foreground transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
@@ -1348,11 +1349,11 @@ export function HomeScreen() {
           <Link to="/menu" className="text-foreground/90 hover:text-foreground transition-colors">
             <MoreVertical className="w-6 h-6" />
           </Link>
-        </div>
-      </div>
+        </View>
+      </View>
 
       {/* Section Nav */}
-      <div className="flex border-b border-border bg-background/95 backdrop-blur-sm overflow-x-auto [&::-webkit-scrollbar]:hidden">
+      <View className="flex border-b border-border bg-background/95 backdrop-blur-sm overflow-x-auto [&::-webkit-scrollbar]:hidden">
         {NAV_SECTIONS.map(({ key, label, Icon }) => (
           <motion.button
             key={key}
@@ -1367,12 +1368,12 @@ export function HomeScreen() {
             )}
           </motion.button>
         ))}
-      </div>
+      </View>
 
       {/* Scrollable content */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto pb-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <View ref={scrollRef} className="flex-1 overflow-y-auto pb-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {renderSection()}
-      </div>
+      </View>
 
       {/* FAB */}
       <AnimatePresence>
@@ -1406,9 +1407,9 @@ export function HomeScreen() {
                       >
                         {label}
                       </motion.span>
-                      <div className={`w-12 h-12 rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center shadow-lg`}>
+                      <View className={`w-12 h-12 rounded-full bg-gradient-to-r ${gradient} flex items-center justify-center shadow-lg`}>
                         <Icon className="w-5 h-5 text-white" />
-                      </div>
+                      </View>
                     </motion.button>
                   ))}
                 </>
@@ -1445,6 +1446,6 @@ export function HomeScreen() {
           />
         )}
       </AnimatePresence>
-    </div>
+    </View>
   );
 }

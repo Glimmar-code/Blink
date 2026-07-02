@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import App from "./app/App.tsx";
+import App from "./app/App";
 import "./styles/index.css";
 
 // Force Dark Mode as the baseline default if no choice is stored yet

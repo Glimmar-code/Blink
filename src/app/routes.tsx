@@ -7,7 +7,7 @@ import { MenuOverlay } from "./components/MenuOverlay";
 import { PostDetailScreen } from "./components/PostDetailScreen";
 import { ProfileScreen } from "./components/ProfileScreen";
 import { ExploreScreen } from "./components/ExploreScreen";
-import { LeaderboardScreen } from "./components/LeaderboardScreen";
+import LeaderboardScreen from "./components/LeaderboardScreen";
 import { NotificationsScreen } from "./components/NotificationsScreen";
 import { MessagesScreen } from "./components/MessagesScreen";
 

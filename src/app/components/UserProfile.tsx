@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { MessageCircle, UserPlus, UserCheck, Users, PlaySquare, MapPin, X, ChevronLeft, Coins, ShoppingBag, BookMarked, Heart, Grid3X3 } from "lucide-react";
 import { Link } from "react-router"; // Added React Router Link
@@ -64,15 +65,15 @@ interface UserListModalProps {
 
 function UserListModal({ title, users, onClose }: UserListModalProps) {
   return (
-    <div
+    <View
       className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
-      <div
+      <View
         className="w-full max-w-md bg-white rounded-t-3xl shadow-2xl max-h-[70vh] flex flex-col animate-rise"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+        <View className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
           <h3 className="font-bold text-gray-900 text-lg">{title}</h3>
           <button
             type="button"
@@ -82,10 +83,10 @@ function UserListModal({ title, users, onClose }: UserListModalProps) {
           >
             <X className="w-5 h-5 text-gray-600" />
           </button>
-        </div>
-        <div className="overflow-y-auto flex-1 px-5 py-3 flex flex-col gap-4">
+        </View>
+        <View className="overflow-y-auto flex-1 px-5 py-3 flex flex-col gap-4">
           {users.map((user) => (
-            <div key={user.id} className="flex items-center gap-3">
+            <View key={user.id} className="flex items-center gap-3">
               {/* Linked Avatar */}
               <Link 
                 to={`/profile/${user.handle.replace('@', '')}`} 
@@ -98,17 +99,17 @@ function UserListModal({ title, users, onClose }: UserListModalProps) {
                   className="w-11 h-11 rounded-full object-cover border-2 border-gray-100 hover:opacity-80 transition-opacity"
                 />
               </Link>
-              <div className="flex-1 min-w-0">
+              <View className="flex-1 min-w-0">
                 {/* Linked Name */}
                 <Link 
                   to={`/profile/${user.handle.replace('@', '')}`}
                   onClick={onClose}
                   className="hover:underline"
                 >
-                  <p className="font-semibold text-gray-900 text-sm truncate">{user.name}</p>
+                  <Text className="font-semibold text-gray-900 text-sm truncate">{user.name}</Text>
                 </Link>
-                <p className="text-gray-400 text-xs">{user.handle}</p>
-              </div>
+                <Text className="text-gray-400 text-xs">{user.handle}</Text>
+              </View>
               <Link
                 to={`/profile/${user.handle.replace('@', '')}`}
                 onClick={onClose}
@@ -116,12 +117,12 @@ function UserListModal({ title, users, onClose }: UserListModalProps) {
               >
                 View
               </Link>
-            </div>
+            </View>
           ))}
-        </div>
-        <div className="h-5" />
-      </div>
-    </div>
+        </View>
+        <View className="h-5" />
+      </View>
+    </View>
   );
 }
 
@@ -133,7 +134,7 @@ interface ImageLightboxProps {
 
 function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
   return (
-    <div
+    <View
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm animate-pop"
       onClick={onClose}
     >
@@ -149,9 +150,9 @@ function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
         src={src}
         alt={alt}
         className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e: { stopPropagation: () => void }) => e.stopPropagation()}
       />
-    </div>
+    </View>
   );
 }
 
@@ -227,7 +228,7 @@ export function UserProfile({ user, isFollowing, onToggleFollow, onBack, onMessa
   const likes = useCountUp(45000, mounted);
 
   return (
-    <div className="flex flex-col h-full bg-white relative">
+    <View className="flex flex-col h-full bg-white relative">
       {/* Scoped keyframes */}
       <style>{`
         @keyframes coverDrift {
@@ -298,7 +299,7 @@ export function UserProfile({ user, isFollowing, onToggleFollow, onBack, onMessa
       )}
 
       {/* Top Nav Bar */}
-      <div className="flex items-center px-4 py-3 bg-white border-b border-gray-100 z-10 shrink-0">
+      <View className="flex items-center px-4 py-3 bg-white border-b border-gray-100 z-10 shrink-0">
         <button
           type="button"
           aria-label="Go back"
@@ -308,12 +309,12 @@ export function UserProfile({ user, isFollowing, onToggleFollow, onBack, onMessa
           <ChevronLeft className="w-5 h-5 text-gray-700" />
         </button>
         <h2 className="flex-1 text-center font-bold text-gray-900 text-base">{user.name}</h2>
-        <div className="w-9 h-9" />
-      </div>
+        <View className="w-9 h-9" />
+      </View>
 
-      <div className="flex-1 overflow-y-auto pb-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <View className="flex-1 overflow-y-auto pb-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {/* Cover Photo */}
-        <div className="relative h-44 bg-gray-200 overflow-hidden">
+        <View className="relative h-44 bg-gray-200 overflow-visible">
           <button
             type="button"
             aria-label="View cover photo"
@@ -326,11 +327,11 @@ export function UserProfile({ user, isFollowing, onToggleFollow, onBack, onMessa
               className="w-full h-full object-cover cover-drift"
             />
           </button>
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent pointer-events-none" />
+          <View className="absolute inset-0 bg-gradient-to-t from-white via-white/10 to-transparent pointer-events-none" />
 
           {/* Avatar overlapping */}
-          <div className="absolute -bottom-12 left-5">
-            <div className="relative animate-pop" style={{ animationDelay: "80ms" }}>
+          <View className="absolute -bottom-12 left-5">
+            <View className="relative animate-pop" style={{ animationDelay: "80ms" }}>
               <button
                 type="button"
                 aria-label="View avatar"
@@ -344,20 +345,20 @@ export function UserProfile({ user, isFollowing, onToggleFollow, onBack, onMessa
                 />
               </button>
               {user.online && (
-                <span className="absolute bottom-1.5 right-1.5 flex w-5 h-5 pointer-events-none">
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
-                  <span className="relative inline-flex w-5 h-5 bg-green-500 border-2 border-white rounded-full" />
-                </span>
+                <Text className="absolute bottom-1.5 right-1.5 flex w-5 h-5 pointer-events-none">
+                  <Text className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
+                  <Text className="relative inline-flex w-5 h-5 bg-green-500 border-2 border-white rounded-full" />
+                </Text>
               )}
-            </div>
-          </div>
-        </div>
+            </View>
+          </View>
+        </View>
 
         {/* User Info */}
-        <div className="px-5 mt-16 mb-6">
-          <div className="flex justify-between items-start gap-3">
-            <div className="animate-rise flex-1 min-w-0" style={{ animationDelay: "120ms" }}>
-              <div className="flex items-center gap-1.5 flex-wrap">
+        <View className="px-5 mt-16 mb-6">
+          <View className="flex justify-between items-start gap-3">
+            <View className="animate-rise flex-1 min-w-0" style={{ animationDelay: "120ms" }}>
+              <View className="flex items-center gap-1.5 flex-wrap">
                 <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{user.name}</h1>
                 {user.verified && (
                   <svg
@@ -369,33 +370,33 @@ export function UserProfile({ user, isFollowing, onToggleFollow, onBack, onMessa
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                   </svg>
                 )}
-              </div>
-              <p className="text-gray-500 font-medium">@{user.username}</p>
+              </View>
+              <Text className="text-gray-500 font-medium">@{user.username}</Text>
 
-              <div className="flex items-center gap-2 mt-2 text-sm flex-wrap">
+              <View className="flex items-center gap-2 mt-2 text-sm flex-wrap">
                 {user.online ? (
-                  <span className="flex items-center gap-1.5 font-semibold text-gray-700">
-                    <span className="relative flex w-2.5 h-2.5">
-                      <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
-                      <span className="relative inline-flex w-2.5 h-2.5 rounded-full bg-green-500" />
-                    </span>
+                  <Text className="flex items-center gap-1.5 font-semibold text-gray-700">
+                    <Text className="relative flex w-2.5 h-2.5">
+                      <Text className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />
+                      <Text className="relative inline-flex w-2.5 h-2.5 rounded-full bg-green-500" />
+                    </Text>
                     Active now
-                  </span>
+                  </Text>
                 ) : (
-                  <span className="text-gray-400 text-sm">Last seen {user.lastSeen}</span>
+                  <Text className="text-gray-400 text-sm">Last seen {user.lastSeen}</Text>
                 )}
-              </div>
+              </View>
 
               {user.bio && (
-                <p className="mt-3 text-sm text-gray-600 leading-relaxed max-w-sm">
+                <Text className="mt-3 text-sm text-gray-600 leading-relaxed max-w-sm">
                   {user.bio}
-                </p>
+                </Text>
               )}
-            </div>
-          </div>
+            </View>
+          </View>
 
           {/* Action Buttons: Follow / Connect / Message */}
-          <div className="mt-5 flex gap-2.5 animate-rise" style={{ animationDelay: "160ms" }}>
+          <View className="mt-5 flex gap-2.5 animate-rise" style={{ animationDelay: "160ms" }}>
             <button
               type="button"
               onClick={onToggleFollow}
@@ -439,58 +440,58 @@ export function UserProfile({ user, isFollowing, onToggleFollow, onBack, onMessa
               <MessageCircle className="w-4 h-4" />
               Message
             </button>
-          </div>
+          </View>
 
           {/* Stats Row */}
-          <div className="flex gap-3 mt-6">
-            <div
+          <View className="flex gap-3 mt-6">
+            <View
               className="flex-1 bg-orange-50 rounded-2xl p-3 flex flex-col items-center justify-center border border-orange-100 animate-rise hover:-translate-y-0.5 hover:shadow-md transition-all duration-300"
               style={{ animationDelay: "200ms" }}
             >
-              <span className="text-xl font-bold text-orange-600 tabular-nums">
-                <span className="flame-flicker mr-1">🔥</span>
+              <Text className="text-xl font-bold text-orange-600 tabular-nums">
+                <Text className="flame-flicker mr-1">🔥</Text>
                 {streak}
-              </span>
-              <span className="text-[10px] font-bold text-orange-800 uppercase tracking-wider mt-1">
+              </Text>
+              <Text className="text-[10px] font-bold text-orange-800 uppercase tracking-wider mt-1">
                 Daily Streak
-              </span>
-            </div>
-            <div
+              </Text>
+            </View>
+            <View
               className="flex-1 bg-blue-50 rounded-2xl p-3 flex flex-col items-center justify-center border border-blue-100 animate-rise hover:-translate-y-0.5 hover:shadow-md transition-all duration-300"
               style={{ animationDelay: "260ms" }}
             >
-              <span className="text-xl font-bold text-blue-600 tabular-nums">#{campusRank}</span>
-              <span className="text-[10px] font-bold text-blue-800 uppercase tracking-wider mt-1">
+              <Text className="text-xl font-bold text-blue-600 tabular-nums">#{campusRank}</Text>
+              <Text className="text-[10px] font-bold text-blue-800 uppercase tracking-wider mt-1">
                 Campus Rank
-              </span>
-            </div>
-            <div
+              </Text>
+            </View>
+            <View
               className="flex-1 bg-purple-50 rounded-2xl p-3 flex flex-col items-center justify-center border border-purple-100 animate-rise hover:-translate-y-0.5 hover:shadow-md transition-all duration-300"
               style={{ animationDelay: "320ms" }}
             >
-              <span className="text-xl font-bold text-purple-600 tabular-nums">
+              <Text className="text-xl font-bold text-purple-600 tabular-nums">
                 {formatCompact(worldRank)}
-              </span>
-              <span className="text-[10px] font-bold text-purple-800 uppercase tracking-wider mt-1">
+              </Text>
+              <Text className="text-[10px] font-bold text-purple-800 uppercase tracking-wider mt-1">
                 World Rank
-              </span>
-            </div>
-          </div>
+              </Text>
+            </View>
+          </View>
 
           {/* Engagement Stats */}
-          <div className="flex justify-between mt-6 px-2">
-            <div className="flex flex-col items-center animate-rise" style={{ animationDelay: "360ms" }}>
-              <span className="text-xl font-bold text-gray-900 tabular-nums">{posts}</span>
-              <span className="text-xs text-gray-500 font-medium">Posts</span>
-            </div>
+          <View className="flex justify-between mt-6 px-2">
+            <View className="flex flex-col items-center animate-rise" style={{ animationDelay: "360ms" }}>
+              <Text className="text-xl font-bold text-gray-900 tabular-nums">{posts}</Text>
+              <Text className="text-xs text-gray-500 font-medium">Posts</Text>
+            </View>
             <button
               type="button"
               onClick={() => setUserListModal("followers")}
               className="flex flex-col items-center animate-rise hover:-translate-y-0.5 transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400 rounded-lg px-2 py-1"
               style={{ animationDelay: "400ms" }}
             >
-              <span className="text-xl font-bold text-gray-900 tabular-nums">{formatCompact(followers)}</span>
-              <span className="text-xs text-gray-500 font-medium">Followers</span>
+              <Text className="text-xl font-bold text-gray-900 tabular-nums">{formatCompact(followers)}</Text>
+              <Text className="text-xs text-gray-500 font-medium">Followers</Text>
             </button>
             <button
               type="button"
@@ -498,20 +499,20 @@ export function UserProfile({ user, isFollowing, onToggleFollow, onBack, onMessa
               className="flex flex-col items-center animate-rise hover:-translate-y-0.5 transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-400 rounded-lg px-2 py-1"
               style={{ animationDelay: "440ms" }}
             >
-              <span className="text-xl font-bold text-gray-900 tabular-nums">{following}</span>
-              <span className="text-xs text-gray-500 font-medium">Following</span>
+              <Text className="text-xl font-bold text-gray-900 tabular-nums">{following}</Text>
+              <Text className="text-xs text-gray-500 font-medium">Following</Text>
             </button>
-            <div className="flex flex-col items-center animate-rise" style={{ animationDelay: "480ms" }}>
-              <span className="text-xl font-bold text-gray-900 tabular-nums">{formatCompact(likes)}</span>
-              <span className="text-xs text-gray-500 font-medium">Likes</span>
-            </div>
-          </div>
-        </div>
+            <View className="flex flex-col items-center animate-rise" style={{ animationDelay: "480ms" }}>
+              <Text className="text-xl font-bold text-gray-900 tabular-nums">{formatCompact(likes)}</Text>
+              <Text className="text-xs text-gray-500 font-medium">Likes</Text>
+            </View>
+          </View>
+        </View>
 
         {/* Content Tabs */}
-        <div ref={feedRef} className="bg-gray-50 flex flex-col border-t border-gray-100">
+        <View ref={feedRef} className="bg-gray-50 flex flex-col border-t border-gray-100">
           {/* Tab Navigation */}
-          <div className="flex bg-white border-b border-gray-100 sticky top-0 z-10">
+          <View className="flex bg-white border-b border-gray-100 sticky top-0 z-10">
             {(
               [
                 { key: "posts", label: "Posts", Icon: Grid3X3 },
@@ -533,69 +534,69 @@ export function UserProfile({ user, isFollowing, onToggleFollow, onBack, onMessa
                 {label}
               </button>
             ))}
-          </div>
+          </View>
 
           {/* Tab Content */}
-          <div className="flex flex-col gap-2 pt-2">
+          <View className="flex flex-col gap-2 pt-2">
             {activeTab === "posts" && (
               <>
-                <div
+                <View
                   className={`transition-all duration-500 ${
                     feedVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
                   }`}
                 >
                   <PostCard />
-                </div>
-                <div
+                </View>
+                <View
                   className={`transition-all duration-500 delay-150 ${
                     feedVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
                   }`}
                 >
                   <PostCard />
-                </div>
+                </View>
               </>
             )}
 
             {activeTab === "liked" && (
               <>
-                <div
+                <View
                   className={`transition-all duration-500 ${
                     feedVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
                   }`}
                 >
                   <PostCard />
-                </div>
-                <div
+                </View>
+                <View
                   className={`transition-all duration-500 delay-150 ${
                     feedVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
                   }`}
                 >
                   <PostCard />
-                </div>
+                </View>
               </>
             )}
 
             {activeTab === "saved" && (
               <>
-                <div
+                <View
                   className={`transition-all duration-500 ${
                     feedVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
                   }`}
                 >
                   <PostCard />
-                </div>
-                <div
+                </View>
+                <View
                   className={`transition-all duration-500 delay-150 ${
                     feedVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-3"
                   }`}
                 >
                   <PostCard />
-                </div>
+                </View>
               </>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </View>
+        </View>
+      </View>
+    </View>
   );
 }

@@ -73,12 +73,62 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let isMounted = true;
 
     async function initialize() {
-      const { data: redirectData, error: redirectError } = await supabase.auth.getSessionFromUrl();
-      if (redirectError && redirectError.message !== "No auth session found") {
-        console.warn("Supabase OAuth redirect parse warning:", redirectError.message);
+      // If redirected back from an OAuth provider, parse the URL and store the session.
+      try {
+        // `getSessionFromUrl` is not present in all @supabase/supabase-js type definitions.
+        // Call it defensively to avoid TypeScript errors in editors that mark it red.
+        const getSessionFromUrl = (supabase.auth as any)?.getSessionFromUrl;
+        if (typeof getSessionFromUrl === "function") {
+          const fromUrl = await getSessionFromUrl.call(supabase.auth, { storeSession: true });
+          if (fromUrl?.data?.session) {
+            try {
+              const cleanUrl = window.location.origin + window.location.pathname + window.location.search;
+              window.history.replaceState({}, document.title, cleanUrl);
+            } catch (e) {
+              // ignore
+            }
+          }
+        }
+      } catch (e) {
+        // ignore if not an auth callback or method unavailable
       }
 
-      const session = redirectData?.session ?? (await supabase.auth.getSession()).data.session;
+      // Fallback: if the redirect left tokens in the URL hash and the SDK didn't parse them,
+      // parse them manually and set the session. This handles cases where getSessionFromUrl
+      // is unavailable or didn't run early enough.
+      try {
+        if (typeof window !== "undefined") {
+          const hash = window.location.hash || "";
+          if (hash.includes("access_token=")) {
+            const params = new URLSearchParams(hash.replace(/^#/, ""));
+            const access_token = params.get("access_token");
+            const refresh_token = params.get("refresh_token");
+            const cleanUrl = window.location.origin + window.location.pathname + window.location.search;
+            if (access_token) {
+              const setSession = (supabase.auth as any)?.setSession;
+              if (typeof setSession === "function") {
+                try {
+                  await setSession.call(supabase.auth, {
+                    access_token,
+                    refresh_token,
+                  });
+                  try {
+                    window.history.replaceState({}, document.title, cleanUrl);
+                  } catch (e) {
+                    // ignore
+                  }
+                } catch (e) {
+                  // ignore setSession errors
+                }
+              }
+            }
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+
+      const session = (await supabase.auth.getSession()).data.session;
       if (!isMounted) return;
       setSession(session);
       setUser(session?.user ?? null);
@@ -145,10 +195,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuthError(null);
 
     const username = email.split("@")[0].replace(/[^a-zA-Z0-9_.-]/g, "_");
-    const { data, error } = await supabase.auth.signUp(
-      { email, password },
-      { emailRedirectTo: `${window.location.origin}/auth` }
-    );
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth`,
+      },
+    });
     if (error) {
       const message = error.message.toLowerCase();
       if (message.includes("invalid api key") || message.includes("unauthorized")) {

@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 "use client";
 
 import * as React from "react";
@@ -78,7 +79,7 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div
+      <View
         data-slot="form-item"
         className={cn("grid gap-2", className)}
         {...props}
@@ -127,7 +128,7 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   const { formDescriptionId } = useFormField();
 
   return (
-    <p
+    <Text
       data-slot="form-description"
       id={formDescriptionId}
       className={cn("text-muted-foreground text-sm", className)}
@@ -145,14 +146,14 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
   }
 
   return (
-    <p
+    <Text
       data-slot="form-message"
       id={formMessageId}
       className={cn("text-destructive text-sm", className)}
       {...props}
     >
       {body}
-    </p>
+    </Text>
   );
 }
 

@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import { useState } from "react";
 import { UserCheck, UserPlus } from "lucide-react";
 import type { UserProfile } from "./types";
@@ -14,22 +15,22 @@ export function PeopleCard({ user, onGoToProfile }: { user: UserProfile; onGoToP
   };
 
   return (
-    <div className="bg-card border-b border-border px-4 py-3">
-      <div className="flex items-center gap-3">
+    <View className="bg-card border-b border-border px-4 py-3">
+      <View className="flex items-center gap-3">
         <Avatar user={user} size="sm" onClick={() => onGoToProfile(user.id)} />
-        <div className="flex-1 min-w-0 cursor-pointer" onClick={() => onGoToProfile(user.id)}>
-          <div className="flex items-center gap-1">
-            <span className="font-semibold text-sm text-foreground">{user.name}</span>
-            {user.badge !== "none" && <span className="text-blue-500">●</span>}
-          </div>
-          <span className="text-muted-foreground text-xs">@{user.username}</span>
-          <p className="text-muted-foreground text-xs mt-0.5 truncate">{user.bio}</p>
-          <div className="flex gap-2 mt-1 flex-wrap text-[10px] text-muted-foreground">
-            <span className="bg-muted px-2 py-1 rounded-full">{user.university}</span>
-            <span className="bg-muted px-2 py-1 rounded-full">{user.level}</span>
-            <span className="bg-muted px-2 py-1 rounded-full">{formatCount(count)} followers</span>
-          </div>
-        </div>
+        <View className="flex-1 min-w-0 cursor-pointer" onClick={() => onGoToProfile(user.id)}>
+          <View className="flex items-center gap-1">
+            <Text className="font-semibold text-sm text-foreground">{user.name}</Text>
+            {user.badge !== "none" && <Text className="text-blue-500">●</Text>}
+          </View>
+          <Text className="text-muted-foreground text-xs">@{user.username}</Text>
+          <Text className="text-muted-foreground text-xs mt-0.5 truncate">{user.bio}</Text>
+          <View className="flex gap-2 mt-1 flex-wrap text-[10px] text-muted-foreground">
+            <Text className="bg-muted px-2 py-1 rounded-full">{user.university}</Text>
+            <Text className="bg-muted px-2 py-1 rounded-full">{user.level}</Text>
+            <Text className="bg-muted px-2 py-1 rounded-full">{formatCount(count)} followers</Text>
+          </View>
+        </View>
         <button
           onClick={toggle}
           className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
@@ -46,7 +47,7 @@ export function PeopleCard({ user, onGoToProfile }: { user: UserProfile; onGoToP
             </>
           )}
         </button>
-      </div>
-    </div>
+      </View>
+    </View>
   );
 }

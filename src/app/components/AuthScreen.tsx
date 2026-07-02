@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -29,12 +30,12 @@ export function AuthScreen() {
   };
 
   return (
-    <div className="min-h-full flex flex-col px-6 pt-12 pb-6 bg-white overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      <div className="flex justify-center mb-8">
+    <View className="min-h-full flex flex-col px-6 pt-12 pb-6 bg-white overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <View className="flex justify-center mb-8">
         <h1 className="text-3xl font-bold tracking-tight text-black">BlacApp</h1>
-      </div>
+      </View>
 
-      <div className="flex bg-gray-100 p-1 rounded-full mb-8">
+      <View className="flex bg-gray-100 p-1 rounded-full mb-8">
         <button
           className={`flex-1 py-3 text-sm font-semibold rounded-full transition-colors ${
             isLogin ? "bg-white text-black shadow-sm" : "text-gray-500"
@@ -51,15 +52,15 @@ export function AuthScreen() {
         >
           Sign Up
         </button>
-      </div>
+      </View>
 
-      <div className="flex-1">
+      <View className="flex-1">
         <h2 className="text-2xl font-bold mb-6 text-gray-900">
           {isLogin ? "Welcome back" : "Create an account"}
         </h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <div>
+          <View>
             <input
               type="email"
               placeholder="Email address"
@@ -68,9 +69,9 @@ export function AuthScreen() {
               className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
               required
             />
-          </div>
+          </View>
           
-          <div className="relative">
+          <View className="relative">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
@@ -86,24 +87,24 @@ export function AuthScreen() {
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
-          </div>
+          </View>
 
           {!isLogin && (
-            <div>
+            <View>
               <input
                 type="text"
                 placeholder="Referred by (Optional)"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-sm focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
               />
-            </div>
+            </View>
           )}
 
           {isLogin && (
-            <div className="flex justify-end">
+            <View className="flex justify-end">
               <button type="button" className="text-sm font-semibold text-gray-600 hover:text-black">
                 Forgot Password?
               </button>
-            </div>
+            </View>
           )}
 
           <button
@@ -115,15 +116,15 @@ export function AuthScreen() {
           </button>
 
           {authError ? (
-            <p className="mt-3 text-sm text-red-600">{authError}</p>
+            <Text className="mt-3 text-sm text-red-600">{authError}</Text>
           ) : null}
         </form>
 
-        <div className="my-8 flex items-center gap-4">
-          <div className="h-px bg-gray-200 flex-1"></div>
-          <span className="text-sm text-gray-400 font-medium">or</span>
-          <div className="h-px bg-gray-200 flex-1"></div>
-        </div>
+        <View className="my-8 flex items-center gap-4">
+          <View className="h-px bg-gray-200 flex-1"></View>
+          <Text className="text-sm text-gray-400 font-medium">or</Text>
+          <View className="h-px bg-gray-200 flex-1"></View>
+        </View>
 
         <button
           type="button"
@@ -152,7 +153,7 @@ export function AuthScreen() {
           </svg>
           Continue with Google
         </button>
-      </div>
-    </div>
+      </View>
+    </View>
   );
 }

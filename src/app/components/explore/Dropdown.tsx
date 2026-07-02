@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import { useState } from "react";
 
 export function Dropdown({
@@ -14,23 +15,23 @@ export function Dropdown({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative">
+    <View className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center justify-between gap-1 bg-card border border-border rounded-xl px-3 py-2.5 text-sm text-left shadow-sm"
       >
-        <div className="flex flex-col">
-          <span className="text-[10px] text-muted-foreground font-medium leading-none mb-0.5">
+        <View className="flex flex-col">
+          <Text className="text-[10px] text-muted-foreground font-medium leading-none mb-0.5">
             {label}
-          </span>
-          <span className="text-foreground font-semibold text-xs leading-none truncate max-w-[90px]">
+          </Text>
+          <Text className="text-foreground font-semibold text-xs leading-none truncate max-w-[90px]">
             {value}
-          </span>
-        </div>
-        <span className={`text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}>⌄</span>
+          </Text>
+        </View>
+        <Text className={`text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}>⌄</Text>
       </button>
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-full bg-card rounded-xl border border-border shadow-lg z-50 overflow-hidden">
+        <View className="absolute top-full left-0 mt-1 w-full bg-card rounded-xl border border-border shadow-lg z-50 overflow-hidden">
           {options.map((opt) => (
             <button
               key={opt}
@@ -43,8 +44,8 @@ export function Dropdown({
               {opt}
             </button>
           ))}
-        </div>
+        </View>
       )}
-    </div>
+    </View>
   );
 }

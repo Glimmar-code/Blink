@@ -1,9 +1,10 @@
+import { View, Text } from "react-native";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router";
 import {
   Bell, Heart, MessageCircle, UserPlus, AtSign, Gift,
   RefreshCw, Eye, Users, Trophy, Check, ChevronRight,
-  Sparkles, Sun, Moon, Monitor, X, Bookmark, Share2,
+  Sparkles, X, Bookmark, Share2,
   Repeat2, MessageSquare, ShieldCheck, Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "motion/react";
@@ -36,7 +37,6 @@ type NotifType =
   | "community_add";
 
 type VerifiedBadge = "blue" | "gold" | null;
-type Theme = "light" | "dark" | "system";
 
 type FilterTab =
   | "all"
@@ -308,12 +308,12 @@ const PAGE_SIZE = 8;
 function VerifiedIcon({ type }: { type: VerifiedBadge }) {
   if (!type) return null;
   return (
-    <span
+    <Text
       className={`absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center ring-2 ${type === "blue" ? "bg-blue-500 ring-[#111]" : "bg-yellow-400 ring-[#111]"}`}
       title={type === "blue" ? "Verified" : "Gold Verified"}
     >
       <Check size={8} className="text-white font-black" strokeWidth={3} />
-    </span>
+    </Text>
   );
 }
 
@@ -328,9 +328,9 @@ function UserAvatar({ user, onAvatarClick, ringColor }: {
       className="relative flex-shrink-0 active:scale-95 transition-transform"
       aria-label={`View ${user.name}'s profile`}
     >
-      <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${user.gradientFrom} ${user.gradientTo} flex items-center justify-center text-white text-sm font-bold`}>
+      <View className={`w-12 h-12 rounded-full bg-gradient-to-br ${user.gradientFrom} ${user.gradientTo} flex items-center justify-center text-white text-sm font-bold`}>
         {user.initials}
-      </div>
+      </View>
       <VerifiedIcon type={user.verified} />
     </button>
   );
@@ -338,17 +338,17 @@ function UserAvatar({ user, onAvatarClick, ringColor }: {
 
 function SystemAvatar({ type }: { type: NotifType }) {
   return (
-    <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${TYPE_COLOR[type]}`}>
-      <span className="text-white">{typeIcon(type, 22)}</span>
-    </div>
+    <View className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${TYPE_COLOR[type]}`}>
+      <Text className="text-white">{typeIcon(type, 22)}</Text>
+    </View>
   );
 }
 
 function TypeBadge({ type, isDark }: { type: NotifType; isDark: boolean }) {
   return (
-    <span className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center text-white ${TYPE_COLOR[type]} ring-2 ${isDark ? "ring-[#111]" : "ring-white"}`}>
+    <Text className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full flex items-center justify-center text-white ${TYPE_COLOR[type]} ring-2 ${isDark ? "ring-[#111]" : "ring-white"}`}>
       {typeIcon(type, 11)}
-    </span>
+    </Text>
   );
 }
 
@@ -370,35 +370,35 @@ function NotifRow({ notif, isDark, onTap, onAvatarTap }: {
       className={`w-full flex items-start gap-3 px-4 py-3.5 border-b ${border} ${!notif.read ? unreadBg : ""} active:opacity-60 transition-opacity text-left`}
       layout
     >
-      <div className="relative flex-shrink-0">
+      <View className="relative flex-shrink-0">
         {notif.user ? (
           <UserAvatar user={notif.user} onAvatarClick={onAvatarTap} ringColor={isDark ? "#111" : "#fff"} />
         ) : (
           <SystemAvatar type={notif.type} />
         )}
         <TypeBadge type={notif.type} isDark={isDark} />
-      </div>
+      </View>
 
-      <div className="flex-1 min-w-0">
-        <p className={`text-[13.5px] leading-snug ${txt} ${!notif.read ? "font-semibold" : "font-normal"}`}>
+      <View className="flex-1 min-w-0">
+        <Text className={`text-[13.5px] leading-snug ${txt} ${!notif.read ? "font-semibold" : "font-normal"}`}>
           {notif.headline}
           {notif.type === "gift" && notif.meta?.coinsAmount && (
-            <span className="ml-1.5 text-yellow-500"> 🪙 {notif.meta.coinsAmount}</span>
+            <Text className="ml-1.5 text-yellow-500"> 🪙 {notif.meta.coinsAmount}</Text>
           )}
           {notif.type === "rank" && notif.meta?.rankNumber && (
-            <span className="ml-1.5 text-amber-500">#{notif.meta.rankNumber}</span>
+            <Text className="ml-1.5 text-amber-500">#{notif.meta.rankNumber}</Text>
           )}
-        </p>
+        </Text>
         {notif.subtext && (
-          <p className={`text-xs mt-0.5 truncate ${sub}`}>{notif.subtext}</p>
+          <Text className={`text-xs mt-0.5 truncate ${sub}`}>{notif.subtext}</Text>
         )}
-        <p className={`text-[11px] mt-1 ${ts}`}>{notif.timestamp}</p>
-      </div>
+        <Text className={`text-[11px] mt-1 ${ts}`}>{notif.timestamp}</Text>
+      </View>
 
-      <div className="flex flex-col items-end gap-1.5 flex-shrink-0 pt-0.5">
-        {!notif.read && <span className="w-2 h-2 rounded-full bg-blue-500" />}
+      <View className="flex flex-col items-end gap-1.5 flex-shrink-0 pt-0.5">
+        {!notif.read && <Text className="w-2 h-2 rounded-full bg-blue-500" />}
         <ChevronRight size={14} className={sub} />
-      </div>
+      </View>
     </motion.button>
   );
 }
@@ -421,26 +421,26 @@ function InAppToast({ notif, isDark, onDismiss, onTap }: {
         onClick={onTap}
         className={`w-full flex items-center gap-3 px-3 py-3 rounded-2xl shadow-2xl border ${isDark ? "bg-[#1c1c1e] border-[#2a2a2a]" : "bg-white border-gray-200"} text-left`}
       >
-        <div className="relative flex-shrink-0">
+        <View className="relative flex-shrink-0">
           {notif.user ? (
-            <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${notif.user.gradientFrom} ${notif.user.gradientTo} flex items-center justify-center text-white text-xs font-bold`}>
+            <View className={`w-10 h-10 rounded-full bg-gradient-to-br ${notif.user.gradientFrom} ${notif.user.gradientTo} flex items-center justify-center text-white text-xs font-bold`}>
               {notif.user.initials}
-            </div>
+            </View>
           ) : (
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${TYPE_COLOR[notif.type]}`}>
-              <span className="text-white">{typeIcon(notif.type, 18)}</span>
-            </div>
+            <View className={`w-10 h-10 rounded-full flex items-center justify-center ${TYPE_COLOR[notif.type]}`}>
+              <Text className="text-white">{typeIcon(notif.type, 18)}</Text>
+            </View>
           )}
           {notif.user && <VerifiedIcon type={notif.user.verified} />}
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className={`text-[13px] font-semibold truncate ${isDark ? "text-white" : "text-gray-900"}`}>
+        </View>
+        <View className="flex-1 min-w-0">
+          <Text className={`text-[13px] font-semibold truncate ${isDark ? "text-white" : "text-gray-900"}`}>
             {notif.headline}
-          </p>
+          </Text>
           {notif.subtext && (
-            <p className={`text-xs truncate ${isDark ? "text-gray-400" : "text-gray-500"}`}>{notif.subtext}</p>
+            <Text className={`text-xs truncate ${isDark ? "text-gray-400" : "text-gray-500"}`}>{notif.subtext}</Text>
           )}
-        </div>
+        </View>
         <button
           onClick={(e) => { e.stopPropagation(); onDismiss(); }}
           className={`p-1 rounded-full flex-shrink-0 ${isDark ? "text-gray-500" : "text-gray-400"}`}
@@ -493,7 +493,6 @@ function usePullToRefresh(onRefresh: () => Promise<void>) {
 
 export function NotificationsScreen() {
   const [allNotifs, setAllNotifs] = useState<Notification[]>(SEED);
-  const [theme, setTheme] = useState<Theme>("system");
   const [toast, setToast] = useState<Notification | null>(null);
   const [filter, setFilter] = useState<FilterTab>("all");
   const [page, setPage] = useState(1);
@@ -501,11 +500,7 @@ export function NotificationsScreen() {
   const [navigatedTo, setNavigatedTo] = useState<string | null>(null);
   const filterScrollRef = useRef<HTMLDivElement>(null);
 
-  const systemDark =
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-color-scheme: dark)").matches
-      : true;
-  const isDark = theme === "dark" || (theme === "system" && systemDark);
+  const isDark = false;
 
   const unreadCount = allNotifs.filter((n) => !n.read).length;
   const filtered = allNotifs.filter((n) => matchesFilter(n, filter));
@@ -594,24 +589,20 @@ export function NotificationsScreen() {
   }, [spawnToast]);
 
   // Style tokens
-  const bg = isDark ? "bg-[#0d0d0d]" : "bg-[#f5f5f7]";
-  const headerBg = isDark ? "bg-[#111111]" : "bg-white";
-  const border = isDark ? "border-[#1e1e1e]" : "border-gray-100";
-  const txtPrimary = isDark ? "text-white" : "text-gray-900";
-  const txtMuted = isDark ? "text-gray-400" : "text-gray-500";
-  const pillActive = isDark ? "bg-white text-black" : "bg-black text-white";
-  const pillInactive = isDark ? "text-gray-400" : "text-gray-500";
-  const themeToggleBg = isDark ? "bg-[#2a2a2a]" : "bg-gray-100";
-  const themeActiveBtn = isDark ? "bg-[#3a3a3a] text-white" : "bg-white text-gray-900 shadow-sm";
-  const markAllBtn = isDark ? "bg-[#1e1e1e] text-blue-400 border border-[#2a2a2a]" : "bg-blue-50 text-blue-600";
-  const filterPillActive = isDark ? "bg-white text-black font-semibold" : "bg-black text-white font-semibold";
-  const filterPillInactive = isDark ? "bg-[#1e1e1e] text-gray-400 border border-[#2a2a2a]" : "bg-white text-gray-600 border border-gray-200 shadow-sm";
-  const loadMoreBtn = isDark ? "bg-[#1a1a1a] text-blue-400 border border-[#2a2a2a]" : "bg-white text-blue-600 border border-gray-200 shadow-sm";
+  const bg = "bg-background";
+  const headerBg = "bg-background";
+  const border = "border-border";
+  const txtPrimary = "text-foreground";
+  const txtMuted = "text-muted-foreground";
+  const markAllBtn = "bg-muted text-blue-600 dark:text-blue-400 border border-border";
+  const filterPillActive = "bg-primary text-primary-foreground font-semibold";
+  const filterPillInactive = "bg-card text-muted-foreground border border-border shadow-sm";
+  const loadMoreBtn = "bg-card text-blue-600 dark:text-blue-400 border border-border shadow-sm";
 
   return (
                   <>
 
-    <div className={`relative flex-1 flex flex-col h-full overflow-hidden ${bg}`}>
+    <View className={`relative flex-1 flex flex-col h-full overflow-hidden ${bg}`}>
 
       {/* ── In-app toast ── */}
       <AnimatePresence>
@@ -640,8 +631,8 @@ export function NotificationsScreen() {
       </AnimatePresence>
 
       {/* ── Header ── */}
-      <div className={`flex items-center justify-between px-4 pt-14 pb-3 border-b ${border} ${headerBg}`}>
-        <div className="flex items-center gap-2">
+      <View className={`flex items-center justify-between px-4 pt-14 pb-3 border-b ${border} ${headerBg}`}>
+        <View className="flex items-center gap-2">
           <h1 className={`text-xl font-bold tracking-tight ${txtPrimary}`}>Activity</h1>
           <AnimatePresence>
             {unreadCount > 0 && (
@@ -656,38 +647,24 @@ export function NotificationsScreen() {
               </motion.span>
             )}
           </AnimatePresence>
-        </div>
+        </View>
 
-        <div className="flex items-center gap-2">
-          {/* Theme selector */}
-          <div className={`flex items-center gap-0.5 p-1 rounded-xl ${themeToggleBg}`}>
-            {(["light", "system", "dark"] as Theme[]).map((t) => (
-              <button
-                key={t}
-                onClick={() => setTheme(t)}
-                className={`p-1.5 rounded-lg transition-all ${theme === t ? themeActiveBtn : txtMuted}`}
-                aria-label={`${t} mode`}
-              >
-                {t === "light" ? <Sun size={13} /> : t === "dark" ? <Moon size={13} /> : <Monitor size={13} />}
-              </button>
-            ))}
-          </div>
-
+        <View className="flex items-center gap-2">
           {unreadCount > 0 && (
             <button
               onClick={markAllRead}
               className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1.5 rounded-xl ${markAllBtn}`}
             >
               <Check size={11} />
-              <span>All read</span>
+              <Text>All read</Text>
             </button>
           )}
-        </div>
-      </div>
+        </View>
+      </View>
 
       {/* ── Swipeable filter tabs ── */}
-      <div className={`border-b ${border} ${headerBg}`}>
-        <div
+      <View className={`border-b ${border} ${headerBg}`}>
+        <View
           ref={filterScrollRef}
           className="flex gap-2 px-4 py-2.5 overflow-x-auto scrollbar-none"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
@@ -704,15 +681,15 @@ export function NotificationsScreen() {
               >
                 {tab.label}
                 {count > 0 && (
-                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center leading-none ${filter === tab.id ? (isDark ? "bg-black/20 text-white" : "bg-white/20 text-white") : "bg-red-500 text-white"}`}>
+                  <Text className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center leading-none ${filter === tab.id ? (isDark ? "bg-black/20 text-white" : "bg-white/20 text-white") : "bg-red-500 text-white"}`}>
                     {count}
-                  </span>
+                  </Text>
                 )}
               </button>
             );
           })}
-        </div>
-      </div>
+        </View>
+      </View>
 
       {/* ── Pull-to-refresh indicator ── */}
       <motion.div
@@ -729,7 +706,7 @@ export function NotificationsScreen() {
       </motion.div>
 
       {/* ── Notification list ── */}
-      <div
+      <View
         ref={listRef}
         className="flex-1 overflow-y-auto"
         onTouchStart={onTouchStart}
@@ -737,21 +714,21 @@ export function NotificationsScreen() {
         onTouchEnd={onTouchEnd}
       >
         {refreshing && (
-          <div className={`flex items-center justify-center gap-2 py-3 ${txtMuted}`}>
+          <View className={`flex items-center justify-center gap-2 py-3 ${txtMuted}`}>
             <Loader2 size={14} className="animate-spin" />
-            <span className="text-xs">Refreshing…</span>
-          </div>
+            <Text className="text-xs">Refreshing…</Text>
+          </View>
         )}
 
         {visible.length === 0 ? (
-          <div className={`flex flex-col items-center justify-center h-48 gap-3 ${txtMuted}`}>
+          <View className={`flex flex-col items-center justify-center h-48 gap-3 ${txtMuted}`}>
             <Bell size={36} className={isDark ? "text-gray-700" : "text-gray-300"} />
-            <p className="text-sm">
+            <Text className="text-sm">
               {filter === "all" ? "No notifications yet" : `No ${filter} notifications`}
-            </p>
-          </div>
+            </Text>
+          </View>
         ) : (
-          <div>
+          <View>
             <AnimatePresence initial={false}>
               {visible.map((notif, i) => (
                 <motion.div
@@ -773,7 +750,7 @@ export function NotificationsScreen() {
 
             {/* Load more */}
             {hasMore ? (
-              <div className="flex justify-center py-4 px-4">
+              <View className="flex justify-center py-4 px-4">
                 <button
                   onClick={handleLoadMore}
                   disabled={loadingMore}
@@ -785,16 +762,16 @@ export function NotificationsScreen() {
                     <>Load more</>
                   )}
                 </button>
-              </div>
+              </View>
             ) : (
-              <p className={`text-center text-xs py-8 ${txtMuted}`}>
+              <Text className={`text-center text-xs py-8 ${txtMuted}`}>
                 You're all caught up ✓
-              </p>
+              </Text>
             )}
-          </div>
+          </View>
         )}
-      </div>
-    </div>
+      </View>
+    </View>
                   <BottomNav />
 
                   </>

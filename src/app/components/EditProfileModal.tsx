@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import { useState, useRef, ChangeEvent } from "react";
 import { 
   X, MapPin, User, AtSign, Camera, GraduationCap, 
@@ -179,7 +180,7 @@ export function EditProfileModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-white flex flex-col animate-rise">
+    <View className="fixed inset-0 z-50 bg-white flex flex-col animate-rise">
       <input 
         type="file" 
         ref={fileInputRef} 
@@ -189,7 +190,7 @@ export function EditProfileModal({
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100 shrink-0">
+      <View className="flex items-center justify-between px-4 py-4 border-b border-gray-100 shrink-0">
         <button
           type="button"
           onClick={onClose}
@@ -205,16 +206,16 @@ export function EditProfileModal({
         >
           Save
         </button>
-      </div>
+      </View>
 
       {/* Form Content */}
-      <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-6 pb-12">
+      <View className="flex-1 overflow-y-auto p-5 flex flex-col gap-6 pb-12">
         {/* Profile Graphics */}
-        <div>
-          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-3">Profile Graphics</span>
-          <div className="relative h-32 w-full bg-gray-100 rounded-2xl overflow-hidden group">
+        <View>
+          <Text className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-3">Profile Graphics</Text>
+          <View className="relative h-32 w-full bg-gray-100 rounded-2xl overflow-hidden group">
             {cover && <img src={cover} alt="Cover preview" className="w-full h-full object-cover" />}
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-100 group-hover:bg-black/50 transition-all">
+            <View className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-100 group-hover:bg-black/50 transition-all">
               <button 
                 type="button"
                 onClick={() => triggerImageSelect("cover")}
@@ -222,11 +223,11 @@ export function EditProfileModal({
               >
                 <Camera className="w-4 h-4" /> Change Cover
               </button>
-            </div>
-          </div>
+            </View>
+          </View>
 
-          <div className="flex justify-start px-4 -mt-10 mb-4 relative z-10">
-            <div className="relative group w-20 h-20 rounded-full border-4 border-white shadow-md bg-gray-200 overflow-hidden">
+          <View className="flex justify-start px-4 -mt-10 mb-4 relative z-10">
+            <View className="relative group w-20 h-20 rounded-full border-4 border-white shadow-md bg-gray-200 overflow-hidden">
               {avatar && <img src={avatar} alt="Avatar preview" className="w-full h-full object-cover" />}
               <button 
                 type="button"
@@ -235,14 +236,14 @@ export function EditProfileModal({
               >
                 <Camera className="w-4 h-4" />
               </button>
-            </div>
-          </div>
-        </div>
+            </View>
+          </View>
+        </View>
 
         {/* Account Identifiers */}
-        <div className="flex flex-col gap-4">
-          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">Account Handles</span>
-          <div className="flex flex-col gap-1.5">
+        <View className="flex flex-col gap-4">
+          <Text className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">Account Handles</Text>
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <User className="w-3.5 h-3.5" /> Full Name
             </label>
@@ -253,9 +254,9 @@ export function EditProfileModal({
               className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 text-gray-900 font-medium transition-colors"
               placeholder="Enter your name"
             />
-          </div>
+          </View>
 
-          <div className="flex flex-col gap-1.5">
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <AtSign className="w-3.5 h-3.5" /> Username
             </label>
@@ -266,13 +267,13 @@ export function EditProfileModal({
               className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 text-gray-900 font-medium transition-colors"
               placeholder="Username"
             />
-          </div>
-        </div>
+          </View>
+        </View>
 
         {/* Campus Details */}
-        <div className="flex flex-col gap-4">
-          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">Campus Credentials</span>
-          <div className="flex flex-col gap-1.5">
+        <View className="flex flex-col gap-4">
+          <Text className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">Campus Credentials</Text>
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <GraduationCap className="w-3.5 h-3.5" /> University
             </label>
@@ -286,9 +287,9 @@ export function EditProfileModal({
                 <option key={uni} value={uni}>{uni}</option>
               ))}
             </select>
-          </div>
+          </View>
 
-          <div className="flex flex-col gap-1.5">
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <Bookmark className="w-3.5 h-3.5" /> Department
             </label>
@@ -302,9 +303,9 @@ export function EditProfileModal({
                 <option key={dept} value={dept}>{dept}</option>
               ))}
             </select>
-          </div>
+          </View>
 
-          <div className="flex flex-col gap-1.5">
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <Layers className="w-3.5 h-3.5" /> Study Level
             </label>
@@ -318,9 +319,9 @@ export function EditProfileModal({
                 <option key={lvl} value={lvl}>{lvl}</option>
               ))}
             </select>
-          </div>
+          </View>
 
-          <div className="flex flex-col gap-1.5">
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5" /> Base Location
             </label>
@@ -331,13 +332,13 @@ export function EditProfileModal({
               className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 text-gray-900 font-medium transition-colors"
               placeholder="e.g. Lagos, Nigeria"
             />
-          </div>
-        </div>
+          </View>
+        </View>
 
         {/* Bio & Social Info */}
-        <div className="flex flex-col gap-4">
-          <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">Bio & Social Info</span>
-          <div className="flex flex-col gap-1.5">
+        <View className="flex flex-col gap-4">
+          <Text className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block">Bio & Social Info</Text>
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <Smile className="w-3.5 h-3.5" /> Bio Description
             </label>
@@ -348,9 +349,9 @@ export function EditProfileModal({
               className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 text-gray-900 font-medium transition-colors resize-none"
               placeholder="Tell your campus peers about you..."
             />
-          </div>
+          </View>
 
-          <div className="flex flex-col gap-1.5">
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <User className="w-3.5 h-3.5" /> Gender Identity
             </label>
@@ -364,9 +365,9 @@ export function EditProfileModal({
                 <option key={gen} value={gen}>{gen}</option>
               ))}
             </select>
-          </div>
+          </View>
 
-          <div className="flex flex-col gap-1.5">
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <Heart className="w-3.5 h-3.5" /> Relationship Status
             </label>
@@ -380,16 +381,16 @@ export function EditProfileModal({
                 <option key={rel} value={rel}>{rel}</option>
               ))}
             </select>
-          </div>
+          </View>
 
-          <div className="flex flex-col gap-1.5">
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <Phone className="w-3.5 h-3.5" /> WhatsApp / Phone Line
             </label>
-            <div className="flex w-full border-2 border-gray-100 rounded-xl overflow-hidden focus-within:border-yellow-500 transition-colors">
-              <div className="bg-gray-50 px-4 py-3 text-gray-500 text-sm font-bold border-r border-gray-100 flex items-center select-none">
+            <View className="flex w-full border-2 border-gray-100 rounded-xl overflow-hidden focus-within:border-yellow-500 transition-colors">
+              <View className="bg-gray-50 px-4 py-3 text-gray-500 text-sm font-bold border-r border-gray-100 flex items-center select-none">
                 +234
-              </div>
+              </View>
               <input
                 type="tel"
                 value={phone}
@@ -397,11 +398,11 @@ export function EditProfileModal({
                 className="flex-1 px-4 py-3 text-sm focus:outline-none text-gray-900 font-medium bg-white"
                 placeholder="803 123 4567"
               />
-            </div>
-            <span className="text-[10px] text-gray-400">Provide the 10 digits omitting the leading 0</span>
-          </div>
+            </View>
+            <Text className="text-[10px] text-gray-400">Provide the 10 digits omitting the leading 0</Text>
+          </View>
 
-          <div className="flex flex-col gap-1.5">
+          <View className="flex flex-col gap-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1">
               <Smile className="w-3.5 h-3.5" /> Hobbies & Skills
             </label>
@@ -412,14 +413,14 @@ export function EditProfileModal({
               className="w-full border-2 border-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-yellow-500 text-gray-900 font-medium transition-colors"
               placeholder="Coding, Football, Music jamming, etc."
             />
-          </div>
-        </div>
-      </div>
+          </View>
+        </View>
+      </View>
 
       {/* Sub Modal Overlay */}
       {imageToCrop && (
-        <div className="fixed inset-0 z-[60] bg-black flex flex-col animate-rise">
-          <div className="flex items-center justify-between px-4 py-4 border-b border-white/10 shrink-0">
+        <View className="fixed inset-0 z-[60] bg-black flex flex-col animate-rise">
+          <View className="flex items-center justify-between px-4 py-4 border-b border-white/10 shrink-0">
             <button
               type="button"
               onClick={() => setImageToCrop(null)}
@@ -437,18 +438,18 @@ export function EditProfileModal({
             >
               Apply Adjust
             </button>
-          </div>
+          </View>
 
-          <div className="flex-1 flex items-center justify-center p-6 relative overflow-hidden bg-zinc-950">
-            <div className="absolute inset-0 pointer-events-none z-10 flex flex-col items-center justify-center">
+          <View className="flex-1 flex items-center justify-center p-6 relative overflow-hidden bg-zinc-950">
+            <View className="absolute inset-0 pointer-events-none z-10 flex flex-col items-center justify-center">
               {cropTarget === "avatar" ? (
-                <div className="w-64 h-64 rounded-full border-2 border-dashed border-yellow-400 shadow-[0_0_0_9999px_rgba(0,0,0,0.65)]" />
+                <View className="w-64 h-64 rounded-full border-2 border-dashed border-yellow-400 shadow-[0_0_0_9999px_rgba(0,0,0,0.65)]" />
               ) : (
-                <div className="w-full max-w-sm h-40 border-2 border-dashed border-yellow-400 shadow-[0_0_0_9999px_rgba(0,0,0,0.65)]" />
+                <View className="w-full max-w-sm h-40 border-2 border-dashed border-yellow-400 shadow-[0_0_0_9999px_rgba(0,0,0,0.65)]" />
               )}
-            </div>
+            </View>
 
-            <div 
+            <View 
               style={{ transform: `scale(${zoomScale})` }} 
               className="transition-transform duration-75 max-w-full max-h-full flex items-center justify-center"
             >
@@ -457,15 +458,15 @@ export function EditProfileModal({
                 alt="Source node adjusting stream" 
                 className="max-w-[85vw] max-h-[55vh] object-contain pointer-events-none" 
               />
-            </div>
-          </div>
+            </View>
+          </View>
 
-          <div className="bg-zinc-900 px-6 py-6 border-t border-white/10 flex flex-col gap-3 shrink-0 pb-8">
-            <div className="flex items-center justify-between text-xs text-zinc-400 font-bold">
-              <span>ZOOM RESIZER SCALE</span>
-              <span className="text-yellow-400 font-mono">{Math.round(zoomScale * 100)}%</span>
-            </div>
-            <div className="flex items-center gap-3">
+          <View className="bg-zinc-900 px-6 py-6 border-t border-white/10 flex flex-col gap-3 shrink-0 pb-8">
+            <View className="flex items-center justify-between text-xs text-zinc-400 font-bold">
+              <Text>ZOOM RESIZER SCALE</Text>
+              <Text className="text-yellow-400 font-mono">{Math.round(zoomScale * 100)}%</Text>
+            </View>
+            <View className="flex items-center gap-3">
               <ImageIcon className="w-4 h-4 text-zinc-500" />
               <input
                 type="range"
@@ -477,10 +478,10 @@ export function EditProfileModal({
                 className="flex-1 accent-yellow-400 cursor-pointer h-1.5 bg-zinc-700 rounded-lg appearance-none"
               />
               <ImageIcon className="w-6 h-6 text-zinc-400" />
-            </div>
-          </div>
-        </div>
+            </View>
+          </View>
+        </View>
       )}
-    </div>
+    </View>
   );
 }

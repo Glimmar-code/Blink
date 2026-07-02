@@ -1,3 +1,4 @@
+import { View } from "react-native";
 "use client";
 
 import * as React from "react";
@@ -28,7 +29,7 @@ function InputOTP({
 
 function InputOTPGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
+    <View
       data-slot="input-otp-group"
       className={cn("flex items-center gap-1", className)}
       {...props}
@@ -47,7 +48,7 @@ function InputOTPSlot({
   const { char, hasFakeCaret, isActive } = inputOTPContext?.slots[index] ?? {};
 
   return (
-    <div
+    <View
       data-slot="input-otp-slot"
       data-active={isActive}
       className={cn(
@@ -58,19 +59,19 @@ function InputOTPSlot({
     >
       {char}
       {hasFakeCaret && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="animate-caret-blink bg-foreground h-4 w-px duration-1000" />
-        </div>
+        <View className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <View className="animate-caret-blink bg-foreground h-4 w-px duration-1000" />
+        </View>
       )}
-    </div>
+    </View>
   );
 }
 
 function InputOTPSeparator({ ...props }: React.ComponentProps<"div">) {
   return (
-    <div data-slot="input-otp-separator" role="separator" {...props}>
+    <View data-slot="input-otp-separator" role="separator" {...props}>
       <MinusIcon />
-    </div>
+    </View>
   );
 }
 

@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 import type { UserProfile } from "./types";
 
 const AVATAR_COLORS: Record<string, string> = {
@@ -28,17 +29,17 @@ export function Avatar({
   const dotSize = { sm: "w-2 h-2", md: "w-2.5 h-2.5", lg: "w-3 h-3" };
 
   return (
-    <div className="relative flex-shrink-0" onClick={onClick}>
-      <div
+    <View className="relative flex-shrink-0" onClick={onClick}>
+      <View
         className={`${sizeClasses[size]} ${AVATAR_COLORS[user.avatar] || "bg-muted-foreground"} rounded-full flex items-center justify-center font-bold text-white ${onClick ? "cursor-pointer" : ""}`}
       >
         {user.avatar}
-      </div>
+      </View>
       {user.isActive && (
-        <span
+        <Text
           className={`absolute bottom-0 right-0 ${dotSize[size]} bg-green-500 rounded-full border-2 border-background`}
         />
       )}
-    </div>
+    </View>
   );
 }

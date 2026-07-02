@@ -1,8 +1,9 @@
+import { View, Text } from "react-native";
 import { useState, useCallback } from "react";
 import { RefreshCw, Shuffle, UserCheck, UserPlus, MessageCircle } from "lucide-react";
 import type { UserProfile } from "./types";
 import { USERS } from "./data";
-import { Dropdown } from "./Dropdown.tsx";
+import { Dropdown } from "./Dropdown";
 import { Avatar } from "./Avatar";
 
 const UNIVERSITIES = [
@@ -65,18 +66,18 @@ export function PartnerFinder({
   };
 
   return (
-    <div className="mb-6">
-      <div className="bg-foreground rounded-2xl px-4 pt-4 pb-5">
-        <div className="flex items-center gap-2 mb-3">
+    <View className="mb-6">
+      <View className="bg-foreground rounded-2xl px-4 pt-4 pb-5">
+        <View className="flex items-center gap-2 mb-3">
           <Shuffle size={16} className="text-background" />
           <h2 className="text-background font-bold text-base">Find a Match</h2>
-        </div>
-        <div className="grid grid-cols-2 gap-2 mb-3">
+        </View>
+        <View className="grid grid-cols-2 gap-2 mb-3">
           <Dropdown label="University" options={UNIVERSITIES} value={university} onChange={setUniversity} />
           <Dropdown label="Gender" options={GENDERS} value={gender} onChange={setGender} />
           <Dropdown label="Status" options={STATUSES} value={status} onChange={setStatus} />
           <Dropdown label="Level" options={LEVELS} value={level} onChange={setLevel} />
-        </div>
+        </View>
         <button
           onClick={spin}
           disabled={spinning}
@@ -85,36 +86,36 @@ export function PartnerFinder({
           <RefreshCw size={15} className={spinning ? "animate-spin" : ""} />
           {spinning ? "Finding someone…" : "Spin & Match"}
         </button>
-      </div>
+      </View>
 
       {matched && !spinning && (
-        <div className="mt-3 bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
-          <div className="h-1.5 bg-gradient-to-r from-violet-500 via-blue-500 to-pink-500" />
-          <div className="p-4">
-            <div className="flex items-start gap-3">
+        <View className="mt-3 bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+          <View className="h-1.5 bg-gradient-to-r from-violet-500 via-blue-500 to-pink-500" />
+          <View className="p-4">
+            <View className="flex items-start gap-3">
               <Avatar user={matched} size="lg" onClick={() => onGoToProfile(matched.id)} />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="font-bold text-foreground text-base">{matched.name}</span>
-                  {matched.badge !== "none" && <span className="text-blue-500">●</span>}
-                </div>
-                <span className="text-muted-foreground text-xs">@{matched.username}</span>
-                <p className="text-foreground/80 text-xs mt-1 leading-relaxed">{matched.bio}</p>
-              </div>
-            </div>
+              <View className="flex-1 min-w-0">
+                <View className="flex items-center gap-1.5 flex-wrap">
+                  <Text className="font-bold text-foreground text-base">{matched.name}</Text>
+                  {matched.badge !== "none" && <Text className="text-blue-500">●</Text>}
+                </View>
+                <Text className="text-muted-foreground text-xs">@{matched.username}</Text>
+                <Text className="text-foreground/80 text-xs mt-1 leading-relaxed">{matched.bio}</Text>
+              </View>
+            </View>
 
-            <div className="flex flex-wrap gap-2 mt-3">
+            <View className="flex flex-wrap gap-2 mt-3">
               {[matched.university, matched.level, matched.relationshipStatus].map((info) => (
-                <span key={info} className="bg-muted text-muted-foreground text-[11px] font-medium px-2.5 py-1 rounded-full">
+                <Text key={info} className="bg-muted text-muted-foreground text-[11px] font-medium px-2.5 py-1 rounded-full">
                   {info}
-                </span>
+                </Text>
               ))}
-              <span className="bg-muted text-muted-foreground text-[11px] font-medium px-2.5 py-1 rounded-full">
+              <Text className="bg-muted text-muted-foreground text-[11px] font-medium px-2.5 py-1 rounded-full">
                 {formatCount(getFollowers(matched))} followers
-              </span>
-            </div>
+              </Text>
+            </View>
 
-            <div className="flex items-center gap-2 mt-4">
+            <View className="flex items-center gap-2 mt-4">
               <button
                 onClick={() => toggleFollow(matched)}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-sm font-semibold transition-colors ${
@@ -136,11 +137,11 @@ export function PartnerFinder({
               >
                 <RefreshCw size={16} />
               </button>
-            </div>
-          </div>
-        </div>
+            </View>
+          </View>
+        </View>
       )}
-    </div>
+    </View>
   );
 }
 

@@ -1,3 +1,4 @@
+import { View } from "react-native";
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -25,7 +26,7 @@ function Alert({
   ...props
 }: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
   return (
-    <div
+    <View
       data-slot="alert"
       role="alert"
       className={cn(alertVariants({ variant }), className)}
@@ -36,7 +37,7 @@ function Alert({
 
 function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div
+    <View
       data-slot="alert-title"
       className={cn(
         "col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight",
@@ -52,7 +53,7 @@ function AlertDescription({
   ...props
 }: React.ComponentProps<"div">) {
   return (
-    <div
+    <View
       data-slot="alert-description"
       className={cn(
         "text-muted-foreground col-start-2 grid justify-items-start gap-1 text-sm [&_p]:leading-relaxed",

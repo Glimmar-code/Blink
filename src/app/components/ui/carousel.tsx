@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 "use client";
 
 import * as React from "react";
@@ -118,7 +119,7 @@ function Carousel({
         canScrollNext,
       }}
     >
-      <div
+      <View
         onKeyDownCapture={handleKeyDown}
         className={cn("relative", className)}
         role="region"
@@ -127,7 +128,7 @@ function Carousel({
         {...props}
       >
         {children}
-      </div>
+      </View>
     </CarouselContext.Provider>
   );
 }
@@ -136,12 +137,12 @@ function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
   const { carouselRef, orientation } = useCarousel();
 
   return (
-    <div
+    <View
       ref={carouselRef}
       className="overflow-hidden"
       data-slot="carousel-content"
     >
-      <div
+      <View
         className={cn(
           "flex",
           orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
@@ -149,7 +150,7 @@ function CarouselContent({ className, ...props }: React.ComponentProps<"div">) {
         )}
         {...props}
       />
-    </div>
+    </View>
   );
 }
 
@@ -157,7 +158,7 @@ function CarouselItem({ className, ...props }: React.ComponentProps<"div">) {
   const { orientation } = useCarousel();
 
   return (
-    <div
+    <View
       role="group"
       aria-roledescription="slide"
       data-slot="carousel-item"
@@ -196,7 +197,7 @@ function CarouselPrevious({
       {...props}
     >
       <ArrowLeft />
-      <span className="sr-only">Previous slide</span>
+      <Text className="sr-only">Previous slide</Text>
     </Button>
   );
 }
@@ -226,7 +227,7 @@ function CarouselNext({
       {...props}
     >
       <ArrowRight />
-      <span className="sr-only">Next slide</span>
+      <Text className="sr-only">Next slide</Text>
     </Button>
   );
 }

@@ -1,3 +1,4 @@
+import { Text } from "react-native";
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { ChevronRight, MoreHorizontal } from "lucide-react";
@@ -51,7 +52,7 @@ function BreadcrumbLink({
 
 function BreadcrumbPage({ className, ...props }: React.ComponentProps<"span">) {
   return (
-    <span
+    <Text
       data-slot="breadcrumb-page"
       role="link"
       aria-disabled="true"
@@ -85,7 +86,7 @@ function BreadcrumbEllipsis({
   ...props
 }: React.ComponentProps<"span">) {
   return (
-    <span
+    <Text
       data-slot="breadcrumb-ellipsis"
       role="presentation"
       aria-hidden="true"
@@ -93,8 +94,8 @@ function BreadcrumbEllipsis({
       {...props}
     >
       <MoreHorizontal className="size-4" />
-      <span className="sr-only">More</span>
-    </span>
+      <Text className="sr-only">More</Text>
+    </Text>
   );
 }
 

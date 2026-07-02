@@ -1,3 +1,4 @@
+import { View, Text } from "react-native";
 "use client";
 
 import * as React from "react";
@@ -58,7 +59,7 @@ function CommandInput({
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
   return (
-    <div
+    <View
       data-slot="command-input-wrapper"
       className="flex h-9 items-center gap-2 border-b px-3"
     >
@@ -71,7 +72,7 @@ function CommandInput({
         )}
         {...props}
       />
-    </div>
+    </View>
   );
 }
 
@@ -153,7 +154,7 @@ function CommandShortcut({
   ...props
 }: React.ComponentProps<"span">) {
   return (
-    <span
+    <Text
       data-slot="command-shortcut"
       className={cn(
         "text-muted-foreground ml-auto text-xs tracking-widest",

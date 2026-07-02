@@ -1,3 +1,4 @@
+import { View } from "react-native";
 import * as React from "react";
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { cva } from "class-variance-authority";
@@ -104,7 +105,7 @@ function NavigationMenuViewport({
   ...props
 }: React.ComponentProps<typeof NavigationMenuPrimitive.Viewport>) {
   return (
-    <div
+    <View
       className={cn(
         "absolute top-full left-0 isolate z-50 flex justify-center",
       )}
@@ -117,7 +118,7 @@ function NavigationMenuViewport({
         )}
         {...props}
       />
-    </div>
+    </View>
   );
 }
 
@@ -150,7 +151,7 @@ function NavigationMenuIndicator({
       )}
       {...props}
     >
-      <div className="bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md" />
+      <View className="bg-border relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm shadow-md" />
     </NavigationMenuPrimitive.Indicator>
   );
 }
