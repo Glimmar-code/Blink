@@ -1011,7 +1011,7 @@ export function PostCard({ post, postId = POST_DATA.id }: { post?: FeedPost; pos
           </div>
         </div>
 
-<Link to={`/post/${currentPost.id}`} className="block cursor-pointer">
+        <Link to={`/post/${currentPost.id}`} className="block cursor-pointer">
             <p className="text-sm text-foreground/90 leading-relaxed">
               {currentPost.content}
             </p>

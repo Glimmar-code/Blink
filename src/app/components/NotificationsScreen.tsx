@@ -12,6 +12,7 @@ import {
   requestBrowserNotificationPermission,
   showBrowserNotification,
 } from "./notificationService";
+import { BottomNav } from "./BottomNav";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -608,6 +609,8 @@ export function NotificationsScreen() {
   const loadMoreBtn = isDark ? "bg-[#1a1a1a] text-blue-400 border border-[#2a2a2a]" : "bg-white text-blue-600 border border-gray-200 shadow-sm";
 
   return (
+                  <>
+
     <div className={`relative flex-1 flex flex-col h-full overflow-hidden ${bg}`}>
 
       {/* ── In-app toast ── */}
@@ -792,5 +795,9 @@ export function NotificationsScreen() {
         )}
       </div>
     </div>
+                  <BottomNav />
+
+                  </>
+
   );
 }

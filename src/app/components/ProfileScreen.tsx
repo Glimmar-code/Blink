@@ -336,8 +336,8 @@ export function ProfileScreen() {
                 <img
                   src={profileAvatar}
                   alt={profileName}
-                  className="w-28 h-28 aspect-square rounded-full border-4 border-white object-cover shadow-md hover:opacity-90 transition-opacity block shrink-0"
-                />
+                  className=" w-28 h-28 aspect-square rounded-full border-4 border-white object-cover shadow-md hover:opacity-90 transition-opacity block shrink-0"
+                /> 
               </button>
               <span className="absolute bottom-1.5 right-1.5 flex w-5 h-5 pointer-events-none">
                 <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping" />

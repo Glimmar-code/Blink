@@ -12,6 +12,7 @@ import {
   ChevronRight, UserCheck,
   Image as ImageIcon, Gift
 } from "lucide-react";
+import { BottomNav } from "./BottomNav";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type VerifiedType = "blue" | "yellow" | null;
@@ -1092,6 +1093,8 @@ function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInf
   };
 
   return (
+    <>
+
     <div className="flex flex-col h-full bg-gray-50">
       {/* Header */}
       <div className="bg-white border-b border-gray-100 shrink-0">
@@ -1206,6 +1209,7 @@ function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInf
                 onVotePoll={handleVotePoll}
               />
             </div>
+            
           );
         })}
 
@@ -1265,6 +1269,8 @@ function ChatView({ chat, messages, users, onBack, onViewProfile, onOpenGroupInf
         )}
       </AnimatePresence>
     </div>
+                    </>
+
   );
 }
 
@@ -1996,6 +2002,8 @@ export function MessagesScreen() {
   };
 
   return (
+                  <>
+
     <div className="w-full h-full flex flex-col bg-gray-50 relative overflow-hidden font-[Plus_Jakarta_Sans,system-ui,sans-serif]">
       <style>{`
         @keyframes ping { 75%, 100% { transform: scale(2); opacity: 0; } }
@@ -2016,11 +2024,15 @@ export function MessagesScreen() {
         </motion.div>
       </AnimatePresence>
     </div>
+                  <BottomNav />
+              </>
+
   );
 }
 
 export default function App() {
   return (
+    
     <div className="min-h-screen bg-gray-200 flex items-center justify-center p-4">
       <div className="w-full max-w-[430px] h-[880px] max-h-screen bg-white rounded-[48px] overflow-hidden shadow-2xl border border-gray-200 relative" style={{ boxShadow: "0 40px 80px rgba(0,0,0,0.25), inset 0 0 0 1px rgba(255,255,255,0.1)" }}>
         <MessagesScreen />

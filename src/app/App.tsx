@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import { createBrowserRouter, RouterProvider, Navigate, Outlet } from "react-router";
 import { HomeScreen } from "./components/HomeScreen";
 import { ExploreScreen } from "./components/ExploreScreen";
 import { LeaderboardScreen } from "./components/LeaderboardScreen";
@@ -8,11 +8,12 @@ import { ProfileScreen } from "./components/ProfileScreen";
 import { UserProfilePage } from "./components/UserProfilePage";
 import { MenuOverlay } from "./components/MenuOverlay";
 import { AuthScreen } from "./components/AuthScreen";
-import { BottomNav } from "./components/BottomNav";
 import { PostsProvider } from "./PostsContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 
-function MobileShell({ children }: { children: React.ReactNode }) {
+// ─── Layouts & Wrappers ───────────────────────────────────────────────────────
+
+function MobileShell() {
   return (
     <div className="min-h-dvh bg-gray-100 flex items-center justify-center">
       <div
@@ -23,54 +24,28 @@ function MobileShell({ children }: { children: React.ReactNode }) {
           borderRadius: "clamp(0px, calc((100vw - 430px) * 999), 40px)",
         }}
       >
-        {children}
+        <Outlet />
       </div>
     </div>
   );
 }
 
-// Placeholder screens for other routes
-function AppContent() {
+function ProtectedRoute() {
   const { session, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-dvh bg-gray-100 flex items-center justify-center">
-        <div className="text-sm text-gray-500">Loading…</div>
+      <div className="flex-1 h-full bg-gray-100 flex items-center justify-center">
+        <div className="text-sm text-gray-500">Loading Blink...</div>
       </div>
     );
   }
 
-  return (
-    <BrowserRouter>
-      <PostsProvider>
-        <MobileShell>
-          <Routes>
-            <Route index element={<Navigate to={session ? "/home" : "/auth"} replace />} />
-            <Route path="/auth" element={session ? <Navigate to="/home" replace /> : <AuthScreen />} />
-            <Route path="/home" element={session ? <HomeScreen /> : <Navigate to="/auth" replace />} />
-            <Route path="/explore" element={session ? <ExploreScreen /> : <Navigate to="/auth" replace />} />
-            <Route path="/leaderboard" element={session ? <LeaderboardScreen /> : <Navigate to="/auth" replace />} />
-            <Route path="/notifications" element={session ? <NotificationsScreen /> : <Navigate to="/auth" replace />} />
-            <Route path="/messages" element={session ? <MessagesScreen /> : <Navigate to="/auth" replace />} />
-            <Route path="/profile" element={session ? <ProfileScreen /> : <Navigate to="/auth" replace />} />
-            <Route path="/profile/:username" element={session ? <UserProfilePage /> : <Navigate to="/auth" replace />} />
-            <Route path="/menu" element={session ? <MenuOverlay /> : <Navigate to="/auth" replace />} />
-            <Route path="/post/:id" element={session ? <PlaceholderScreen label="Post" /> : <Navigate to="/auth" replace />} />
-            <Route path="*" element={<Navigate to={session ? "/home" : "/auth"} replace />} />
-          </Routes>
-        </MobileShell>
-      </PostsProvider>
-    </BrowserRouter>
-  );
-}
+  if (!session) {
+    return <Navigate to="/auth" replace />;
+  }
 
-export default function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
-  );
+  return <Outlet />;
 }
 
 function PlaceholderScreen({ label }: { label: string }) {
@@ -83,5 +58,52 @@ function PlaceholderScreen({ label }: { label: string }) {
         Go Home
       </a>
     </div>
+  );
+}
+
+// ─── Routing Configuration ────────────────────────────────────────────────────
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MobileShell />,
+    children: [
+      // Base redirect
+      { index: true, element: <Navigate to="/home" replace /> },
+      
+      // Public Route
+      { path: "auth", element: <AuthScreen /> },
+      
+      // Protected Routes
+      {
+        element: <ProtectedRoute />,
+        children: [
+          { path: "home", element: <HomeScreen /> },
+          { path: "explore", element: <ExploreScreen /> },
+          { path: "leaderboard", element: <LeaderboardScreen /> },
+          { path: "notifications", element: <NotificationsScreen /> },
+          { path: "messages", element: <MessagesScreen /> },
+          { path: "profile", element: <ProfileScreen /> },
+          { path: "profile/:username", element: <UserProfilePage /> },
+          { path: "menu", element: <MenuOverlay /> },
+          { path: "post/:id", element: <PlaceholderScreen label="Post" /> },
+        ],
+      },
+      
+      // Catch-all
+      { path: "*", element: <Navigate to="/home" replace /> },
+    ],
+  },
+]);
+
+// ─── Main App Component ───────────────────────────────────────────────────────
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <PostsProvider>
+        <RouterProvider router={router} />
+      </PostsProvider>
+    </AuthProvider>
   );
 }

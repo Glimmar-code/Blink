@@ -7,7 +7,7 @@ import { PeopleCard } from "./PeopleCard";
 import { TagCard } from "./TagCard";
 import { EmptyState } from "./EmptyState";
 import { POSTS, TAGS, USERS } from "./data";
-import type { Post, Tag } from "./types";
+import { BottomNav } from "../BottomNav";
 
 export function ExploreScreen() {
   const navigate = useNavigate();
@@ -63,6 +63,8 @@ export function ExploreScreen() {
   ];
 
   return (
+    <>
+
     <div className="flex-1 bg-background flex flex-col pt-14 pb-20 h-full overflow-y-auto">
       <div className="px-4 pt-4 pb-2">
         <h1 className="text-2xl font-bold text-foreground">Explore</h1>
@@ -191,8 +193,13 @@ export function ExploreScreen() {
           ) : (
             <EmptyState label="No tags found" />
           ))}
+
       </div>
     </div>
+      <BottomNav />
+
+    </>
+ 
   );
 }
 
