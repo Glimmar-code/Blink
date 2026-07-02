@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MessageCircle, UserPlus, UserCheck, Users, PlaySquare, MapPin, X, ChevronLeft, Coins, ShoppingBag, BookMarked, Heart, Grid3X3 } from "lucide-react";
+import { Link } from "react-router"; // Added React Router Link
 import { PostCard } from "./HomeScreen";
 
 /** Animates a number from 0 up to `value` once `start` flips true. */
@@ -85,21 +86,36 @@ function UserListModal({ title, users, onClose }: UserListModalProps) {
         <div className="overflow-y-auto flex-1 px-5 py-3 flex flex-col gap-4">
           {users.map((user) => (
             <div key={user.id} className="flex items-center gap-3">
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="w-11 h-11 rounded-full object-cover border-2 border-gray-100 shrink-0"
-              />
+              {/* Linked Avatar */}
+              <Link 
+                to={`/profile/${user.handle.replace('@', '')}`} 
+                onClick={onClose}
+                className="shrink-0"
+              >
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-11 h-11 rounded-full object-cover border-2 border-gray-100 hover:opacity-80 transition-opacity"
+                />
+              </Link>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-gray-900 text-sm truncate">{user.name}</p>
+                {/* Linked Name */}
+                <Link 
+                  to={`/profile/${user.handle.replace('@', '')}`}
+                  onClick={onClose}
+                  className="hover:underline"
+                >
+                  <p className="font-semibold text-gray-900 text-sm truncate">{user.name}</p>
+                </Link>
                 <p className="text-gray-400 text-xs">{user.handle}</p>
               </div>
-              <button
-                type="button"
+              <Link
+                to={`/profile/${user.handle.replace('@', '')}`}
+                onClick={onClose}
                 className="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold rounded-full transition-colors shrink-0"
               >
                 View
-              </button>
+              </Link>
             </div>
           ))}
         </div>

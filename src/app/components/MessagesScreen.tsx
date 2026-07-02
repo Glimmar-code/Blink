@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { UserProfile } from "./UserProfile";
 import {
   Search, Edit2, ChevronLeft, Phone, Video, Info,
   Smile, Paperclip, Mic, Send, Camera, FileText,
@@ -1734,6 +1735,12 @@ export function MessagesScreen() {
   const current = stack[stack.length - 1];
 
   useEffect(() => {
+    const shouldHide = current.view === "chat" || current.view === "profile";
+    document.documentElement.classList.toggle("hide-bottom-nav", shouldHide);
+    return () => document.documentElement.classList.remove("hide-bottom-nav");
+  }, [current.view]);
+
+  useEffect(() => {
     if (stack.length !== prevLen.current) prevLen.current = stack.length;
   }, [stack.length]);
 
@@ -1825,7 +1832,7 @@ export function MessagesScreen() {
       if (!user) return null;
       const existing = chats.find(c => c.type === "dm" && c.userId === v.userId);
       return (
-        <UserProfileView
+        <UserProfile
           user={user}
           isFollowing={followingIds.includes(v.userId)}
           onToggleFollow={() => setFollowingIds(p => p.includes(v.userId) ? p.filter(id => id !== v.userId) : [...p, v.userId])}

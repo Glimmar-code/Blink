@@ -1,38 +1,52 @@
-import { Home, Compass, Trophy, Bell, MessageCircle } from "lucide-react";
+import { Home, Search, Trophy, Bell, MessageCircle } from "lucide-react";
 import { Link, useLocation } from "react-router";
+import { motion } from "motion/react";
+
+const NAV_ITEMS = [
+  { icon: Home,          label: "Home",          to: "/home" },
+  { icon: Search,        label: "Explore",       to: "/explore" },
+  { icon: Trophy,        label: "Leaderboard",   to: "/leaderboard" },
+  { icon: Bell,          label: "Notifications", to: "/notifications" },
+  { icon: MessageCircle, label: "Messages",      to: "/messages" },
+];
 
 export function BottomNav() {
-  const location = useLocation();
-
-  const items = [
-    { icon: Home, path: "/home", label: "Home" },
-    { icon: Compass, path: "/explore", label: "Explore" },
-    { icon: Trophy, path: "/leaderboard", label: "Leaderboard" },
-    { icon: Bell, path: "/notifications", label: "Notifications" },
-    { icon: MessageCircle, path: "/messages", label: "Messages" },
-  ];
+  const { pathname } = useLocation();
 
   return (
-    <div className="bg-background border-t border-border flex items-center justify-between px-6 py-3 pb-6 shrink-0 z-40">
-      {items.map((item) => {
-        const Icon = item.icon;
-        const isActive = location.pathname.startsWith(item.path) || (item.path === "/home" && location.pathname === "/");
-        
+    <nav className="bottom-nav shrink-0 flex items-center justify-around px-1 py-2 bg-background border-t border-border">
+      {NAV_ITEMS.map(({ icon: Icon, label, to }) => {
+        const isActive = pathname === to || (to !== "/home" && pathname.startsWith(to));
+
         return (
           <Link
-            key={item.path}
-            to={item.path}
-            className={`flex flex-col items-center gap-1 ${
-              isActive ? "text-foreground" : "text-muted-foreground"
-            }`}
+            key={to}
+            to={to}
+            aria-label={label}
+            className="relative flex flex-col items-center gap-0.5 px-3 py-1"
           >
-            <Icon className="w-6 h-6" strokeWidth={isActive ? 2.5 : 2} fill={isActive ? "currentColor" : "none"} />
-            {/* Removing labels for a cleaner, modern look often found in mobile navs, 
-                or keeping a tiny dot for active state. The prompt said "5 evenly spaced icons", 
-                so we'll stick to just icons. */}
+            <motion.div
+              whileTap={{ scale: 0.8 }}
+              className={`p-1.5 rounded-xl transition-colors ${isActive ? "bg-blue-50" : ""}`}
+            >
+              <Icon
+                className={`w-5 h-5 transition-colors ${isActive ? "text-blue-600" : "text-muted-foreground"}`}
+                strokeWidth={isActive ? 2.5 : 2}
+              />
+            </motion.div>
+            <span className={`text-[10px] font-semibold transition-colors ${isActive ? "text-blue-600" : "text-muted-foreground"}`}>
+              {label}
+            </span>
+            {isActive && (
+              <motion.span
+                layoutId="navDot"
+                className="absolute -top-0.5 w-1 h-1 rounded-full bg-blue-500"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
           </Link>
         );
       })}
-    </div>
+    </nav>
   );
 }

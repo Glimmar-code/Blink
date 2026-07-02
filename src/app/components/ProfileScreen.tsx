@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Edit2, PlaySquare, MapPin, X, ChevronLeft, Coins, ShoppingBag, BookMarked, Heart, Grid3X3 } from "lucide-react";
 import { BottomNav } from "./BottomNav";
 import { PostCard } from "./HomeScreen";
