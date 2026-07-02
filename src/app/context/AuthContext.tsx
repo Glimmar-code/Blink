@@ -73,12 +73,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let isMounted = true;
 
     async function initialize() {
-      const { data } = await supabase.auth.getSession();
+      const { data: redirectData, error: redirectError } = await supabase.auth.getSessionFromUrl();
+      if (redirectError && redirectError.message !== "No auth session found") {
+        console.warn("Supabase OAuth redirect parse warning:", redirectError.message);
+      }
+
+      const session = redirectData?.session ?? (await supabase.auth.getSession()).data.session;
       if (!isMounted) return;
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
-      if (data.session?.user) {
-        const profileData = await fetchProfile(data.session.user.id);
+      setSession(session);
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        const profileData = await fetchProfile(session.user.id);
         if (!isMounted) return;
         setProfile(profileData);
       }
@@ -112,7 +117,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setAuthError(error.message);
+      const message = error.message.toLowerCase();
+      if (message.includes("invalid api key") || message.includes("unauthorized")) {
+        setAuthError(
+          "Login failed: your Supabase API key may be invalid. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env."
+        );
+      } else {
+        setAuthError(error.message);
+      }
       setLoading(false);
       return false;
     }
@@ -133,9 +145,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuthError(null);
 
     const username = email.split("@")[0].replace(/[^a-zA-Z0-9_.-]/g, "_");
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp(
+      { email, password },
+      { emailRedirectTo: `${window.location.origin}/auth` }
+    );
     if (error) {
-      setAuthError(error.message);
+      const message = error.message.toLowerCase();
+      if (message.includes("invalid api key") || message.includes("unauthorized")) {
+        setAuthError(
+          "Sign up failed: your Supabase API key may be invalid. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env."
+        );
+      } else {
+        setAuthError(error.message);
+      }
       setLoading(false);
       return false;
     }
@@ -200,7 +222,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (error) {
-      setAuthError(error.message);
+      const message = error.message.toLowerCase();
+      if (message.includes("provider is not enabled")) {
+        setAuthError(
+          "Google sign-in is not enabled in Supabase Auth. Enable Google under Auth > Providers."
+        );
+      } else if (message.includes("invalid api key") || message.includes("unauthorized")) {
+        setAuthError(
+          "Supabase API key is invalid or missing. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env."
+        );
+      } else {
+        setAuthError(error.message);
+      }
       setLoading(false);
       return false;
     }
