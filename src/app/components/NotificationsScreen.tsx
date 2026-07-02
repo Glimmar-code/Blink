@@ -7,6 +7,11 @@ import {
   Repeat2, MessageSquare, ShieldCheck, Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "motion/react";
+import {
+  browserNotificationsSupported,
+  requestBrowserNotificationPermission,
+  showBrowserNotification,
+} from "./notificationService";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -542,19 +547,35 @@ export function NotificationsScreen() {
   const { listRef, pullY, arrowOpacity, refreshing, onTouchStart, onTouchMove, onTouchEnd } =
     usePullToRefresh(handleRefresh);
 
-  const spawnToast = useCallback((notif: Notification) => {
+  const spawnToast = useCallback((notif: Notification, notifyBrowser = true) => {
     setAllNotifs((p) => p.find((n) => n.id === notif.id) ? p : [notif, ...p]);
     setToast(notif);
     setTimeout(() => setToast(null), 4500);
-    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
-      new Notification("BlacApp", { body: notif.headline, tag: notif.id });
+
+    if (notifyBrowser) {
+      showBrowserNotification({
+        title: "BlacApp",
+        body: notif.headline,
+        path: "/notifications",
+        tag: notif.id,
+      });
     }
   }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
+    const initializeNotifications = async () => {
+      if (!browserNotificationsSupported()) {
+        return;
+      }
+
+      const permission = await requestBrowserNotificationPermission();
+      if (permission !== "granted") {
+        return;
+      }
+    };
+
+    void initializeNotifications();
+
     const t = setTimeout(() => {
       spawnToast({
         id: "live-1",
