@@ -27,6 +27,7 @@ interface AuthContextType {
   authError: string | null;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string) => Promise<boolean>;
+  signInWithGoogle: () => Promise<boolean>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<AuthProfile>) => Promise<boolean>;
   refreshProfile: () => Promise<void>;
@@ -40,6 +41,7 @@ const AuthContext = createContext<AuthContextType>({
   authError: null,
   signIn: async () => false,
   signUp: async () => false,
+  signInWithGoogle: async () => false,
   signOut: async () => {},
   updateProfile: async () => false,
   refreshProfile: async () => {},
@@ -47,7 +49,7 @@ const AuthContext = createContext<AuthContextType>({
 
 async function fetchProfile(userId: string) {
   const { data, error } = await supabase
-    .from<AuthProfile>("profiles")
+    .from("profiles")
     .select("*")
     .eq("id", userId)
     .single();
@@ -164,14 +166,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    setSession(data.session);
-    setUser(data.session?.user ?? null);
-    if (userId) {
-      const profileData = await fetchProfile(userId);
-      setProfile(profileData);
+    if (data.session) {
+      setSession(data.session);
+      setUser(data.session?.user ?? null);
+      if (userId) {
+        const profileData = await fetchProfile(userId);
+        setProfile(profileData);
+      }
+      setLoading(false);
+      return true;
     }
 
+    if (data.user) {
+      setAuthError("Check your email to confirm your account before logging in.");
+      setLoading(false);
+      return false;
+    }
+
+    setAuthError("Sign up failed. Please try again.");
     setLoading(false);
+    return false;
+  };
+
+  const signInWithGoogle = async () => {
+    setLoading(true);
+    setAuthError(null);
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth`,
+      },
+    });
+
+    if (error) {
+      setAuthError(error.message);
+      setLoading(false);
+      return false;
+    }
+
+    if (!data || !data.url) {
+      setAuthError("Google sign-in failed. Please try again.");
+      setLoading(false);
+      return false;
+    }
+
+    window.location.assign(data.url);
     return true;
   };
 
@@ -216,6 +256,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authError,
       signIn,
       signUp,
+      signInWithGoogle,
       signOut,
       updateProfile,
       refreshProfile,

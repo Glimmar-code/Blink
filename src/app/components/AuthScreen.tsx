@@ -9,7 +9,7 @@ export function AuthScreen() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { signIn, signUp, authError, loading } = useAuth();
+  const { signIn, signUp, signInWithGoogle, authError, loading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,7 +128,9 @@ export function AuthScreen() {
         <button
           type="button"
           className="w-full bg-white border-2 border-gray-100 text-gray-800 font-semibold py-4 rounded-xl flex items-center justify-center gap-2 active:scale-[0.98] transition-all"
-          onClick={() => navigate("/home")}
+          onClick={async () => {
+            await signInWithGoogle();
+          }}
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path

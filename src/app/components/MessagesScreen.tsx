@@ -1276,7 +1276,7 @@ interface GroupInfoProps {
   onBack: () => void;
   onViewProfile: (userId: string) => void;
   onUpdateChat: (chat: IChat) => void;
-  onDeleteGroup: () => void;
+  onDeleteGroup: () => Promise<void> | void;
   allUsers: IUser[];
 }
 
@@ -1527,7 +1527,7 @@ function GroupInfoScreen({ chat, users, onBack, onViewProfile, onUpdateChat, onD
 
 // ─── Create Group Screen ──────────────────────────────────────────────────────
 
-function CreateGroupScreen({ users, onBack, onCreate }: { users: IUser[]; onBack: () => void; onCreate: (name: string, description: string, members: string[]) => void }) {
+function CreateGroupScreen({ users, onBack, onCreate }: { users: IUser[]; onBack: () => void; onCreate: (name: string, description: string, members: string[]) => Promise<void> | void }) {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
@@ -1720,8 +1720,8 @@ function UserProfileView({ user, isFollowing, onToggleFollow, onBack, onMessage 
 export function MessagesScreen() {
   const { user } = useAuth();
   const [stack, setStack] = useState<ScreenView[]>([{ view: "list" }]);
-  const [chats, setChats] = useState<IChat[]>(INITIAL_CHATS);
-  const [messages, setMessages] = useState<Record<string, IMessage[]>>(INITIAL_MESSAGES);
+  const [chats, setChats] = useState<IChat[]>([]);
+  const [messages, setMessages] = useState<Record<string, IMessage[]>>({});
   const users = INITIAL_USERS;
   const [followingIds, setFollowingIds] = useState<string[]>(["u1", "u4"]);
   const prevLen = useRef(1);
@@ -1735,7 +1735,7 @@ export function MessagesScreen() {
       const { data: chatData, error: chatError } = await supabase.from("chats").select("*").order("updated_at", { ascending: false }).limit(30);
       const { data: msgData, error: msgError } = await supabase.from("messages").select("*");
 
-      if (!chatError && Array.isArray(chatData)) {
+      if (!chatError && Array.isArray(chatData) && chatData.length > 0) {
         setChats(chatData.map((row: any) => ({
           id: row.id,
           type: row.type,
@@ -1750,9 +1750,11 @@ export function MessagesScreen() {
           members: row.members,
           description: row.description,
         })));
+      } else if (chatError || !Array.isArray(chatData) || chatData.length === 0) {
+        setChats(INITIAL_CHATS);
       }
 
-      if (!msgError && Array.isArray(msgData)) {
+      if (!msgError && Array.isArray(msgData) && msgData.length > 0 && msgData.length > 0) {
         const grouped = msgData.reduce((acc: Record<string, IMessage[]>, row: any) => {
           const chatId = row.chat_id;
           const senderId = row.sender_id === authUserId ? ME : row.sender_id;
@@ -1857,22 +1859,51 @@ export function MessagesScreen() {
     setChats(p => p.map(c => c.id === updated.id ? updated : c));
   };
 
-  const createGroup = (name: string, description: string, memberIds: string[]) => {
+  const createGroup = async (name: string, description: string, memberIds: string[]) => {
     const id = `g${Date.now()}`;
     const newGroup: IChat = {
-      id, type: "group", name, description, avatar: `https://i.pravatar.cc/96?img=${Math.floor(Math.random() * 70 + 53)}`,
-      streak: 0, unreadCount: 0, lastMessage: "Group created", lastTime: "now",
-      members: [{ userId: ME, role: "owner" }, ...memberIds.map(uid => ({ userId: uid, role: "member" as MemberRole }))]
+      id,
+      type: "group",
+      name,
+      description,
+      avatar: `https://i.pravatar.cc/96?img=${Math.floor(Math.random() * 70 + 53)}`,
+      streak: 0,
+      unreadCount: 0,
+      lastMessage: "Group created",
+      lastTime: "now",
+      members: [{ userId: ME, role: "owner" }, ...memberIds.map(uid => ({ userId: uid, role: "member" as MemberRole }))],
     };
-    setChats(p => [newGroup, ...p]);
-    setMessages(p => ({ ...p, [id]: [mkMsg(genId(), ME, "text", `${name} group created! 🎉`, "now")] }));
+
+    const firstMessage = mkMsg(genId(), ME, "text", `${name} group created! 🎉`, "now");
+
+    setChats((p) => [newGroup, ...p]);
+    setMessages((p) => ({ ...p, [id]: [firstMessage] }));
     pop();
     push({ view: "chat", chatId: id });
+
+    syncChatToSupabase(newGroup).catch(console.error);
+    syncMessageToSupabase(id, firstMessage).catch(console.error);
   };
 
-  const deleteGroup = (chatId: string) => {
-    setChats(p => p.filter(c => c.id !== chatId));
-    pop(); pop();
+  const deleteGroup = async (chatId: string) => {
+    setChats((p) => p.filter((c) => c.id !== chatId));
+    setMessages((p) => {
+      const next = { ...p };
+      delete next[chatId];
+      return next;
+    });
+    pop();
+    pop();
+
+    const { error: deleteMessagesError } = await supabase.from("messages").delete().eq("chat_id", chatId);
+    if (deleteMessagesError) {
+      console.error("Failed to delete group messages from Supabase:", deleteMessagesError.message);
+    }
+
+    const { error: deleteChatError } = await supabase.from("chats").delete().eq("id", chatId);
+    if (deleteChatError) {
+      console.error("Failed to delete group chat from Supabase:", deleteChatError.message);
+    }
   };
 
   const renderScreen = () => {
@@ -1920,7 +1951,10 @@ export function MessagesScreen() {
           allUsers={users}
           onBack={pop}
           onViewProfile={userId => push({ view: "profile", userId })}
-          onUpdateChat={updateChat}
+          onUpdateChat={(updated) => {
+            updateChat(updated);
+            syncChatToSupabase(updated).catch(console.error);
+          }}
           onDeleteGroup={() => deleteGroup(v.chatId)}
         />
       );

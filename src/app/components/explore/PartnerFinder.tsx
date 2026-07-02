@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { RefreshCw, Shuffle, UserCheck, UserPlus, MessageCircle } from "lucide-react";
 import type { UserProfile } from "./types";
 import { USERS } from "./data";
-import { Dropdown } from "./Dropdown";
+import { Dropdown } from "./Dropdown.tsx";
 import { Avatar } from "./Avatar";
 
 const UNIVERSITIES = [
