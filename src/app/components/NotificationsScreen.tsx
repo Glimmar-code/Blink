@@ -409,6 +409,17 @@ function InAppToast({ notif, isDark, onDismiss, onTap }: {
   onDismiss: () => void;
   onTap: () => void;
 }) {
+  const navigate = useNavigate();
+  const handleAvatarClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (notif.user) {
+      const uname = notif.user.username.startsWith("@")
+        ? notif.user.username.slice(1)
+        : notif.user.username;
+      navigate(`/profile/${uname}`);
+    }
+  };
+
   return (
     <motion.div
       initial={{ y: -90, opacity: 0, scale: 0.95 }}
@@ -421,7 +432,12 @@ function InAppToast({ notif, isDark, onDismiss, onTap }: {
         onClick={onTap}
         className={`w-full flex items-center gap-3 px-3 py-3 rounded-2xl shadow-2xl border ${isDark ? "bg-[#1c1c1e] border-[#2a2a2a]" : "bg-white border-gray-200"} text-left`}
       >
-        <View className="relative flex-shrink-0">
+        <button
+          onClick={handleAvatarClick}
+          disabled={!notif.user}
+          className="relative flex-shrink-0 active:scale-95 transition-transform"
+          aria-label={notif.user ? `View ${notif.user.name}'s profile` : undefined}
+        >
           {notif.user ? (
             <View className={`w-10 h-10 rounded-full bg-gradient-to-br ${notif.user.gradientFrom} ${notif.user.gradientTo} flex items-center justify-center text-white text-xs font-bold`}>
               {notif.user.initials}
@@ -432,7 +448,7 @@ function InAppToast({ notif, isDark, onDismiss, onTap }: {
             </View>
           )}
           {notif.user && <VerifiedIcon type={notif.user.verified} />}
-        </View>
+        </button>
         <View className="flex-1 min-w-0">
           <Text className={`text-[13px] font-semibold truncate ${isDark ? "text-white" : "text-gray-900"}`}>
             {notif.headline}
@@ -742,7 +758,16 @@ export function NotificationsScreen() {
                     notif={notif}
                     isDark={isDark}
                     onTap={() => { markRead(notif.id); handleNavigate(notif.destination); }}
-                    onAvatarTap={() => { if (notif.avatarDestination) handleNavigate(notif.avatarDestination); }}
+                    onAvatarTap={() => {
+                      if (notif.user) {
+                        const uname = notif.user.username.startsWith("@")
+                          ? notif.user.username.slice(1)
+                          : notif.user.username;
+                        handleNavigate(`/profile/${uname}`);
+                      } else if (notif.avatarDestination) {
+                        handleNavigate(notif.avatarDestination);
+                      }
+                    }}
                   />
                 </motion.div>
               ))}

@@ -21,6 +21,7 @@ import {
   Flame,
   Shield,
 } from "lucide-react";
+import { useNavigate } from "react-router";
 import { BottomNav } from "./BottomNav";
 import { Avatar as UiAvatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { useAuth } from "../context/AuthContext";
@@ -158,6 +159,7 @@ function useCountdown(target: Date) {
 
 function Avatar({ student, size = 44 }: { student: Student; size?: number }) {
   const { profile } = useAuth();
+  const navigate = useNavigate();
   const [c1, c2] = getGradient(student.name);
   const initials = student.isMe
     ? "ME"
@@ -165,8 +167,25 @@ function Avatar({ student, size = 44 }: { student: Student; size?: number }) {
 
   const avatarUrl = student.avatar ?? (student.isMe ? profile?.avatar_url ?? undefined : undefined);
 
+  const handleAvatarClick = () => {
+    if (student.isMe) {
+      navigate("/profile");
+    } else {
+      const username = student.name
+        .toLowerCase()
+        .replace(/\s+/g, "_")
+        .replace(/[^a-z0-9_]/g, "");
+      navigate(`/profile/${username}`);
+    }
+  };
+
   return (
-    <View className="relative flex-shrink-0" style={{ width: size, height: size }}>
+    <button
+      onClick={handleAvatarClick}
+      className="relative flex-shrink-0 active:scale-95 transition-transform text-left"
+      style={{ width: size, height: size }}
+      aria-label={`View ${student.name}'s profile`}
+    >
       <UiAvatar style={{ width: size, height: size }}>
         {avatarUrl ? (
           <AvatarImage src={avatarUrl} alt={student.name} />
@@ -202,7 +221,7 @@ function Avatar({ student, size = 44 }: { student: Student; size?: number }) {
         animate={student.isOnline ? { scale: [1, 1.25, 1], opacity: [1, 0.65, 1] } : {}}
         transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
       />
-    </View>
+    </button>
   );
 }
 

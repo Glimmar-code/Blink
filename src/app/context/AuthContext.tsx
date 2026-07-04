@@ -47,19 +47,52 @@ const AuthContext = createContext<AuthContextType>({
   refreshProfile: async () => {},
 });
 
-async function fetchProfile(userId: string) {
+async function fetchAndEnsureProfile(user: User) {
   const { data, error } = await supabase
     .from("profiles")
     .select("*")
-    .eq("id", userId)
+    .eq("id", user.id)
     .single();
 
-  if (error) {
-    console.error("Failed to load profile:", error);
+  if (!error && data) {
+    return data;
+  }
+
+  // If profile is missing (e.g. Google OAuth sign-in), create one
+  const email = user.email ?? "";
+  const baseUsername = email.split("@")[0].replace(/[^a-zA-Z0-9_.-]/g, "_");
+  const randSuffix = Math.floor(1000 + Math.random() * 9000);
+  const username = `${baseUsername}_${randSuffix}`;
+  const full_name = user.user_metadata?.full_name || user.user_metadata?.name || "";
+  const avatar_url = user.user_metadata?.avatar_url || "";
+
+  const { data: newProfile, error: upsertError } = await supabase
+    .from("profiles")
+    .upsert({
+      id: user.id,
+      email,
+      username,
+      full_name,
+      avatar_url,
+      cover_url: "",
+      bio: "",
+      university: "",
+      level: "",
+      department: "",
+      gender: "",
+      relationship: "",
+      phone: "",
+      hobbies: "",
+    })
+    .select()
+    .single();
+
+  if (upsertError) {
+    console.error("Failed to auto-create profile:", upsertError);
     return null;
   }
 
-  return data;
+  return newProfile;
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -133,7 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        const profileData = await fetchProfile(session.user.id);
+        const profileData = await fetchAndEnsureProfile(session.user);
         if (!isMounted) return;
         setProfile(profileData);
       }
@@ -147,7 +180,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        const profileData = await fetchProfile(session.user.id);
+        const profileData = await fetchAndEnsureProfile(session.user);
         setProfile(profileData);
       } else {
         setProfile(null);
@@ -182,7 +215,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(data.session);
     setUser(data.session?.user ?? null);
     if (data.session?.user) {
-      const profileData = await fetchProfile(data.session.user.id);
+      const profileData = await fetchAndEnsureProfile(data.session.user);
       setProfile(profileData);
     }
 
@@ -244,8 +277,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data.session) {
       setSession(data.session);
       setUser(data.session?.user ?? null);
-      if (userId) {
-        const profileData = await fetchProfile(userId);
+      if (data.session.user) {
+        const profileData = await fetchAndEnsureProfile(data.session.user);
         setProfile(profileData);
       }
       setLoading(false);
@@ -328,8 +361,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshProfile = async () => {
-    if (!user?.id) return;
-    const profileData = await fetchProfile(user.id);
+    if (!user) return;
+    const profileData = await fetchAndEnsureProfile(user);
     setProfile(profileData);
   };
 
