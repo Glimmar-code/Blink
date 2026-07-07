@@ -249,7 +249,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const userId = data.user?.id ?? data.session?.user?.id;
-    if (userId) {
+    if (userId && data.session) {
+      // Only pre-create a profile row when the user is immediately signed in
+      // (e.g. email confirmation is disabled). When confirmation is required,
+      // the profile will be created on first sign-in via fetchAndEnsureProfile,
+      // which avoids a failing upsert before the user actually exists in auth.
       const { error: profileError } = await supabase
         .from("profiles")
         .upsert({

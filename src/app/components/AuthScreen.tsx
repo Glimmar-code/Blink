@@ -10,13 +10,27 @@ export function AuthScreen() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { session, signIn, signUp, signInWithGoogle, authError, loading } = useAuth();
+  const { session, profile, signIn, signUp, signInWithGoogle, authError, loading } = useAuth();
+
+  // Determine where to send the user after authentication.
+  // A profile is considered "incomplete / new" when key fields (full_name or university)
+  // haven't been filled in yet — in that case we send them to onboarding.
+  const isProfileIncomplete = (p: typeof profile) => {
+    if (!p) return true;
+    const nameMissing = !p.full_name || p.full_name.trim() === "";
+    const universityMissing = !p.university || p.university.trim() === "";
+    return nameMissing || universityMissing;
+  };
 
   useEffect(() => {
-    if (session) {
-      navigate("/home");
-    }
-  }, [session, navigate]);
+    if (!session) return;
+    // Wait until the profile has been loaded before deciding where to send the user.
+    // Without this guard, new sign-ups would briefly route to /home before the
+    // freshly-created (empty) profile is fetched.
+    if (loading) return;
+    navigate(isProfileIncomplete(profile) ? "/onboarding" : "/home", { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, profile, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,14 +38,16 @@ export function AuthScreen() {
     if (isLogin) {
       const success = await signIn(email.trim(), password);
       if (success) {
-        navigate("/home");
+        // Navigation will be handled by the session/profile effect above
+        return;
       }
       return;
     }
 
     const success = await signUp(email.trim(), password);
     if (success) {
-      navigate("/onboarding");
+      // Navigation will be handled by the session/profile effect above
+      return;
     }
   };
 
@@ -76,7 +92,7 @@ export function AuthScreen() {
               required
             />
           </View>
-          
+
           <View className="relative">
             <input
               type={showPassword ? "text" : "password"}
