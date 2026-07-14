@@ -1,11 +1,25 @@
+# Blink
 
-  # BlacApp
+Blink is an Expo React Native app.
 
-  This is a code bundle for BlacApp. The original project is available at https://www.figma.com/design/p9FuSNO1pw2aaDovhCr2IC/BlacApp.
+## Running the app
 
-  ## Running the code
+Install dependencies:
 
-  Run `npm i` to install the dependencies.
+```sh
+npm install
+```
 
-  Run `npm run dev` to start the development server.
-  # BlacApp
+Run in a browser:
+
+```sh
+npm run dev
+```
+
+Run for Expo Go or native devices:
+
+```sh
+npm start
+```
+
+Metro's native development server runs on port `8081`. Opening `http://localhost:8081` directly can show Expo bundle metadata JSON instead of the app UI. For the browser app, use the URL printed by `npm run dev`.
