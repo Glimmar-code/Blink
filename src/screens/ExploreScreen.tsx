@@ -12,7 +12,7 @@ import { mapProfile, PROFILE_SELECT } from '../lib/dbCompat';
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
 type ExploreItem =
-  | { type: 'person'; id: string; username: string; full_name: string; avatar_url?: string; university?: string }
+  | { type: 'person'; id: string; username: string; full_name: string; avatar_url?: string | null; university?: string | null }
   | { type: 'tag'; id: string; name: string; post_count: number };
 
 const SECTIONS = [

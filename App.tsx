@@ -1,14 +1,11 @@
-import './global.css'; // <-- This is the crucial missing import for your styles
-
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './src/context/AuthContext';
 import { RootNavigator } from './src/navigation/RootNavigator';
-import { useEffect } from 'react';
 import { useAuth } from './src/context/AuthContext';
-import { AppState, AppStateStatus, View } from 'react-native';
+import { View } from 'react-native';
 
 // --- PUSH NOTIFICATIONS TEMPORARILY DISABLED FOR EXPO GO ---
 // Uncomment this import when you are ready to make a Development Build:

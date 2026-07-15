@@ -46,16 +46,16 @@ export function UserProfileScreen() {
       supabase
         .from('posts')
         .select(POST_WITH_PROFILE_SELECT)
-        .eq('author_id', profileData.id)
+        .eq('author_id', normalizedProfile.id)
         .order('created_at', { ascending: false }),
-      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', profileData.id),
-      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profileData.id),
+      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', normalizedProfile.id),
+      supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', normalizedProfile.id),
       user
         ? supabase
             .from('follows')
             .select('*', { count: 'exact', head: true })
             .eq('follower_id', user.id)
-            .eq('following_id', profileData.id)
+            .eq('following_id', normalizedProfile.id)
         : Promise.resolve({ count: 0 }),
     ]);
 

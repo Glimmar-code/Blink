@@ -14,8 +14,8 @@ interface LeaderboardEntry {
   id: string;
   username: string;
   full_name: string;
-  avatar_url?: string;
-  university?: string;
+  avatar_url?: string | null;
+  university?: string | null;
   xp: number;
   rank: number;
 }
