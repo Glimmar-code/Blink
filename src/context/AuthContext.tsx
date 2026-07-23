@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { Platform } from 'react-native';
 import { supabase } from '../lib/supabase';
 import type { Session, User, AuthChangeEvent } from '@supabase/supabase-js';
 import type { AuthProfile } from '../types/auth';
@@ -214,10 +215,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signInWithGoogle = async () => {
     setLoading(true);
     setAuthError(null);
+    const redirectTo =
+      Platform.OS === 'web'
+        ? window.location.origin
+        : 'exp://localhost:8081/--/auth';
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'exp://localhost:8081/--/auth', // This will need to be configured for your app
+        redirectTo,
       },
     });
     if (error) {

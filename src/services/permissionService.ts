@@ -13,6 +13,7 @@ export interface PermissionResult {
 }
 
 export async function checkPermission(key: PermissionKey): Promise<PermissionResult> {
+  if (Platform.OS === 'web') return { key, status: 'granted' };
   let status: PermissionStatus = 'undetermined';
 
   try {
@@ -56,6 +57,10 @@ export async function requestAllPermissions(options: RequestOptions = {}): Promi
     order = ['notifications', 'camera', 'photos', 'mediaLibrary'],
     skipGranted = true,
   } = options;
+
+  if (Platform.OS === 'web') {
+    return order.map((key) => ({ key, status: 'granted' as PermissionStatus }));
+  }
 
   const results: PermissionResult[] = [];
 
@@ -104,6 +109,7 @@ export async function requestAllPermissions(options: RequestOptions = {}): Promi
 }
 
 export function openSystemSettings(): void {
+  if (Platform.OS === 'web') return;
   if (Platform.OS === 'ios') {
     Linking.openURL('app-settings:');
   } else {

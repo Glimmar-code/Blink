@@ -75,17 +75,20 @@ export async function markAllNotificationsRead(userId: string): Promise<void> {
 
 // ─── Push Notification Setup ──────────────────────────────────────────────────
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: true,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+if (Platform.OS !== 'web') {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: true,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+}
 
 export async function registerForPushNotifications(): Promise<string | null> {
+  if (Platform.OS === 'web') return null;
   if (!Device.isDevice) {
     console.warn('[notifications] push not available on simulator');
     return null;
@@ -152,6 +155,7 @@ let foregroundSub: Notifications.Subscription | null = null;
 let responseSub: Notifications.Subscription | null = null;
 
 export function setupNotificationListeners(): void {
+  if (Platform.OS === 'web') return;
   foregroundSub = Notifications.addNotificationReceivedListener((notification) => {
     console.log('[notifications] received in foreground:', notification.request.content.title);
   });
@@ -191,6 +195,7 @@ export async function scheduleLocalNotification(
   data?: Record<string, unknown>,
   trigger?: Notifications.NotificationTriggerInput
 ): Promise<string> {
+  if (Platform.OS === 'web') return '';
   return Notifications.scheduleNotificationAsync({
     content: { title, body, data: data ?? {}, sound: 'default' },
     trigger: trigger ?? null,
