@@ -43,11 +43,13 @@ function MainTabs() {
 }
 
 export function RootNavigator() {
-  const { session, loading } = useAuth();
+  const { session, loading, isNewUser } = useAuth();
 
   if (loading) {
-    return null; // Or a splash screen
+    return null;
   }
+
+  const showOnboarding = session && isNewUser;
 
   return (
     <NavigationContainer ref={navigationRef}>
@@ -61,6 +63,8 @@ export function RootNavigator() {
             <Stack.Screen name="Onboarding" component={OnboardingScreen} />
             <Stack.Screen name="Auth" component={AuthScreen} />
           </>
+        ) : showOnboarding ? (
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         ) : (
           <>
             <Stack.Screen name="Main" component={MainTabs} />

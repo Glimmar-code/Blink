@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Button } from '../components/ui/Button';
 import { ScreenContainer } from '../components/ui/ScreenContainer';
+import { useAuth } from '../context/AuthContext';
 import type { RootStackParamList } from '../types/auth';
 
 type Nav = NativeStackNavigationProp<RootStackParamList, 'Onboarding'>;
@@ -39,20 +40,30 @@ const slides = [
 
 export function OnboardingScreen() {
   const navigation = useNavigation<Nav>();
+  const { session, completeOnboarding } = useAuth();
   const [index, setIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
+
+  const finishOnboarding = () => {
+    if (session) {
+      completeOnboarding();
+      navigation.replace('Permissions');
+    } else {
+      navigation.replace('Auth');
+    }
+  };
 
   const handleNext = () => {
     if (index < slides.length - 1) {
       flatListRef.current?.scrollToIndex({ index: index + 1, animated: true });
       setIndex(index + 1);
     } else {
-      navigation.replace('Auth');
+      finishOnboarding();
     }
   };
 
   const handleSkip = () => {
-    navigation.replace('Auth');
+    finishOnboarding();
   };
 
   return (

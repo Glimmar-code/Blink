@@ -16,12 +16,14 @@ interface AuthContextType {
   profile: AuthProfile | null;
   loading: boolean;
   authError: string | null;
+  isNewUser: boolean;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string) => Promise<boolean>;
   signInWithGoogle: () => Promise<boolean>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<AuthProfile>) => Promise<boolean>;
   refreshProfile: () => Promise<void>;
+  completeOnboarding: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -30,22 +32,24 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   loading: true,
   authError: null,
+  isNewUser: false,
   signIn: async () => false,
   signUp: async () => false,
   signInWithGoogle: async () => false,
   signOut: async () => {},
   updateProfile: async () => false,
   refreshProfile: async () => {},
+  completeOnboarding: () => {},
 });
-async function fetchAndEnsureProfile(user: User) {
+async function fetchAndEnsureProfile(user: User): Promise<{ profile: AuthProfile | null; isNew: boolean }> {
   const { data, error } = await supabase
     .from('profiles')
     .select(PROFILE_SELECT)
     .eq('id', user.id)
-    .single();
+    .maybeSingle();
 
   if (!error && data) {
-    return mapProfile(data);
+    return { profile: mapProfile(data), isNew: false };
   }
 
   // If profile is missing (e.g. Google OAuth sign-in), create one
@@ -60,6 +64,7 @@ async function fetchAndEnsureProfile(user: User) {
       id: user.id,
       handle,
       name,
+      full_name: name,
       avatar_url: avatarUrl,
       cover_url: '',
       bio: '',
@@ -71,13 +76,13 @@ async function fetchAndEnsureProfile(user: User) {
       hobby: '',
     })
     .select(PROFILE_SELECT)
-    .single();
+    .maybeSingle();
 
   if (upsertError) {
     console.error('Failed to auto-create profile:', upsertError);
-    return null;
+    return { profile: null, isNew: false };
   }
-  return mapProfile(newProfile);
+  return { profile: mapProfile(newProfile), isNew: true };
 }
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
@@ -85,6 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<AuthProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [isNewUser, setIsNewUser] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -95,24 +101,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        const profileData = await fetchAndEnsureProfile(session.user);
+        const { profile: profileData, isNew } = await fetchAndEnsureProfile(session.user);
         if (!isMounted) return;
         setProfile(profileData);
+        if (isNew) setIsNewUser(true);
       }
       setLoading(false);
     }
     initialize();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event: AuthChangeEvent, session: Session | null) => {
+      (_event: AuthChangeEvent, session: Session | null) => {
         if (!isMounted) return;
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          const profileData = await fetchAndEnsureProfile(session.user);
-          setProfile(profileData);
+          (async () => {
+            const { profile: profileData, isNew } = await fetchAndEnsureProfile(session.user);
+            if (!isMounted) return;
+            setProfile(profileData);
+            if (isNew) setIsNewUser(true);
+          })();
         } else {
           setProfile(null);
+          setIsNewUser(false);
         }
         setLoading(false);
       }
@@ -146,8 +158,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSession(data.session);
     setUser(data.session?.user ?? null);
     if (data.session?.user) {
-      const profileData = await fetchAndEnsureProfile(data.session.user);
+      const { profile: profileData, isNew } = await fetchAndEnsureProfile(data.session.user);
       setProfile(profileData);
+      if (isNew) setIsNewUser(true);
     }
     setLoading(false);
     return true;
@@ -196,8 +209,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setSession(data.session);
       setUser(data.session?.user ?? null);
       if (data.session.user) {
-        const profileData = await fetchAndEnsureProfile(data.session.user);
+        const { profile: profileData, isNew } = await fetchAndEnsureProfile(data.session.user);
         setProfile(profileData);
+        if (isNew) setIsNewUser(true);
       }
       setLoading(false);
       return true;
@@ -276,9 +290,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshProfile = async () => {
     if (!user) return;
-    const profileData = await fetchAndEnsureProfile(user);
+    const { profile: profileData } = await fetchAndEnsureProfile(user);
     setProfile(profileData);
   };
+
+  const completeOnboarding = () => setIsNewUser(false);
 
   const value = useMemo(
     () => ({
@@ -287,14 +303,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       profile,
       loading,
       authError,
+      isNewUser,
       signIn,
       signUp,
       signInWithGoogle,
       signOut,
       updateProfile,
       refreshProfile,
+      completeOnboarding,
     }),
-    [session, user, profile, loading, authError]
+    [session, user, profile, loading, authError, isNewUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

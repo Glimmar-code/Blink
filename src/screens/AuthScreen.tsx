@@ -14,7 +14,7 @@ type Nav = NativeStackNavigationProp<RootStackParamList, 'Auth'>;
 
 export function AuthScreen() {
   const navigation = useNavigation<Nav>();
-  const { signIn, signUp, signInWithGoogle, loading, authError } = useAuth();
+  const { signIn, signUp, signInWithGoogle, loading, authError, isNewUser } = useAuth();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -30,7 +30,11 @@ export function AuthScreen() {
           ? await signIn(email.trim(), password)
           : await signUp(email.trim(), password);
       if (ok) {
-        navigation.replace('Permissions');
+        if (mode === 'signup' && isNewUser) {
+          navigation.replace('Onboarding');
+        } else {
+          navigation.replace('Permissions');
+        }
       }
     } finally {
       setSubmitting(false);
