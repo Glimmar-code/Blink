@@ -4,7 +4,7 @@
     "slug": "blink-rn",
     "version": "1.0.0",
     "orientation": "portrait",
-    "jsEngine": "jsc",
+    "jsEngine": "hermes",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "blink",
@@ -61,7 +61,9 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Blink needs camera access so you can take photos for posts."
+          "cameraPermission": "Blink needs camera access so you can take photos for posts.",
+          "microphonePermission": "Blink needs microphone access so you can record audio with your videos.",
+          "recordAudioAndroid": true
         }
       ]
     ],
