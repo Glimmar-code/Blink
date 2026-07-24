@@ -32,3 +32,21 @@ yarn-error.*
 Thumbs.db
 .idea/
 .vscode/
+# IDE files
+.idea/
+.vscode/
+
+# Build artifacts
+dist/
+.expo-export-check/
+.expo-export-check-2/
+
+# Log files
+*.err.log
+*.out.log
+
+# AI config
+.continue/
+
+# Debug scripts
+inspect_db.js
