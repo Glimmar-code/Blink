@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
 import { RouteProp, useNavigation, useRoute } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ArrowLeft, Grid3x3, Heart, MessageCircle, MoreHorizontal, UserCheck, UserPlus } from 'lucide-react-native';
+import { ArrowLeft, Grid3x3, Heart, MessageCircle, MoveHorizontal as MoreHorizontal, UserCheck, UserPlus } from 'lucide-react-native';
 import { Avatar } from '../components/ui/Avatar';
 import { Button } from '../components/ui/Button';
 import { PostCard, type Post } from '../components/PostCard';

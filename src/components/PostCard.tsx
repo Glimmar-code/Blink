@@ -1,5 +1,5 @@
 import { View, Text, Image, Pressable } from 'react-native';
-import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal } from 'lucide-react-native';
+import { Heart, MessageCircle, Share2, Bookmark, MoveHorizontal as MoreHorizontal } from 'lucide-react-native';
 import { Avatar } from './ui/Avatar';
 import { Card } from './ui/Card';
 import { formatDistanceToNow } from 'date-fns';

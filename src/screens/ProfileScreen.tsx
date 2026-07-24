@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { View, Text, FlatList, Pressable, RefreshControl, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Settings, Edit3, LogOut, Sparkles, Grid3x3, Heart } from 'lucide-react-native';
+import { Settings, CreditCard as Edit3, LogOut, Sparkles, Grid3x3, Heart } from 'lucide-react-native';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Avatar } from '../components/ui/Avatar';

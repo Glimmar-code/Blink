@@ -1,12 +1,7 @@
 import { View, Text } from "react-native";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router";
-import {
-  Bell, Heart, MessageCircle, UserPlus, AtSign, Gift,
-  RefreshCw, Eye, Users, Trophy, Check, ChevronRight,
-  Sparkles, X, Bookmark, Share2,
-  Repeat2, MessageSquare, ShieldCheck, Loader2,
-} from "lucide-react";
+import { Bell, Heart, MessageCircle, UserPlus, AtSign, Gift, RefreshCw, Eye, Users, Trophy, Check, ChevronRight, Sparkles, X, Bookmark, Share2, Repeat2, MessageSquare, ShieldCheck, Loader as Loader2 } from "lucide-react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "motion/react";
 import {
   browserNotificationsSupported,

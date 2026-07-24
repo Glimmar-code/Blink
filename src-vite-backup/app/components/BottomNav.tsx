@@ -1,5 +1,5 @@
 import { Text } from "react-native";
-import { Home, Search, Trophy, Bell, MessageCircle } from "lucide-react";
+import { Hop as Home, Search, Trophy, Bell, MessageCircle } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { motion } from "motion/react";
 

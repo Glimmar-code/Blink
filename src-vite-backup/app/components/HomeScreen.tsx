@@ -1,11 +1,6 @@
 import { View, Text } from "react-native";
 import { useState, useRef, useEffect, useCallback } from "react";
-import {
-  Plus, MoreVertical, MessageCircle, Heart, Share, Bookmark, Repeat2, Eye, Send,
-  PenSquare, Megaphone, X, Trash2, Image as ImageIcon, Trophy, Bell, MapPin,
-  AtSign, Link2, Tag, ChevronLeft, ChevronRight, Video, ShoppingBag, Gamepad2,
-  GraduationCap, Calendar, Home, Pause, Play,
-} from "lucide-react";
+import { Plus, MoveVertical as MoreVertical, MessageCircle, Heart, Share, Bookmark, Repeat2, Eye, Send, SquarePen as PenSquare, Megaphone, X, Trash2, Image as ImageIcon, Trophy, Bell, MapPin, AtSign, Link2, Tag, ChevronLeft, ChevronRight, Video, ShoppingBag, Gamepad2, GraduationCap, Calendar, Hop as Home, Pause, Play } from "lucide-react";
 import { Link } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { BottomNav } from "./BottomNav";
