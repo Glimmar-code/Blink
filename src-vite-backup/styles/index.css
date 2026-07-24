@@ -1,0 +1,6 @@
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* Tell Tailwind v4 to look for the .dark class on the HTML tag */
+@variant dark (&:where(.dark, .dark *));
