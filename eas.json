@@ -1,40 +1,18 @@
 {
   "cli": {
-    "version": ">= 13.0.0",
-    "appVersionSource": "remote"
+    "version": ">= 9.0.0"
   },
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal",
-      "ios": {
-        "simulator": true
-      }
+      "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal",
-      "ios": {
-        "simulator": false
-      }
+      "distribution": "internal"
     },
-    "production": {
-      "ios": {
-        "simulator": false
-      }
-    }
+    "production": {}
   },
   "submit": {
-    "production": {
-      "ios": {
-        "ascAppId": "REPLACE_WITH_APP_STORE_CONNECT_APP_ID"
-      },
-      "android": {
-        "track": "internal",
-        "releaseStatus": "draft"
-      }
-    }
-  },
-  "notification": {
-    "profile": "production"
+    "production": {}
   }
 }
