@@ -1,6 +1,9 @@
 import { View, Text } from "react-native";
 import { useState, useRef, ChangeEvent } from "react";
-import { X, MapPin, User, AtSign, Camera, GraduationCap, Layers, Bookmark, Heart, Smile, Phone, Image as ImageIcon, FileSliders as Sliders } from "lucide-react";
+import { 
+  X, MapPin, User, AtSign, Camera, GraduationCap, 
+  Layers, Bookmark, Heart, Smile, Phone, Image as ImageIcon, Sliders 
+} from "lucide-react";
 
 // =========================================================================
 // CAMPUS DATA PLACEHOLDER

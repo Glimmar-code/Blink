@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import { ArrowLeft, MoveVertical as MoreVertical, Heart, MessageCircle, Share, Bookmark, Send } from "lucide-react";
+import { ArrowLeft, MoreVertical, Heart, MessageCircle, Share, Bookmark, Send } from "lucide-react";
 import { useNavigate } from "react-router";
 
 const COMMENTS = [

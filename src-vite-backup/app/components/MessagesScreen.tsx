@@ -4,7 +4,15 @@ import { motion, AnimatePresence } from "motion/react";
 import { UserProfile } from "./UserProfile";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../../lib/supabase";
-import { Search, CreditCard as Edit2, ChevronLeft, Phone, Video, Info, Smile, Paperclip, Mic, Send, Camera, FileText, Users, ChartBar as BarChart2, Plus, X, Check, CheckCheck, Pin, Copy, Trash2, Share2, Flag, Reply, Crown, Shield, UserPlus, Play, ChevronRight, UserCheck, Image as ImageIcon, Gift } from "lucide-react";
+import {
+  Search, Edit2, ChevronLeft, Phone, Video, Info,
+  Smile, Paperclip, Mic, Send, Camera, FileText,
+  Users, BarChart2, Plus, X, Check, CheckCheck,
+  Pin, Copy, Trash2, Share2, Flag, Reply,
+  Crown, Shield, UserPlus, Play,
+  ChevronRight, UserCheck,
+  Image as ImageIcon, Gift
+} from "lucide-react";
 import { BottomNav } from "./BottomNav";
 
 // ─── Types ────────────────────────────────────────────────────────────────────

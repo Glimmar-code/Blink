@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 
 import * as React from "react";
 import { Command as CommandPrimitive } from "cmdk";
-import { Search as SearchIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 
 import { cn } from "./utils";
 import {

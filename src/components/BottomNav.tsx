@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native';
-import { Chrome as Home, Compass, Trophy, Bell, MessageCircle, User } from 'lucide-react-native';
+import { Home, Compass, Trophy, Bell, MessageCircle, User } from 'lucide-react-native';
 import type { LucideIcon } from 'lucide-react-native';
 import { cn } from '../lib/cn';
 import type { MainTabParamList } from '../types/auth';

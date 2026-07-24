@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import { useEffect, useRef, useState } from "react";
-import { MessageCircle, UserPlus, UserCheck, Users, SquarePlay as PlaySquare, MapPin, X, ChevronLeft, Coins, ShoppingBag, BookMarked, Heart, Grid3x2 as Grid3X3 } from "lucide-react";
+import { MessageCircle, UserPlus, UserCheck, Users, PlaySquare, MapPin, X, ChevronLeft, Coins, ShoppingBag, BookMarked, Heart, Grid3X3 } from "lucide-react";
 import { Link } from "react-router"; // Added React Router Link
 import { PostCard } from "./HomeScreen";
 

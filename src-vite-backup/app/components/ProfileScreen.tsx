@@ -1,7 +1,7 @@
 import { View, Text } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
-import { CreditCard as Edit2, SquarePlay as PlaySquare, MapPin, X, ChevronLeft, Coins, ShoppingBag, BookMarked, Heart, Grid3x2 as Grid3X3 } from "lucide-react";
+import { Edit2, PlaySquare, MapPin, X, ChevronLeft, Coins, ShoppingBag, BookMarked, Heart, Grid3X3 } from "lucide-react";
 import { BottomNav } from "./BottomNav";
 import { PostCard } from "./HomeScreen";
 // 1. Imported the separate EditProfileModal component

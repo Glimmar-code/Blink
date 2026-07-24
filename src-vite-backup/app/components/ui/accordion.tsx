@@ -3,7 +3,7 @@ import { View } from "react-native";
 
 import * as React from "react";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { ChevronDown as ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 
 import { cn } from "./utils";
 

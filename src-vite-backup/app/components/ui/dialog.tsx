@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 
 import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Bone as XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
 
 import { cn } from "./utils";
 
