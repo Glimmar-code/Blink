@@ -1,10 +1,6 @@
 import { Text } from "react-native";
 import * as React from "react";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  MoreHorizontalIcon,
-} from "lucide-react";
+import { ChevronLeft as ChevronLeftIcon, ChevronRight as ChevronRightIcon, MoveHorizontal as MoreHorizontalIcon } from "lucide-react";
 
 import { cn } from "./utils";
 import { Button, buttonVariants } from "./button";

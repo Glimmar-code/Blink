@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import { useState } from "react";
-import { Heart, MessageSquare, Repeat2, Share, MoreHorizontal } from "lucide-react";
+import { Heart, MessageSquare, Repeat2, Share, MoveHorizontal as MoreHorizontal } from "lucide-react";
 import type { Post } from "./types";
 import { Avatar } from "./Avatar";
 import { formatCount } from "./utils";
