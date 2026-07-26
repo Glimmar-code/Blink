@@ -126,9 +126,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
   }
 
   try {
-    const tokenData = await Notifications.getExpoPushTokenAsync({
-      projectId: process.env.EXPO_PUBLIC_EAS_PROJECT_ID,
-    });
+    const tokenData = await Notifications.getExpoPushTokenAsync();
     return tokenData.data;
   } catch (err) {
     console.error('[notifications] failed to get push token:', err);

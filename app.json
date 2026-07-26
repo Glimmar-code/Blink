@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Blink",
-    "slug": "blink-rn",
+    "slug": "blink-uowo7gzwm1x5msw2o3ddj",
     "version": "1.0.0",
     "orientation": "portrait",
     "jsEngine": "hermes",
@@ -74,7 +74,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+        "projectId": "921804c0-53be-4722-b09e-cbe8323c7b5c"
       }
     }
   }
