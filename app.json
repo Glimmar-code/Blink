@@ -2,6 +2,7 @@
   "expo": {
     "name": "Blink",
     "slug": "blink-uowo7gzwm1x5msw2o3ddj",
+    "owner": "blinkng",
     "version": "1.0.0",
     "orientation": "portrait",
     "jsEngine": "hermes",
