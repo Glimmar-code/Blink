@@ -16,7 +16,7 @@ interface LeaderboardEntry {
   full_name: string;
   avatar_url?: string | null;
   university?: string | null;
-  xp: number;
+  points: number;
   rank: number;
 }
 
@@ -29,7 +29,7 @@ export function LeaderboardScreen() {
     const { data, error } = await supabase
       .from('profiles')
       .select(PROFILE_SELECT)
-      .order('current_wallet_balance', { ascending: false })
+      .order('points', { ascending: false })
       .limit(50);
 
     if (error) {
@@ -46,7 +46,7 @@ export function LeaderboardScreen() {
           full_name: profile.full_name,
           avatar_url: profile.avatar_url,
           university: profile.university,
-          xp: profile.xp ?? 0,
+          points: profile.points ?? 0,
           rank: index + 1,
         };
       })
@@ -105,8 +105,8 @@ export function LeaderboardScreen() {
               </Text>
             </View>
             <View className="flex-row items-center gap-1">
-              <Text className="text-sm font-semibold text-primary-600">{item.xp}</Text>
-              <Text className="text-xs text-muted-foreground">XP</Text>
+              <Text className="text-sm font-semibold text-primary-600">{item.points}</Text>
+              <Text className="text-xs text-muted-foreground">pts</Text>
             </View>
           </Pressable>
         )}
