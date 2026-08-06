@@ -1,49 +1,62 @@
 import 'package:flutter/material.dart';
 
-/// Colors pulled directly from the Figma export.
-/// NOTE: this app is dark-mode-first (Figma defaulted isDark = true).
-/// Where the Figma file swapped a color based on light/dark mode, use the
-/// `light`/`dark` pairs below via `BlinkColors.of(context)` or pass isDark
-/// explicitly — see `BlinkTheme.colors(isDark)`.
-class BlinkColors {
-  BlinkColors._();
+/// Updated app palette based on the new brand colors.
+class AppColors {
+  AppColors._();
 
-  // Brand
-  static const primary = Color(0xFFFF3B8B);
-  static const primaryDeep = Color(0xFFD81B60);
-  static const accent = Color(0xFFFF3B8B); // #FF3B8B
-  static const accentSoft = Color(0xFFFF8EBA);
-  static const gold = Color(0xFFFFD700); // #1 rank / stars
-  static const purple = Color(0xFFA78BFA); // saved / SIMME-adjacent
-  static const cyan = Color(0xFF22D3EE); // SBMS faculty badge
-  static const online = Color(0xFF22C55E); // online-status dot
-  static const error = Color(0xFFEF4444); // Form errors
+  // Brand accent (shared across both modes)
+  static const primaryMint = Color(0xFF26D98F);
+  static const accentGold = Color(0xFFFFCF10);
+  static const accentRed = Color(0xFFFF2A3B);
+  static const accentBlue = Color(0xFF1A83FA);
+  static const brandPink = Color(0xFFFF2D78);
 
-  // Backgrounds (mode-dependent)
-  static const bgDark = Color(0xFF000000);
-  static const bgLight = Color(0xFFF5F5F7);
+  // Legacy aliases used across the app for compatibility
+  static const primary = primaryMint;
+  static const primaryDeep = primaryMint;
+  static const accent = primaryMint;
+  static const accentSoft = Color(0xFF9BEFCE);
+  static const gold = accentGold;
+  static const purple = accentBlue;
+  static const cyan = accentBlue;
+  static const online = primaryMint;
+  static const error = accentRed;
 
-  // Surfaces / cards
-  static const surfaceDark = Color(0x0AFFFFFF); // rgba(255,255,255,0.04)
-  static const surfaceLight = Color(0xFFFFFFFF);
+  // Dark mode colors
+  static const darkBackground = Color(0xFF0D1715);
+  static const darkSurface = Color(0xFF172320);
+  static const darkBorder = Color(0xFF2C423D);
+  static const darkTextPrimary = Color(0xFFFFFFFF);
+  static const darkTextSecondary = Color(0xFF869D98);
 
-  // Borders / dividers
-  static const borderDark = Color(0x12FFFFFF); // rgba(255,255,255,0.07)
-  static const borderLight = Color(0x14000000); // rgba(0,0,0,0.08)
-  static const divider = Color(0x12FFFFFF); 
+  // Light mode colors
+  static const lightBackground = Color(0xFFF4F8F6);
+  static const lightSurface = Color(0xFFFFFFFF);
+  static const lightBorder = Color(0xFFD9E2DF);
+  static const lightTextPrimary = Color(0xFF0D1715);
+  static const lightTextSecondary = Color(0xFF5C7770);
 
-  // Text
-  static const textDark = Color(0xFFFFFFFF);
-  static const textLight = Color(0xFF0A0A0A);
-  static const textSecondary = Color(0xFFA1A1AA); 
-  static const textMuted = Color(0xFF71717A); 
-  static const mutedDark = Color(0x73FFFFFF); // rgba(255,255,255,0.45)
-  static const mutedLight = Color(0x66000000); // rgba(0,0,0,0.4)
+  // Backgrounds / surfaces
+  static const bgDark = darkBackground;
+  static const bgLight = lightBackground;
+  static const surfaceDark = darkSurface;
+  static const surfaceLight = lightSurface;
+  static const borderDark = darkBorder;
+  static const borderLight = lightBorder;
+  static const divider = darkBorder;
 
-  // Glass surfaces (nav bar, sheets, menus)
-  static const glassNav = Color(0xB8121212); // rgba(18,18,18,0.72)
-  static const glassDark = Color(0x80000000); // rgba(0,0,0,0.5)
-  static const glassLight = Color(0x0FFFFFFF); // rgba(255,255,255,0.06)
+  // Text / muted colors
+  static const textDark = darkTextPrimary;
+  static const textLight = lightTextPrimary;
+  static const textSecondary = darkTextSecondary;
+  static const textMuted = lightTextSecondary;
+  static const mutedDark = darkTextSecondary;
+  static const mutedLight = lightTextSecondary;
+
+  // Glass surfaces
+  static const glassNav = Color(0xB8121212);
+  static const glassDark = Color(0x80000000);
+  static const glassLight = Color(0x0FFFFFFF);
 
   // Faculty badge colors
   static const simme = accent;
@@ -63,6 +76,8 @@ class BlinkColors {
     }
   }
 }
+
+typedef BlinkColors = AppColors;
 
 /// Resolved token set for the current theme mode, so screens don't need
 /// `isDark ? a : b` everywhere.

@@ -124,7 +124,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(u.user, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: txt)),
-                        if (u.faculty != null) ...[const SizedBox(height: 3), FacultyBadge(tag: u.faculty!)],
+                        if (u.faculty != null && u.faculty!.isNotEmpty) ...[const SizedBox(height: 3), FacultyBadge(tag: u.faculty!)],
                       ],
                     ),
                   ),

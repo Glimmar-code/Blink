@@ -4,6 +4,7 @@ import '../post_model.dart';
 import '../widgets/comment_sheet.dart';
 import '../widgets/post_card.dart';
 import '../widgets/shimmer_box.dart';
+import 'package:blink/services/post_service.dart';
 
 enum FeedTab { posts, reels }
 
@@ -11,8 +12,17 @@ class FeedScreen extends StatefulWidget {
   final bool isDark;
   final ValueChanged<String> onSnack;
   final ValueChanged<String> onProfile;
+  final String profileAvatarUrl;
+  final String profileUsername;
 
-  const FeedScreen({super.key, required this.isDark, required this.onSnack, required this.onProfile});
+  const FeedScreen({
+    super.key,
+    required this.isDark,
+    required this.onSnack,
+    required this.onProfile,
+    required this.profileAvatarUrl,
+    required this.profileUsername,
+  });
 
   @override
   State<FeedScreen> createState() => _FeedScreenState();
@@ -26,12 +36,23 @@ class _FeedScreenState extends State<FeedScreen> {
   String _reelMode = 'Friends'; // 'Friends' | 'For You'
   bool _liked = false;
   bool _saved = false;
+  List<FeedPost> _posts = [];
 
   @override
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 1400), () {
       if (mounted) setState(() => _loading = false);
+    });
+    _loadPosts();
+  }
+
+  Future<void> _loadPosts() async {
+    final posts = await PostService.fetchFeed();
+    if (!mounted) return;
+    setState(() {
+      _posts = posts;
+      _loading = false;
     });
   }
 
@@ -57,24 +78,72 @@ class _FeedScreenState extends State<FeedScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 18),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 14),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('B!nk', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: txt)),
-                    const SizedBox(height: 4),
-                    Text('Discover what matters today', style: TextStyle(fontSize: 12, color: muted, letterSpacing: 0.2)),
-                  ],
-                ),
                 GestureDetector(
-                  onTap: () => widget.onSnack('Profile tapped'),
-                  child: const CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage('https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=80&h=80&fit=crop'),
+                  onTap: () => widget.onSnack('Menu tapped'),
+                  child: Icon(Icons.more_horiz_rounded, color: txt, size: 26),
+                ),
+                const Text(
+                  'Bl!nk',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                    color: BlinkColors.brandPink,
+                    letterSpacing: 0.2,
                   ),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    GestureDetector(
+                      onTap: () => widget.onSnack('Notifications tapped'),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Icon(Icons.notifications_none_rounded, color: txt, size: 24),
+                          Positioned(
+                            top: -2,
+                            right: -2,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(color: BlinkColors.brandPink, shape: BoxShape.circle),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    GestureDetector(
+                      onTap: () => widget.onProfile(widget.profileUsername),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          CircleAvatar(
+                            radius: 18,
+                            backgroundImage: NetworkImage(widget.profileAvatarUrl),
+                          ),
+                          Positioned(
+                            bottom: -1,
+                            right: -1,
+                            child: Container(
+                              width: 10,
+                              height: 10,
+                              decoration: BoxDecoration(
+                                color: BlinkColors.online,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: widget.isDark ? BlinkColors.bgDark : BlinkColors.bgLight, width: 2),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -225,9 +294,9 @@ class _FeedScreenState extends State<FeedScreen> {
                 ),
               ),
             )
-          else
+            else
             Column(
-              children: feedPosts
+              children: _posts
                   .map((post) => PostCard(
                         post: post,
                         isDark: widget.isDark,
@@ -438,12 +507,12 @@ class _TabPill extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 7),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: selected ? BlinkColors.accent : border, width: 1.5),
-          color: selected ? BlinkColors.accent.withOpacity(0.15) : Colors.transparent,
+          border: Border.all(color: selected ? BlinkColors.brandPink : border, width: 1.5),
+          color: selected ? BlinkColors.brandPink.withOpacity(0.15) : Colors.transparent,
         ),
         child: Text(
           label,
-          style: TextStyle(fontSize: 14, fontWeight: selected ? FontWeight.w700 : FontWeight.w400, color: selected ? BlinkColors.accent : muted),
+          style: TextStyle(fontSize: 14, fontWeight: selected ? FontWeight.w700 : FontWeight.w400, color: selected ? BlinkColors.brandPink : muted),
         ),
       ),
     );

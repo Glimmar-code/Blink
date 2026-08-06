@@ -8,9 +8,12 @@ import 'package:blink/features/feed_screen.dart';
 import 'package:blink/features/search_screen.dart';
 import 'package:blink/features/leaderboard_screen.dart';
 import 'package:blink/features/market_screen.dart';
-import 'package:blink/features/notifications_screen.dart';
 import 'package:blink/features/messages_screen.dart';
 import 'package:blink/features/profile/guest_profile_screen.dart';
+import 'package:blink/features/profile/my_profile_screen.dart';
+import 'package:blink/features/profile/user_profile_model.dart';
+import 'package:blink/services/auth_service.dart';
+import 'package:blink/services/profile_service.dart';
 import 'package:blink/widgets/blink_snackbar.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -30,20 +33,58 @@ class _HomeScreenState extends State<HomeScreen> {
   final _snack = BlinkSnackController();
 
   static const _items = <_NavItem>[
-    _NavItem(icon: PhosphorIconsRegular.house, filledIcon: PhosphorIconsFill.house, label: 'Feed'),
+    _NavItem(icon: PhosphorIconsRegular.house, filledIcon: PhosphorIconsFill.house, label: 'Home'),
     _NavItem(icon: PhosphorIconsRegular.magnifyingGlass, filledIcon: PhosphorIconsFill.magnifyingGlass, label: 'Search'),
-    _NavItem(icon: PhosphorIconsRegular.trophy, filledIcon: PhosphorIconsFill.trophy, label: 'Ranks'),
+    _NavItem(icon: PhosphorIconsRegular.trophy, filledIcon: PhosphorIconsFill.trophy, label: 'Leaderboard'),
     _NavItem(icon: PhosphorIconsRegular.storefront, filledIcon: PhosphorIconsFill.storefront, label: 'Market'),
-    _NavItem(icon: PhosphorIconsRegular.bell, filledIcon: PhosphorIconsFill.bell, label: 'Alerts'),
-    _NavItem(icon: PhosphorIconsRegular.chatCircle, filledIcon: PhosphorIconsFill.chatCircle, label: 'Chats'),
+    _NavItem(icon: PhosphorIconsRegular.chatCircle, filledIcon: PhosphorIconsFill.chatCircle, label: 'Message'),
   ];
 
   void _showSnack(String msg) => _snack.show(msg);
+  UserProfile? _currentProfile;
+
+  UserProfile get _signedInUserProfile => _currentProfile ?? kDemoMyProfile.clone();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final p = await ProfileService.fetchCurrent();
+    if (!mounted) return;
+    setState(() => _currentProfile = p);
+  }
 
   void _openProfile(String username) {
+    final current = _signedInUserProfile;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => GuestProfileScreen(username: username, isDark: _isDark, onSnack: _showSnack),
+        builder: (_) {
+          if (username == 'you' || username == current.username) {
+            return MyProfileScreen(profile: current, isDark: _isDark, onSnack: _showSnack);
+          }
+
+          final guestProfile = kDemoMyProfile.clone()
+            ..fullName = username[0].toUpperCase() + username.substring(1)
+            ..username = username
+            ..avatar = 'photo-1509631179647-0177331693ae?w=176&h=176&fit=crop'
+            ..coverPhoto = 'photo-1519389950473-47ba0277781c?w=800&h=300&fit=crop'
+            ..professionalHeadline = 'Creative storyteller • Student leader'
+            ..currentJobTitle = 'Community builder'
+            ..university = 'University of Lagos'
+            ..faculty = 'Arts'
+            ..countryOfOrigin = '🇳🇬 Nigeria'
+            ..currentCityState = 'Lagos, Nigeria'
+            ..bio = 'Sharing a campus perspective with the world.'
+            ..followerCount = 1820
+            ..followingCount = 220
+            ..profileViewsThisWeek = 54
+            ..onlineNow = false;
+
+          return GuestProfileScreen(profile: guestProfile, isDark: _isDark, onSnack: _showSnack);
+        },
       ),
     );
   }
@@ -54,83 +95,106 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  List<Widget> get _screens => [
-        FeedScreen(isDark: _isDark, onSnack: _showSnack, onProfile: _openProfile),
-        SearchScreen(isDark: _isDark),
-        LeaderboardScreen(isDark: _isDark),
-        MarketScreen(isDark: _isDark, onSnack: _showSnack),
-        NotificationsScreen(isDark: _isDark),
-        MessagesScreen(isDark: _isDark, onSnack: _showSnack),
-      ];
+  List<Widget> get _screens {
+    final current = _signedInUserProfile;
+    return [
+      FeedScreen(
+        isDark: _isDark,
+        onSnack: _showSnack,
+        onProfile: _openProfile,
+        profileAvatarUrl: current.avatarUrl,
+        profileUsername: current.username,
+      ),
+      SearchScreen(isDark: _isDark),
+      LeaderboardScreen(isDark: _isDark),
+      MarketScreen(isDark: _isDark, onSnack: _showSnack),
+      MessagesScreen(isDark: _isDark, onSnack: _showSnack),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     final screens = _screens;
     return Scaffold(
-      body: Stack(
-        children: [
-          IndexedStack(
-            index: _index,
-            children: screens.map((s) => KeyedSubtree(key: ValueKey(s.runtimeType), child: s)).toList(),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 100,
-            child: BlinkSnackbar(controller: _snack),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: _isDark ? const Color(0xFF09090D) : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.18), blurRadius: 18, offset: const Offset(0, -10)),
+      body: Container(
+        decoration: blinkBackgroundDecoration(_isDark),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: AnimatedSwitcher(
+                duration: 300.ms,
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                transitionBuilder: (child, animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0.04, 0),
+                        end: Offset.zero,
+                      ).animate(animation),
+                      child: child,
+                    ),
+                  );
+                },
+                child: KeyedSubtree(
+                  key: ValueKey(_index),
+                  child: screens[_index],
+                ),
+              ),
+            ),
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 110,
+              child: BlinkSnackbar(controller: _snack),
+            ),
           ],
         ),
-        child: SafeArea(
-          top: false,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+      ),
+      extendBody: true,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        minimum: const EdgeInsets.only(bottom: 16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+            decoration: BoxDecoration(
+              color: _isDark ? const Color(0xE6141018) : Colors.white.withOpacity(0.96),
+              borderRadius: BorderRadius.circular(100),
+              border: Border.all(
+                color: _isDark ? const Color(0x33FFFFFF) : BlinkColors.lightBorder,
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 20, offset: const Offset(0, 8)),
+              ],
+            ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: List.generate(_items.length, (i) {
                 final item = _items[i];
                 final selected = i == _index;
-                return Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => setState(() => _index = i),
-                    child: AnimatedContainer(
-                      duration: 200.ms,
-                      curve: Curves.easeOutCubic,
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
-                            decoration: BoxDecoration(
-                              color: selected ? BlinkColors.accent : Colors.transparent,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Center(
-                              child: PhosphorIcon(
-                                selected ? item.filledIcon : item.icon,
-                                size: 22,
-                                color: selected ? Colors.white : (_isDark ? BlinkColors.mutedDark : BlinkColors.mutedLight),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          if (selected)
-                            Text(
-                              item.label,
-                              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: BlinkColors.accent),
-                            ),
-                        ],
+                return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => setState(() => _index = i),
+                  child: AnimatedContainer(
+                    duration: 220.ms,
+                    curve: Curves.easeOutCubic,
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: selected ? BlinkColors.brandPink : Colors.transparent,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: PhosphorIcon(
+                        selected ? item.filledIcon : item.icon,
+                        size: 22,
+                        color: selected
+                            ? Colors.white
+                            : (_isDark ? BlinkColors.mutedDark : BlinkColors.mutedLight),
                       ),
                     ),
                   ),

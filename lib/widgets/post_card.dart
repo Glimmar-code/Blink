@@ -127,7 +127,7 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                             onTap: () => widget.onProfile(p.user),
                             child: Text(p.user, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: txt)),
                           ),
-                          if (p.faculty != null) ...[
+                          if (p.faculty != null && p.faculty!.isNotEmpty) ...[
                             const SizedBox(width: 6),
                             FacultyBadge(tag: p.faculty!),
                           ],
@@ -144,7 +144,9 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
 
           // Content
           if (p.type == PostType.photo) ...[
-            Image.network(unsplash(p.image!), width: double.infinity, height: 260, fit: BoxFit.cover),
+            p.image != null && p.image!.isNotEmpty
+              ? Image.network(unsplash(p.image!), width: double.infinity, height: 260, fit: BoxFit.cover)
+              : const SizedBox.shrink(),
             Padding(
               padding: const EdgeInsets.fromLTRB(14, 10, 14, 4),
               child: RichTextHighlight(text: p.caption ?? '', color: txt, fontSize: 13, height: 1.55),
@@ -155,11 +157,11 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
               constraints: const BoxConstraints(minHeight: 140),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               alignment: Alignment.center,
-              decoration: BoxDecoration(
+                decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: p.gradient!.map((h) => Color(int.parse('FF${h.substring(1)}', radix: 16))).toList(),
+                  colors: (p.gradient ?? ['#CCCCCC']).map((h) => Color(int.parse('FF${h.substring(1)}', radix: 16))).toList(),
                 ),
               ),
               child: RichTextHighlight(
