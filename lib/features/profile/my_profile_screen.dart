@@ -467,7 +467,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                             uploadedUrl = await PostService.uploadPostAsset(_picked!, bucket: 'posts');
                             setState(() => _uploading = false);
                           }
-                          final created = await PostService.createProfilePost(authorUsername: profile.username, text: text, images: uploadedUrl != null ? [uploadedUrl] : null);
+                          final created = await PostService.createProfilePost(
+                            authorUsername: profile.username,
+                            authorFullName: profile.fullName,
+                            authorAvatar: profile.avatarUrl,
+                            text: text,
+                            images: uploadedUrl != null ? [uploadedUrl] : null,
+                          );
                           if (created != null) {
                             setState(() => profile.posts.insert(0, created));
                             widget.onSnack('Post shared');

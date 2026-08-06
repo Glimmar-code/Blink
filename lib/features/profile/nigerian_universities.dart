@@ -234,7 +234,6 @@ const List<String> kNigerianUniversities = [
   'Triumph University',
   'Twin-City University',
   'Umaru Musa Yar\'Adua University Katsina',
-  'Umaru Musa Yar\'adua University',
   'University of Abuja, Gwagwalada',
   'University of Africa Toru Orua',
   'University of Agriculture and Environmental Sciences Umuagwo',

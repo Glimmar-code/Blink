@@ -4,36 +4,53 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // Brand accent (shared across both modes)
-  static const primaryMint = Color(0xFF26D98F);
+  // Brand accent (shared across both modes).
+  // Was a bright mint/teal (#26D98F) — replaced with a true dark green
+  // (Tailwind "green-600") that still has enough luminance contrast to
+  // read clearly on both pure black and pure white backgrounds.
+  static const primaryMint = Color(0xFF16A34A);
   static const accentGold = Color(0xFFFFCF10);
   static const accentRed = Color(0xFFFF2A3B);
   static const accentBlue = Color(0xFF1A83FA);
-  static const brandPink = Color(0xFFFF2D78);
+  // FIX: this used to be Color(0xFF0A0A0A) — the exact same hex as
+  // `darkBackground` AND `lightTextPrimary`. Anywhere brandPink was used
+  // as an accent/text color on the dark background it was invisible
+  // (black on black). It's now aliased to the green accent instead, so
+  // there's exactly one "special" brand color and it's always legible.
+  static const brandPink = primaryMint;
 
   // Legacy aliases used across the app for compatibility
   static const primary = primaryMint;
   static const primaryDeep = primaryMint;
   static const accent = primaryMint;
-  static const accentSoft = Color(0xFF9BEFCE);
+  static const accentSoft = Color(0xFFBBF7D0); // light green tint, for hover/highlight states
   static const gold = accentGold;
-  static const purple = accentBlue;
-  static const cyan = accentBlue;
+  // FIX: purple and cyan both pointed at accentBlue, so anything using
+  // `AppColors.purple` and anything using `AppColors.cyan` rendered as the
+  // identical color (this is what was making SIMME/SBMS/default faculty
+  // badges overlap). Keeping the app otherwise monochrome, these are now
+  // two distinct neutral grays instead of introducing more competing hues.
+  static const purple = Color(0xFF4B5563); // slate gray
+  static const cyan = Color(0xFF9CA3AF); // light gray
   static const online = primaryMint;
   static const error = accentRed;
 
   // Dark mode colors
-  static const darkBackground = Color(0xFF0D1715);
+  // Pure black background; text is pure white (see darkTextPrimary below).
+  static const darkBackground = Color(0xFF000000);
   static const darkSurface = Color(0xFF172320);
   static const darkBorder = Color(0xFF2C423D);
   static const darkTextPrimary = Color(0xFFFFFFFF);
   static const darkTextSecondary = Color(0xFF869D98);
 
   // Light mode colors
+  // Pure white background; text is pure black (see lightTextPrimary below).
+  // lightSurface stays pure white and lightBackground a hair off-white so
+  // elevated cards are still distinguishable from the page background.
   static const lightBackground = Color(0xFFF4F8F6);
   static const lightSurface = Color(0xFFFFFFFF);
   static const lightBorder = Color(0xFFD9E2DF);
-  static const lightTextPrimary = Color(0xFF0D1715);
+  static const lightTextPrimary = Color(0xFF000000);
   static const lightTextSecondary = Color(0xFF5C7770);
 
   // Backgrounds / surfaces
@@ -43,7 +60,10 @@ class AppColors {
   static const surfaceLight = lightSurface;
   static const borderDark = darkBorder;
   static const borderLight = lightBorder;
-  static const divider = darkBorder;
+  // FIX: this was hard-coded to darkBorder regardless of mode, so light-mode
+  // dividers were silently using dark-mode styling. Use a neutral
+  // semi-transparent gray that reads correctly against both backgrounds.
+  static const divider = Color(0x1F888888);
 
   // Text / muted colors
   static const textDark = darkTextPrimary;
@@ -58,7 +78,9 @@ class AppColors {
   static const glassDark = Color(0x80000000);
   static const glassLight = Color(0x0FFFFFFF);
 
-  // Faculty badge colors
+  // Faculty badge colors — simme is the one colored (green) badge,
+  // sbms/default are neutral grays so they're always visually distinct
+  // from each other and from simme.
   static const simme = accent;
   static const sbms = cyan;
   static const facultyDefault = purple;
@@ -117,8 +139,8 @@ BoxDecoration blinkBackgroundDecoration(bool isDark) {
       center: const Alignment(0.2, -1.0),
       radius: 1.2,
       colors: isDark
-          ? [const Color(0xFF1A0012), BlinkColors.bgDark]
-          : [const Color(0xFFF0E8FF), BlinkColors.bgLight],
+          ? [const Color(0xFF0D1F16), BlinkColors.bgDark]
+          : [const Color(0xFFE7F7EE), BlinkColors.bgLight],
       stops: const [0.0, 0.55],
     ),
   );
@@ -128,7 +150,7 @@ const blinkFontFamily = 'Outfit';
 
 ThemeData buildBlinkTheme({required bool isDark}) {
   final palette = BlinkPalette.of(isDark);
-  
+
   // Replaced copyWith(fontFamily: ...) by passing it directly to ThemeData
   return ThemeData(
     brightness: isDark ? Brightness.dark : Brightness.light,

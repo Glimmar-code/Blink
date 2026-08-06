@@ -12,9 +12,21 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
 
   // 3. Pass the environment variables to Supabase
+  final supabaseUrl = (dotenv.env['SUPABASE_URL'] ?? dotenv.env['EXPO_PUBLIC_SUPABASE_URL'])?.trim();
+  final supabaseAnonKey = (dotenv.env['SUPABASE_ANON_KEY'] ?? dotenv.env['EXPO_PUBLIC_SUPABASE_ANON_KEY'])?.trim();
+
+  debugPrint('Supabase URL loaded: $supabaseUrl');
+  debugPrint('Supabase anon key loaded: ${supabaseAnonKey != null && supabaseAnonKey.isNotEmpty}');
+
+  if (supabaseUrl == null || supabaseAnonKey == null || supabaseUrl.isEmpty || supabaseAnonKey.isEmpty) {
+    throw FlutterError(
+      'Missing or empty Supabase environment variables. Ensure .env contains SUPABASE_URL/SUPABASE_ANON_KEY or EXPO_PUBLIC_SUPABASE_URL/EXPO_PUBLIC_SUPABASE_ANON_KEY.',
+    );
+  }
+
   await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
 
   runApp(const BlinkApp());

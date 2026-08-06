@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:blink/post_model.dart';
 import 'package:blink/features/profile/user_profile_model.dart';
@@ -12,26 +13,47 @@ class PostService {
   static Future<List<FeedPost>> fetchFeed() async {
     try {
       final resp = await _client.from('posts').select().order('created_at', ascending: false).limit(50) as List<dynamic>;
-      return resp.map((r) => _mapRow(r as Map<String, dynamic>)).toList();
-    } catch (_) {
-      return feedPosts; // fallback to demo data
+      if (resp.isNotEmpty) {
+        return resp.map((r) => _mapFeedRow(r as Map<String, dynamic>)).toList();
+      }
+    } catch (e, st) {
+      debugPrint('PostService.fetchFeed(posts) error: $e');
+      debugPrintStack(stackTrace: st);
+    }
+
+    try {
+      final resp = await _client.from('profile_posts').select().order('created_at', ascending: false).limit(50) as List<dynamic>;
+      return resp.map((r) => _mapFeedRow(r as Map<String, dynamic>)).toList();
+    } catch (e, st) {
+      debugPrint('PostService.fetchFeed(profile_posts) error: $e');
+      debugPrintStack(stackTrace: st);
+      throw Exception('Unable to load feed from Supabase.');
     }
   }
 
-  static FeedPost _mapRow(Map<String, dynamic> r) {
-    final type = (r['type'] as String?) == 'photo' ? PostType.photo : PostType.text;
+  static FeedPost _mapFeedRow(Map<String, dynamic> r) {
+    final typeString = (r['type'] as String?) ?? (r['kind'] as String?);
+    final hasImages = (r['image_url'] as String?)?.isNotEmpty == true || (r['images'] as List<dynamic>?)?.isNotEmpty == true;
+    final type = (typeString == 'photo' || typeString == 'image' || hasImages) ? PostType.photo : PostType.text;
+    final image = (r['image_url'] as String?) ??
+        ((r['images'] is List<dynamic> && (r['images'] as List<dynamic>).isNotEmpty)
+            ? (r['images'] as List<dynamic>).first as String
+            : null);
+    final caption = (r['caption'] as String?) ?? (type == PostType.photo ? r['text'] as String? : null);
     return FeedPost(
       id: r['id'].toString(),
       type: type,
-      user: (r['username'] as String?) ?? 'unknown',
-      avatar: (r['avatar_url'] as String?) ?? feedPosts.first.avatar,
+      user: (r['username'] as String?) ?? (r['author_username'] as String?) ?? 'unknown',
+      avatar: (r['avatar_url'] as String?) ?? (r['author_avatar'] as String?) ?? feedPosts.first.avatar,
       faculty: (r['faculty'] as String?),
       time: _formatTime(r['created_at']),
-      text: r['text'] as String?,
+      text: type == PostType.text ? r['text'] as String? : null,
       gradient: (r['gradient'] as List<dynamic>?)?.map((e) => e as String).toList(),
-      image: r['image_url'] as String?,
-      caption: r['caption'] as String?,
-      likes: (r['likes'] is int) ? r['likes'] as int : (r['likes'] is num ? (r['likes'] as num).toInt() : 0),
+      image: image,
+      caption: caption,
+      likes: (r['likes'] is int)
+          ? r['likes'] as int
+          : (r['likes'] is num ? (r['likes'] as num).toInt() : 0),
       comments: (r['comments'] is int) ? r['comments'] as int : 0,
       shares: (r['shares'] is int) ? r['shares'] as int : 0,
     );
@@ -52,19 +74,32 @@ class PostService {
 
   /// Create a new profile post (text or images). Returns the created
   /// `ProfilePost` mapped from the inserted row, or null on failure.
-  static Future<ProfilePost?> createProfilePost({required String authorUsername, required String text, List<String>? images}) async {
+  static Future<ProfilePost?> createProfilePost({
+    required String authorUsername,
+    required String authorFullName,
+    required String authorAvatar,
+    required String text,
+    List<String>? images,
+  }) async {
     try {
       final row = {
         'username': authorUsername,
+        'author_username': authorUsername,
+        'author_full_name': authorFullName,
+        'author_avatar': authorAvatar,
+        'kind': (images != null && images.isNotEmpty) ? 'image' : 'text',
         'text': text,
-        'images': images,
+        'images': images ?? [],
         'created_at': DateTime.now().toUtc().toIso8601String(),
       };
-      final resp = await _client.from('profile_posts').insert(row).select().maybeSingle();
+      final resp = await _client.from('profile_posts').insert(row).select();
       if (resp == null) return null;
-      final r = resp as Map<String, dynamic>;
+      final r = resp is List ? (resp.isNotEmpty ? resp.first as Map<String, dynamic> : null) : resp as Map<String, dynamic>?;
+      if (r == null) return null;
       return _mapProfileRow(r);
-    } catch (_) {
+    } catch (e, st) {
+      debugPrint('PostService.createProfilePost error: $e');
+      debugPrintStack(stackTrace: st);
       return null;
     }
   }
