@@ -10,6 +10,12 @@ import 'package:blink/services/auth_service.dart';
 class ProfileService {
   static final _client = Supabase.instance.client;
 
+  /// The real reason the last `updateProfile()` call failed, set right
+  /// before it returns `false`. Read this after a failed save — it's the
+  /// actual Postgrest/Auth error (e.g. an RLS policy rejection), not the
+  /// generic "check your connection" message the UI shows by default.
+  static String? lastError;
+
   /// Fetch profile by username. Returns a demo profile when none found.
   static Future<UserProfile> fetchByUsername(String username) async {
     try {
@@ -55,14 +61,26 @@ class ProfileService {
   /// so nothing ever reached Supabase and edits vanished on next launch.
   ///
   /// Requires a `profiles` table keyed by `id` (the Supabase auth user id)
-  /// with (at minimum) the columns referenced below. Add columns as your
-  /// schema grows — anything not in this map is simply left untouched on
-  /// the server. Returns true on success, false otherwise (check debug
-  /// console for the underlying Postgrest error).
+  /// with (at minimum) the columns referenced below, AND a Row Level
+  /// Security policy that lets a user write their own row, e.g.:
+  ///
+  ///   create policy "Users can update their own profile"
+  ///   on profiles for update
+  ///   using (auth.uid() = id)
+  ///   with check (auth.uid() = id);
+  ///
+  /// Without that policy, Supabase silently rejects the write (no rows
+  /// affected) rather than throwing — which is the single most common
+  /// cause of "Couldn't save to Supabase" showing up even on a perfectly
+  /// good connection. Check `ProfileService.lastError` after a failed
+  /// call, or watch the debug console, to confirm.
+  ///
+  /// Returns true on success, false otherwise.
   static Future<bool> updateProfile(UserProfile profile) async {
     final user = AuthService.currentUser;
     if (user == null) {
-      debugPrint('ProfileService.updateProfile: no authenticated user, aborting.');
+      lastError = 'No authenticated user.';
+      debugPrint('ProfileService.updateProfile: $lastError');
       return false;
     }
     try {
@@ -100,9 +118,20 @@ class ProfileService {
         'profile_views_this_week': profile.profileViewsThisWeek,
         'updated_at': DateTime.now().toUtc().toIso8601String(),
       };
-      await _client.from('profiles').upsert(row);
+      // FIX: explicit onConflict target — makes the upsert's conflict
+      // resolution (update-if-exists) unambiguous instead of relying on
+      // whatever Supabase infers as the table's default unique constraint.
+      await _client.from('profiles').upsert(row, onConflict: 'id');
+      lastError = null;
       return true;
+    } on PostgrestException catch (e) {
+      // FIX: surface the real Postgrest error (RLS rejection, missing
+      // column, type mismatch, etc.) instead of only a generic bool.
+      lastError = e.message;
+      debugPrint('ProfileService.updateProfile PostgrestException: ${e.code} ${e.message} ${e.details}');
+      return false;
     } catch (e, st) {
+      lastError = e.toString();
       debugPrint('ProfileService.updateProfile error: $e');
       debugPrintStack(stackTrace: st);
       return false;

@@ -82,7 +82,12 @@ class AuthService {
   ///
   /// Setup required outside of Dart (per Supabase's docs):
   /// 1. Enable the Google provider in your Supabase dashboard.
-  /// 2. Register a redirect URL (e.g. io.blink.app://login-callback/)
+  /// 2. Web: add every origin you actually run the app from (e.g.
+  ///    `http://localhost:5000`, your deployed domain, etc.) to
+  ///    Supabase Dashboard → Authentication → URL Configuration →
+  ///    Redirect URLs. A wildcard like `http://localhost:*/**` covers
+  ///    every port during local dev, so you don't need to pin one.
+  ///    Mobile: register a redirect URL (e.g. io.blink.app://login-callback/)
   ///    with both Supabase and your Google Cloud OAuth client.
   /// 3. Add the matching URL scheme in Info.plist (iOS) and an
   ///    intent-filter in AndroidManifest.xml (Android).
@@ -90,7 +95,13 @@ class AuthService {
     try {
       await _auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: kIsWeb ? null : 'io.blink.app://login-callback/',
+        // FIX: passing `null` on web made Supabase fall back to the
+        // dashboard's Site URL (often a stale/default localhost port),
+        // not wherever the app is actually running — that mismatch is
+        // exactly what produced "localhost refused to connect" after
+        // Google's redirect back. Uri.base.origin is the page's real,
+        // current origin, so the redirect always lands on a live server.
+        redirectTo: kIsWeb ? Uri.base.origin : 'io.blink.app://login-callback/',
       );
       return const AuthResult.success();
     } on AuthException catch (e) {
