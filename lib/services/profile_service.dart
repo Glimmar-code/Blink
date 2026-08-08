@@ -1,11 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:blink/features/profile/user_profile_model.dart';
 import 'package:blink/services/auth_service.dart';
 
-/// Lightweight profile service that reads profile rows from Supabase and
-/// maps them to the app's `UserProfile` model. This is intentionally
-/// permissive: missing fields fall back to demo values so the UI remains
-/// stable while you adapt your DB schema.
+/// Lightweight profile service that reads/writes profile rows from
+/// Supabase and maps them to the app's `UserProfile` model. This is
+/// intentionally permissive on read: missing fields fall back to demo
+/// values so the UI remains stable while you adapt your DB schema.
 class ProfileService {
   static final _client = Supabase.instance.client;
 
@@ -45,6 +46,67 @@ class ProfileService {
       // fallthrough to demo
     }
     return kDemoMyProfile.clone();
+  }
+
+  /// Persist edits to the currently authenticated user's profile row.
+  ///
+  /// This was missing entirely before — `EditProfileScreen` only mutated
+  /// the in-memory `UserProfile` object and popped it back to the caller,
+  /// so nothing ever reached Supabase and edits vanished on next launch.
+  ///
+  /// Requires a `profiles` table keyed by `id` (the Supabase auth user id)
+  /// with (at minimum) the columns referenced below. Add columns as your
+  /// schema grows — anything not in this map is simply left untouched on
+  /// the server. Returns true on success, false otherwise (check debug
+  /// console for the underlying Postgrest error).
+  static Future<bool> updateProfile(UserProfile profile) async {
+    final user = AuthService.currentUser;
+    if (user == null) {
+      debugPrint('ProfileService.updateProfile: no authenticated user, aborting.');
+      return false;
+    }
+    try {
+      final row = <String, dynamic>{
+        'id': user.id,
+        'full_name': profile.fullName,
+        'username': profile.username,
+        'avatar_url': profile.avatar,
+        'cover_photo': profile.coverPhoto,
+        'pronouns': profile.pronouns,
+        'university': profile.university,
+        'faculty': profile.faculty,
+        'department': profile.department,
+        'course_of_study': profile.courseOfStudy,
+        'academic_level': profile.academicLevel,
+        'graduation_year': profile.graduationYear,
+        'professional_headline': profile.professionalHeadline,
+        'current_job_title': profile.currentJobTitle,
+        'email': profile.email.value,
+        'phone': profile.phone.value,
+        'country_of_origin': profile.countryOfOrigin,
+        'current_city_state': profile.currentCityState,
+        'campus_hostel_location': profile.campusHostelLocation,
+        'bio': profile.bio,
+        'favorite_quote': profile.favoriteQuote,
+        'custom_status': profile.customStatus,
+        'website': profile.links.website,
+        'linkedin': profile.links.linkedin,
+        'twitter': profile.links.twitter,
+        'instagram': profile.links.instagram,
+        'featured_link': profile.links.featuredLink,
+        'featured_link_label': profile.links.featuredLinkLabel,
+        'follower_count': profile.followerCount,
+        'following_count': profile.followingCount,
+        'profile_views_this_week': profile.profileViewsThisWeek,
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      };
+      await _client.from('profiles').upsert(row);
+      return true;
+    } catch (e, st) {
+      debugPrint('ProfileService.updateProfile error: $e');
+      debugPrintStack(stackTrace: st);
+      return false;
+    }
   }
 
   static UserProfile _mapRowToProfile(Map<String, dynamic> row) {

@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:blink/config/theme.dart';
 import 'package:blink/features/profile/user_profile_model.dart';
 import 'package:blink/features/profile/nigerian_universities.dart'; // kNigerianUniversities — generated from the xlsx list
+import 'package:blink/services/profile_service.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final UserProfile profile; // pass a `.clone()` in so cancel doesn't mutate the caller's copy
@@ -33,9 +34,19 @@ const List<String> kDepartmentPresets = [
   'Architecture', 'Pharmacy', 'Nursing Science', 'Psychology', 'Other',
 ];
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _EditProfileScreenState extends State<EditProfileScreen> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   late UserProfile p = widget.profile;
+
+  // Page-entrance animation: gentle fade + rise for the whole form when the
+  // screen first appears.
+  late final AnimationController _entranceCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 650),
+  )..forward();
+  late final Animation<double> _entranceFade = CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutCubic);
+  late final Animation<Offset> _entranceSlide =
+      Tween<Offset>(begin: const Offset(0, 0.05), end: Offset.zero).animate(_entranceFade);
 
   // Controllers for plain text fields.
   late final _fullName = TextEditingController(text: p.fullName);
@@ -71,6 +82,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   static const List<int> _accentSwatches = [0xFFFF006E, 0xFF7C3AED, 0xFF2563EB, 0xFF059669, 0xFFF59E0B, 0xFFDC2626];
 
+  bool _saving = false;
   @override
   void dispose() {
     for (final c in [
@@ -80,10 +92,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     ]) {
       c.dispose();
     }
+    _entranceCtrl.dispose();
     super.dispose();
   }
 
-  void _save() {
+  Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     p
       ..fullName = _fullName.text.trim()
@@ -109,7 +122,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ..instagram = _instagram.text.trim()
       ..featuredLink = _featuredLink.text.trim()
       ..featuredLinkLabel = _featuredLinkLabel.text.trim();
-    Navigator.of(context).pop(p);
+
+    // This used to just pop `p` back to the caller — it never touched
+    // Supabase, so edits only ever lived in memory for the current
+    // session and were gone on next launch. Now it actually persists.
+    setState(() => _saving = true);
+    final ok = await ProfileService.updateProfile(p);
+    if (!mounted) return;
+    setState(() => _saving = false);
+
+    if (ok) {
+      Navigator.of(context).pop(p);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Couldn't save to Supabase — check your connection and try again.")),
+      );
+    }
   }
 
   @override
@@ -128,25 +156,46 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         title: const Text('Edit Profile', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
         actions: [
           TextButton(
-            onPressed: _save,
-            child: const Text('Save', style: TextStyle(fontWeight: FontWeight.w800)),
+            onPressed: _saving ? null : _save,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 220),
+              transitionBuilder: (child, anim) => FadeTransition(
+                opacity: anim,
+                child: ScaleTransition(scale: anim, child: child),
+              ),
+              child: _saving
+                  ? const SizedBox(
+                      key: ValueKey('appbar_saving'),
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Save', key: ValueKey('appbar_save_text'), style: TextStyle(fontWeight: FontWeight.w800)),
+            ),
           ),
         ],
       ),
       body: Form(
         key: _formKey,
-        child: ListView(
+        child: FadeTransition(
+          opacity: _entranceFade,
+          child: SlideTransition(
+            position: _entranceSlide,
+            child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
           children: [
-            _AvatarCoverPicker(
-              profile: p,
-              isDark: isDark,
-              onAvatarUploaded: (url) => setState(() => p.avatar = url),
-              onCoverUploaded: (url) => setState(() => p.coverPhoto = url),
+            _StaggerFadeIn(
+              index: 0,
+              child: _AvatarCoverPicker(
+                profile: p,
+                isDark: isDark,
+                onAvatarUploaded: (url) => setState(() => p.avatar = url),
+                onCoverUploaded: (url) => setState(() => p.coverPhoto = url),
+              ),
             ),
             const SizedBox(height: 24),
 
-            _Section(title: 'Core Identity', txt: txt, children: [
+            _StaggerFadeIn(index: 1, child: _Section(title: 'Core Identity', txt: txt, children: [
               _text(_fullName, 'Full legal name', icon: Icons.badge_outlined, validator: _required),
               _text(_username, 'Username', icon: Icons.alternate_email, prefixText: '@', validator: _required),
               _DropdownField<String>(
@@ -172,9 +221,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   ),
                 ),
-            ]),
+            ])),
 
-            _Section(title: 'Academic & Professional', txt: txt, children: [
+            _StaggerFadeIn(index: 2, child: _Section(title: 'Academic & Professional', txt: txt, children: [
               _UniversityPicker(
                 initial: p.university,
                 onSelected: (v) => p.university = v,
@@ -219,9 +268,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 isDark: isDark,
                 onChanged: (v) => setState(() => p.coreSkills = v),
               ),
-            ]),
+            ])),
 
-            _Section(title: 'Contact & Location', txt: txt, children: [
+            _StaggerFadeIn(index: 3, child: _Section(title: 'Contact & Location', txt: txt, children: [
               _text(
                 _email,
                 'Email address',
@@ -254,9 +303,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 onChanged: (v) => setState(() => p.availability = v ?? AvailabilityStatus.none),
                 isDark: isDark,
               ),
-            ]),
+            ])),
 
-            _Section(title: 'Personal Details & Expression', txt: txt, children: [
+            _StaggerFadeIn(index: 4, child: _Section(title: 'Personal Details & Expression', txt: txt, children: [
               _text(_bio, 'Short bio / about me', icon: Icons.info_outline, maxLines: 3),
               _DropdownField<Gender>(
                 label: 'Gender',
@@ -301,18 +350,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               _text(_quote, 'Favorite quote / life motto', icon: Icons.format_quote_outlined),
               _text(_status, 'Custom status message', icon: Icons.chat_bubble_outline, hint: 'e.g. Studying for exams 📚'),
-            ]),
+            ])),
 
-            _Section(title: 'Social Connections & Links', txt: txt, children: [
+            _StaggerFadeIn(index: 5, child: _Section(title: 'Social Connections & Links', txt: txt, children: [
               _text(_website, 'Personal portfolio / website', icon: Icons.link, keyboardType: TextInputType.url),
               _text(_linkedin, 'LinkedIn profile URL', icon: Icons.business_center_outlined, keyboardType: TextInputType.url),
               _text(_twitter, 'Twitter / X handle', icon: Icons.alternate_email),
               _text(_instagram, 'Instagram handle', icon: Icons.camera_alt_outlined),
               _text(_featuredLink, 'Featured link (e.g. Linktree)', icon: Icons.star_outline, keyboardType: TextInputType.url),
               _text(_featuredLinkLabel, 'Featured link label', icon: Icons.label_outline, hint: 'e.g. "All my links"'),
-            ]),
+            ])),
 
-            _Section(title: 'Profile Theme', txt: txt, children: [
+            _StaggerFadeIn(index: 6, child: _Section(title: 'Profile Theme', txt: txt, children: [
               Text('Accent color', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: txt)),
               const SizedBox(height: 10),
               Wrap(
@@ -336,27 +385,60 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   );
                 }).toList(),
               ),
-            ]),
+            ])),
 
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _save,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(p.accentColorValue),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-                  elevation: 0,
-                ),
-                child: const Text('Save Changes', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
-              ),
-            ),
+            _StaggerFadeIn(
+              index: 7,
+              child: AnimatedScale(
+                scale: _saving ? 0.97 : 1.0,
+                duration: const Duration(milliseconds: 150),
+                curve: Curves.easeOut,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _saving ? null : _save,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(p.accentColorValue),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
+                      elevation: 0,
+                    ),
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      transitionBuilder: (child, anim) => FadeTransition(
+                        opacity: anim,
+                        child: ScaleTransition(scale: anim, child: child),
+                      ),
+                      child: _saving
+                          ? const SizedBox(
+                              key: ValueKey('save_btn_saving'),
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              'Save Changes',
+                              key: ValueKey('save_btn_text'),
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                    ),
+                  ), // Closes ElevatedButton
+                ), // Closes SizedBox
+              ), // Closes AnimatedScale
+            ), // Closes _StaggerFadeIn
           ],
-        ),
-      ),
-    );
+        ), // Closes ListView
+          ), // Closes SlideTransition
+        ), // Closes FadeTransition
+      ), // Closes Form
+    ); // Closes Scaffold
   }
 
   String? _required(String? v) => (v == null || v.trim().isEmpty) ? 'Required' : null;
@@ -404,6 +486,46 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 // ---------------------------------------------------------------------------
 // Building blocks
 // ---------------------------------------------------------------------------
+
+/// Wraps [child] in a gentle fade + upward-rise entrance, delayed by
+/// [index] * 60ms so a stack of these (e.g. each form section) staggers in
+/// one after another instead of all popping in at once.
+class _StaggerFadeIn extends StatefulWidget {
+  final Widget child;
+  final int index;
+  const _StaggerFadeIn({required this.child, this.index = 0});
+
+  @override
+  State<_StaggerFadeIn> createState() => _StaggerFadeInState();
+}
+
+class _StaggerFadeInState extends State<_StaggerFadeIn> with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 420));
+  late final Animation<double> _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
+  late final Animation<Offset> _slide = Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero).animate(_fade);
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: 60 * widget.index), () {
+      if (mounted) _ctrl.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fade,
+      child: SlideTransition(position: _slide, child: widget.child),
+    );
+  }
+}
 
 class _Section extends StatelessWidget {
   final String title;

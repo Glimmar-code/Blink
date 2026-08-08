@@ -415,11 +415,13 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
       isScrollControlled: true,
       backgroundColor: widget.isDark ? BlinkColors.bgDark : BlinkColors.bgLight,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => StatefulBuilder(builder: (context, setState) {
+      builder: (sheetContext) => StatefulBuilder(builder: (sheetContext, setSheetState) {
         File? _picked;
         bool _uploading = false;
+        bool _posting = false;
+        final busy = _uploading || _posting;
         return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          padding: EdgeInsets.only(bottom: MediaQuery.of(sheetContext).viewInsets.bottom),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -436,18 +438,20 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                 const SizedBox(height: 8),
                 Row(children: [
                   IconButton(
-                    onPressed: () async {
-                      final picker = ImagePicker();
-                      final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
-                      if (picked == null) return;
-                      setState(() => _picked = File(picked.path));
-                    },
+                    onPressed: busy
+                        ? null
+                        : () async {
+                            final picker = ImagePicker();
+                            final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+                            if (picked == null) return;
+                            setSheetState(() => _picked = File(picked.path));
+                          },
                     icon: const Icon(Icons.image),
                   ),
                   if (_picked != null) ...[
                     Expanded(child: Text('Image selected', style: TextStyle(color: widget.isDark ? BlinkColors.textDark : BlinkColors.textLight))),
                     IconButton(
-                      onPressed: () => setState(() => _picked = null),
+                      onPressed: busy ? null : () => setSheetState(() => _picked = null),
                       icon: const Icon(Icons.close),
                     ),
                   ]
@@ -457,37 +461,58 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () async {
-                          final text = _controller.text.trim();
-                          if (text.isEmpty && _picked == null) return;
-                          Navigator.of(context).pop();
-                          String? uploadedUrl;
-                          if (_picked != null) {
-                            setState(() => _uploading = true);
-                            uploadedUrl = await PostService.uploadPostAsset(_picked!, bucket: 'posts');
-                            setState(() => _uploading = false);
-                          }
-                          final created = await PostService.createProfilePost(
-                            authorUsername: profile.username,
-                            authorFullName: profile.fullName,
-                            authorAvatar: profile.avatarUrl,
-                            text: text,
-                            images: uploadedUrl != null ? [uploadedUrl] : null,
-                          );
-                          if (created != null) {
-                            setState(() => profile.posts.insert(0, created));
-                            widget.onSnack('Post shared');
-                          } else {
-                            widget.onSnack('Could not post — try again');
-                          }
-                        },
+                        // This used to call Navigator.pop() BEFORE the
+                        // Supabase upload/insert calls even ran, then tried
+                        // to setState on the (now-closed) sheet — so the
+                        // insert either raced against a dead widget or its
+                        // result silently vanished, and the profile screen
+                        // never showed the new post even when the row did
+                        // make it into Supabase. Now we wait for the real
+                        // result and only close once we have it.
+                        onPressed: busy
+                            ? null
+                            : () async {
+                                final text = _controller.text.trim();
+                                if (text.isEmpty && _picked == null) return;
+
+                                String? uploadedUrl;
+                                if (_picked != null) {
+                                  setSheetState(() => _uploading = true);
+                                  uploadedUrl = await PostService.uploadPostAsset(_picked!, bucket: 'posts');
+                                  setSheetState(() => _uploading = false);
+                                  if (uploadedUrl == null) {
+                                    widget.onSnack('Image upload failed — check your Supabase storage bucket');
+                                    return;
+                                  }
+                                }
+
+                                setSheetState(() => _posting = true);
+                                final created = await PostService.createProfilePost(
+                                  authorUsername: profile.username,
+                                  authorFullName: profile.fullName,
+                                  authorAvatar: profile.avatarUrl,
+                                  text: text,
+                                  images: uploadedUrl != null ? [uploadedUrl] : null,
+                                );
+                                setSheetState(() => _posting = false);
+
+                                if (created != null) {
+                                  if (mounted) setState(() => profile.posts.insert(0, created));
+                                  Navigator.of(sheetContext).pop();
+                                  widget.onSnack('Post shared');
+                                } else {
+                                  widget.onSnack('Could not save to Supabase — check your connection and try again');
+                                }
+                              },
                         style: ElevatedButton.styleFrom(backgroundColor: BlinkColors.accent),
-                        child: const Text('Post'),
+                        child: busy
+                            ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                            : const Text('Post'),
                       ),
                     ),
                   ],
                 ),
-                if (_uploading) const Padding(padding: EdgeInsets.only(top:8), child: LinearProgressIndicator()),
+                if (_uploading) const Padding(padding: EdgeInsets.only(top: 8), child: LinearProgressIndicator()),
               ],
             ),
           ),
