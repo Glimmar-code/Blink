@@ -500,25 +500,27 @@ class _TabPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+   return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 7),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: selected ? BlinkColors.brandPink : border, width: 1.5),
-          color: selected ? BlinkColors.brandPink.withOpacity(0.15) : Colors.transparent,
+          border: Border.all(color: selected ? BlinkColors.lavender : border, width: 1.5),
+          color: selected ? Colors.white : Colors.transparent,
         ),
         child: Text(
           label,
-          style: TextStyle(fontSize: 14, fontWeight: selected ? FontWeight.w700 : FontWeight.w400, color: selected ? BlinkColors.brandPink : muted),
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+            color: selected ? Colors.black : muted,
+          ),
         ),
       ),
     );
-  }
-}
-
+    
 class _ReelAction extends StatelessWidget {
   final IconData icon;
   final Color color;

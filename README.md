@@ -6,21 +6,21 @@ Supabase, built dark-mode-first around your `#250E0E` wine-red brand color.
 
 ## Get it running
 
+## Get it running
+
 ```bash
-# 1. Drop the lib/ folder and pubspec.yaml into your project
-#    (or unzip this whole folder and start from here).
+# 1. Clone the repo
+git clone https://github.com/Glimmar-code/Blink.git
+cd Blink
 
 # 2. Get packages
 flutter pub get
 
-# 3. Generate the platform folders (android, ios, web, etc.) — this repo
-#    ships Dart source only, so you need this once per machine/checkout:
-flutter create --platforms=android,ios,web .
+# 3. Add your Supabase project's URL + anon key.
+#    Either edit .env directly, or set SUPABASE_URL / SUPABASE_ANON_KEY
+#    (see lib/main.dart for how they're loaded).
 
-# 4. Add your Supabase project's URL + anon key in lib/main.dart
-#    (see kSupabaseUrl / kSupabaseAnonKey at the top of the file).
-
-# 5. Run it
+# 4. Run it
 flutter run                # phone/emulator
 flutter run -d chrome      # preview in Chrome
 ```
@@ -28,19 +28,6 @@ flutter run -d chrome      # preview in Chrome
 If `flutter run -d chrome` says Chrome isn't found, make sure web support
 is turned on for your Flutter install: `flutter config --enable-web`, then
 restart your terminal/IDE.
-
-### Supabase setup
-1. Create a free project at supabase.com.
-2. Project Settings → API → copy the **Project URL** and **anon public key**
-   into `lib/main.dart`.
-3. Email/password auth works out of the box.
-4. For **Google sign-in**: enable the Google provider in Supabase's Auth
-   settings, then register a redirect URL (e.g.
-   `io.blink.app://login-callback/`) with both Supabase and your Google
-   Cloud OAuth client, and add the matching URL scheme in `Info.plist`
-   (iOS) / intent-filter in `AndroidManifest.xml` (Android). This part is
-   native config, not Dart, so it isn't included here — see the comment
-   above `signInWithGoogle()` in `lib/services/auth_service.dart`.
 
 ## What's real vs. mock
 - **Auth is fully wired** to Supabase (sign up, sign in, Google OAuth,

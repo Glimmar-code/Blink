@@ -4,35 +4,37 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // Brand accent (shared across both modes).
-  // Was a bright mint/teal (#26D98F) — replaced with a true dark green
-  // (Tailwind "green-600") that still has enough luminance contrast to
-  // read clearly on both pure black and pure white backgrounds.
-  static const primaryMint = Color(0xFF16A34A);
+ // Brand accent (shared across both modes).
+  // This is the app's real identity color: a vivid magenta-pink, not the
+  // green it had been aliased to. The old `brandPink` was literally
+  // Color(0xFF0A0A0A) — the same hex as `darkBackground`, so it was
+  // invisible (black on black) anywhere it was used on the dark theme.
+  // Fixed at the source instead of aliasing it away to another hue.
+  static const primaryPink = Color(0xFFE91E63);
+  static const primaryPinkDeep = Color(0xFFC2185B);
   static const accentGold = Color(0xFFFFCF10);
   static const accentRed = Color(0xFFFF2A3B);
   static const accentBlue = Color(0xFF1A83FA);
-  // FIX: this used to be Color(0xFF0A0A0A) — the exact same hex as
-  // `darkBackground` AND `lightTextPrimary`. Anywhere brandPink was used
-  // as an accent/text color on the dark background it was invisible
-  // (black on black). It's now aliased to the green accent instead, so
-  // there's exactly one "special" brand color and it's always legible.
-  static const brandPink = primaryMint;
+  static const brandPink = primaryPink;
 
   // Legacy aliases used across the app for compatibility
-  static const primary = primaryMint;
-  static const primaryDeep = primaryMint;
-  static const accent = primaryMint;
-  static const accentSoft = Color(0xFFBBF7D0); // light green tint, for hover/highlight states
+  static const primary = primaryPink;
+  static const primaryDeep = primaryPinkDeep;
+  static const accent = primaryPink;
+  static const accentSoft = Color(0xFFF9C9DD); // soft pink tint, for hover/highlight states
   static const gold = accentGold;
-  // FIX: purple and cyan both pointed at accentBlue, so anything using
-  // `AppColors.purple` and anything using `AppColors.cyan` rendered as the
-  // identical color (this is what was making SIMME/SBMS/default faculty
-  // badges overlap). Keeping the app otherwise monochrome, these are now
-  // two distinct neutral grays instead of introducing more competing hues.
-  static const purple = Color(0xFF4B5563); // slate gray
-  static const cyan = Color(0xFF9CA3AF); // light gray
-  static const online = primaryMint;
+  // Lavender/orchid accent used for the selected pill outline (Posts/Reels
+  // tabs) in the reference design — kept distinct from the hot-pink brand
+  // color so selected states read as "selected", not just "branded".
+  static const lavender = Color(0xFFD9A9FB);
+  // purple/cyan stay distinct neutral-ish tones so SIMME/SBMS/default
+  // faculty badges remain visually distinguishable from each other and
+  // from the brand pink.
+  static const purple = Color(0xFF8B5CF6); // violet
+  static const cyan = Color(0xFF38BDF8); // sky blue
+  // Presence ("online") dot stays green — a different hue from the brand
+  // pink so status indicators don't get visually confused with branding.
+  static const online = Color(0xFF22C55E);
   static const error = accentRed;
 
   // Dark mode colors
