@@ -73,7 +73,6 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-      decoration: BoxDecoration(
         color: cardBg,
         border: Border.all(color: border),
         borderRadius: BorderRadius.circular(28),
@@ -144,12 +143,15 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
           ),
 
           // Content
-          p.image != null && p.image!.isNotEmpty
+          if (p.type == PostType.photo) ...[
+            p.image != null && p.image!.isNotEmpty
               ? AspectRatio(
                   aspectRatio: 4 / 5,
                   child: Image.network(unsplash(p.image!), width: double.infinity, fit: BoxFit.cover),
                 )
               : const SizedBox.shrink(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 10, 14, 4),
               child: RichTextHighlight(text: p.caption ?? '', color: txt, fontSize: 13, height: 1.55),
             ),
           ] else
@@ -158,7 +160,7 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
               constraints: const BoxConstraints(minHeight: 140),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               alignment: Alignment.center,
-                decoration: BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,

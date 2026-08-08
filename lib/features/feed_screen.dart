@@ -514,13 +514,15 @@ class _TabPill extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 14,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
             color: selected ? Colors.black : muted,
           ),
         ),
       ),
     );
-    
+  }
+}
+
 class _ReelAction extends StatelessWidget {
   final IconData icon;
   final Color color;
