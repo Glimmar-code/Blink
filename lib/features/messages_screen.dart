@@ -5,7 +5,14 @@ import '../post_model.dart';
 class MessagesScreen extends StatefulWidget {
   final bool isDark;
   final ValueChanged<String> onSnack;
-  const MessagesScreen({super.key, required this.isDark, required this.onSnack});
+
+  /// When set, the screen opens directly into this user's conversation
+  /// instead of the chat list — used by the Market tab's DM icon. If no
+  /// existing thread matches, a fresh empty conversation is started so the
+  /// person can message a seller they've never chatted with before.
+  final String? openWithUsername;
+
+  const MessagesScreen({super.key, required this.isDark, required this.onSnack, this.openWithUsername});
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
@@ -15,6 +22,28 @@ class _MessagesScreenState extends State<MessagesScreen> {
   Chat? _active;
   late List<ChatMessage> _msgs;
   final _input = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    final username = widget.openWithUsername;
+    if (username != null) {
+      final existing = chats.where((c) => c.user == username);
+      final chat = existing.isNotEmpty
+          ? existing.first
+          : Chat(
+              id: username.hashCode,
+              user: username,
+              avatar: 'photo-1607746882042-944635dfe10e?w=80&h=80&fit=crop',
+              lastMsg: 'Say hello 👋',
+              time: 'now',
+              unread: 0,
+              online: false,
+            );
+      _active = chat;
+      _msgs = existing.isNotEmpty ? mockThreadFor(chat) : [];
+    }
+  }
 
   void _openChat(Chat chat) {
     setState(() {

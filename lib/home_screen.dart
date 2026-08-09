@@ -7,7 +7,7 @@ import 'package:blink/config/theme.dart';
 import 'package:blink/features/feed_screen.dart';
 import 'package:blink/features/search_screen.dart';
 import 'package:blink/features/leaderboard_screen.dart';
-import 'package:blink/features/market_screen.dart';
+import 'package:blink/features/market/market_screen.dart';
 import 'package:blink/features/messages_screen.dart';
 import 'package:blink/features/profile/guest_profile_screen.dart';
 import 'package:blink/features/profile/my_profile_screen.dart';
@@ -42,6 +42,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showSnack(String msg) => _snack.show(msg);
   UserProfile? _currentProfile;
+
+  // Set by the Market tab's DM icon (via [_openChatWithSeller]) so the
+  // Messages tab opens directly into that seller's conversation instead of
+  // the chat list. Cleared whenever the user switches tabs manually so a
+  // stale seller doesn't keep popping open.
+  String? _pendingChatUsername;
+
+  void _openChatWithSeller(String username) {
+    setState(() {
+      _pendingChatUsername = username;
+      _index = 4; // Messages tab
+    });
+  }
 
   UserProfile get _signedInUserProfile => _currentProfile ?? kDemoMyProfile.clone();
 
@@ -107,8 +120,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       SearchScreen(isDark: _isDark),
       LeaderboardScreen(isDark: _isDark),
-      MarketScreen(isDark: _isDark, onSnack: _showSnack),
-      MessagesScreen(isDark: _isDark, onSnack: _showSnack),
+      MarketScreen(isDark: _isDark, onSnack: _showSnack, onMessageSeller: _openChatWithSeller),
+      MessagesScreen(isDark: _isDark, onSnack: _showSnack, openWithUsername: _pendingChatUsername),
     ];
   }
 
@@ -178,7 +191,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 final selected = i == _index;
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
-                  onTap: () => setState(() => _index = i),
+                  onTap: () => setState(() {
+                    _index = i;
+                    _pendingChatUsername = null;
+                  }),
                   child: AnimatedContainer(
                     duration: 220.ms,
                     curve: Curves.easeOutCubic,

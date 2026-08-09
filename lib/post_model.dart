@@ -159,15 +159,59 @@ const leaderboard = <LeaderboardUser>[
   LeaderboardUser(rank: 5, user: 'marco_v', faculty: 'SIMME', pts: 43800, badge: '⭐', avatar: 'photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop'),
 ];
 
-// ─── Market ─────────────────────────────────────────────────────────────────
+// ─── Market (ALUTA MARKET) ───────────────────────────────────────────────────
+//
+// Extended for the ALUTA MARKET feature. `MarketItem` now carries everything
+// the feed, filters, product detail, and seller-onboarding screens need.
+// Old call sites that only used {id, title, price, img, seller, tag} still
+// compile — every new field has a default — but `price` is now a `double`
+// (was `String`) so it can be filtered/sorted; use `item.priceLabel` for the
+// old "₵280"-style display string.
+
+/// Mirrors `VerificationBadge` in `features/profile/user_profile_model.dart`.
+/// Duplicated here (rather than imported) to keep this file dependency-free;
+/// the two enums are kept in sync by hand — if you add a tier there, add it
+/// here too.
+enum SellerTier { none, blue, gold }
+
+extension SellerTierX on SellerTier {
+  bool get canSell => this == SellerTier.blue || this == SellerTier.gold;
+  String get label => switch (this) {
+        SellerTier.blue => 'Blue Tick Verified',
+        SellerTier.gold => 'Gold Tick Verified',
+        SellerTier.none => 'Not Verified',
+      };
+}
+
+enum ItemCondition { brandNew, used, refurbished }
+
+extension ItemConditionX on ItemCondition {
+  String get label => switch (this) {
+        ItemCondition.brandNew => 'Brand New',
+        ItemCondition.used => 'Used',
+        ItemCondition.refurbished => 'Refurbished',
+      };
+}
 
 class MarketItem {
   final int id;
   final String title;
-  final String price;
-  final String img;
+  final String description;
+  final double price;
+  final bool negotiable;
+  final String img; // cover image (Unsplash path fragment, same convention as elsewhere)
+  final List<String> images; // gallery — falls back to [img] if empty
   final String seller;
-  final String tag;
+  final String sellerAvatar;
+  final SellerTier sellerTier;
+  final String tag; // primary category, kept for backward compatibility
+  final List<String> tags; // trending/topic tags, e.g. ['back-to-school', 'hot-deal']
+  final String location; // e.g. "Lagos"
+  final ItemCondition condition;
+  final bool isPromoted;
+  final int viewCount;
+  final int chatCount;
+  final DateTime postedAt;
 
   const MarketItem({
     required this.id,
@@ -176,14 +220,123 @@ class MarketItem {
     required this.img,
     required this.seller,
     required this.tag,
+    this.description = '',
+    this.negotiable = false,
+    this.images = const [],
+    this.sellerAvatar = '',
+    this.sellerTier = SellerTier.none,
+    this.tags = const [],
+    this.location = 'Lagos',
+    this.condition = ItemCondition.used,
+    this.isPromoted = false,
+    this.viewCount = 0,
+    this.chatCount = 0,
+    this.postedAt = _epoch,
   });
+
+  static final DateTime _epoch = DateTime(2026, 1, 1);
+
+  /// Old-style display string, e.g. "₵280". Keep using ₦ elsewhere in the
+  /// UI where the copy explicitly talks about Naira/Paystack fees.
+  String get priceLabel => '₵${price.toStringAsFixed(price.truncateToDouble() == price ? 0 : 2)}';
+
+  List<String> get gallery => images.isNotEmpty ? images : [img];
+
+  bool get isTrending => viewCount >= 50 || chatCount >= 10;
+
+  MarketItem copyWith({bool? isPromoted, int? viewCount, int? chatCount}) {
+    return MarketItem(
+      id: id,
+      title: title,
+      description: description,
+      price: price,
+      negotiable: negotiable,
+      img: img,
+      images: images,
+      seller: seller,
+      sellerAvatar: sellerAvatar,
+      sellerTier: sellerTier,
+      tag: tag,
+      tags: tags,
+      location: location,
+      condition: condition,
+      isPromoted: isPromoted ?? this.isPromoted,
+      viewCount: viewCount ?? this.viewCount,
+      chatCount: chatCount ?? this.chatCount,
+      postedAt: postedAt,
+    );
+  }
 }
 
-const marketItems = <MarketItem>[
-  MarketItem(id: 1, title: 'Vintage Leather Jacket', price: '₵280', img: 'photo-1551028719-00167b16eac5?w=200&h=200&fit=crop', seller: 'zara.editorial', tag: 'Fashion'),
-  MarketItem(id: 2, title: 'Medical Anatomy Atlas', price: '₵95', img: 'photo-1532012197267-da84d127e765?w=200&h=200&fit=crop', seller: 'dr.osei', tag: 'Books'),
-  MarketItem(id: 3, title: 'Canon EF 50mm f/1.8', price: '₵650', img: 'photo-1516035069371-29a1b244cc32?w=200&h=200&fit=crop', seller: 'luna.style', tag: 'Tech'),
-  MarketItem(id: 4, title: 'Graphic Design Course', price: '₵45', img: 'photo-1626785774573-4b799315345d?w=200&h=200&fit=crop', seller: 'kai.lens', tag: 'Course'),
+final marketItems = <MarketItem>[
+  MarketItem(
+    id: 1,
+    title: 'Vintage Leather Jacket',
+    description: 'Genuine leather, barely worn, size M. Picked up in Milan — no rips, no cracking, smells like new leather not old closet.',
+    price: 280,
+    negotiable: true,
+    img: 'photo-1551028719-00167b16eac5?w=600&h=600&fit=crop',
+    seller: 'zara.editorial',
+    sellerAvatar: 'photo-1509631179647-0177331693ae?w=80&h=80&fit=crop',
+    sellerTier: SellerTier.gold,
+    tag: "Men's Fashion",
+    tags: const ['trending', 'streetwear'],
+    location: 'Lagos',
+    condition: ItemCondition.used,
+    isPromoted: true,
+    viewCount: 212,
+    chatCount: 18,
+  ),
+  MarketItem(
+    id: 2,
+    title: 'Medical Anatomy Atlas (7th Ed.)',
+    description: 'Full-colour anatomy atlas, all plates intact, minor highlighter marks in chapter 3 only.',
+    price: 95,
+    img: 'photo-1532012197267-da84d127e765?w=600&h=600&fit=crop',
+    seller: 'dr.osei',
+    sellerAvatar: 'photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop',
+    sellerTier: SellerTier.blue,
+    tag: 'Books',
+    tags: const ['medschool'],
+    location: 'Accra',
+    condition: ItemCondition.used,
+    viewCount: 34,
+    chatCount: 4,
+  ),
+  MarketItem(
+    id: 3,
+    title: 'Canon EF 50mm f/1.8 STM',
+    description: 'The nifty-fifty. Comes with front/rear caps and a UV filter. No fungus, no scratches on glass.',
+    price: 650,
+    negotiable: true,
+    img: 'photo-1516035069371-29a1b244cc32?w=600&h=600&fit=crop',
+    seller: 'luna.style',
+    sellerAvatar: 'photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop',
+    sellerTier: SellerTier.gold,
+    tag: 'Cameras & Photography',
+    tags: const ['trending', 'hot-deal'],
+    location: 'Lagos',
+    condition: ItemCondition.refurbished,
+    isPromoted: true,
+    viewCount: 501,
+    chatCount: 47,
+  ),
+  MarketItem(
+    id: 4,
+    title: 'Graphic Design Course (Full Access)',
+    description: 'Lifetime access code to a 40-hour graphic design bundle. Certificate included.',
+    price: 45,
+    img: 'photo-1626785774573-4b799315345d?w=600&h=600&fit=crop',
+    seller: 'kai.lens',
+    sellerAvatar: 'photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop',
+    sellerTier: SellerTier.blue,
+    tag: 'Online Courses & Tutorials',
+    tags: const ['back-to-school'],
+    location: 'Kumasi',
+    condition: ItemCondition.brandNew,
+    viewCount: 61,
+    chatCount: 6,
+  ),
 ];
 
 // ─── Chats ──────────────────────────────────────────────────────────────────
