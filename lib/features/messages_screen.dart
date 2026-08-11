@@ -12,7 +12,17 @@ class MessagesScreen extends StatefulWidget {
   /// person can message a seller they've never chatted with before.
   final String? openWithUsername;
 
-  const MessagesScreen({super.key, required this.isDark, required this.onSnack, this.openWithUsername});
+  /// Notifies the parent (HomeScreen) whether a conversation is currently
+  /// open, so it can hide the bottom navigation bar while chatting.
+  final ValueChanged<bool>? onConversationChanged;
+
+  const MessagesScreen({
+    super.key,
+    required this.isDark,
+    required this.onSnack,
+    this.openWithUsername,
+    this.onConversationChanged,
+  });
 
   @override
   State<MessagesScreen> createState() => _MessagesScreenState();
@@ -42,6 +52,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
             );
       _active = chat;
       _msgs = existing.isNotEmpty ? mockThreadFor(chat) : [];
+      widget.onConversationChanged?.call(true);
     }
   }
 
@@ -50,6 +61,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       _active = chat;
       _msgs = mockThreadFor(chat);
     });
+    widget.onConversationChanged?.call(true);
   }
 
   void _send() {
@@ -155,7 +167,10 @@ class _MessagesScreenState extends State<MessagesScreen> {
           child: Row(
             children: [
               IconButton(
-                onPressed: () => setState(() => _active = null),
+                onPressed: () {
+                  setState(() => _active = null);
+                  widget.onConversationChanged?.call(false);
+                },
                 icon: Icon(Icons.arrow_back_ios_new, size: 18, color: txt),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),

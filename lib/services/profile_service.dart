@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:blink/post_model.dart';
 import 'package:blink/features/profile/user_profile_model.dart';
 import 'package:blink/services/auth_service.dart';
+import 'package:blink/services/post_service.dart';
 
 /// Lightweight profile service that reads/writes profile rows from
 /// Supabase and maps them to the app's `UserProfile` model. This is
@@ -25,7 +27,26 @@ class ProfileService {
           .eq('username', username)
           .maybeSingle() as Map<String, dynamic>?;
       if (resp == null) return kDemoMyProfile.clone();
-      return _mapRowToProfile(resp);
+      final profile = _mapRowToProfile(resp);
+      // Load the user's posts from Supabase (live data, no mock).
+      final posts = await PostService.fetchPostsByUser(username);
+      profile.posts = posts
+          .map((p) => ProfilePost(
+                id: p.id,
+                kind: p.type == PostType.photo ? ProfilePostKind.image : ProfilePostKind.text,
+                text: p.text ?? p.caption ?? '',
+                images: p.image != null ? [p.image!] : [],
+                createdAt: p.createdAt ?? DateTime.now(),
+                likeCount: p.likes,
+                commentCount: p.comments,
+                repostCount: p.shares,
+                viewCount: p.views,
+                authorUsername: p.user,
+                authorFullName: profile.fullName,
+                authorAvatar: p.avatar,
+              ))
+          .toList();
+      return profile;
     } catch (_) {
       return kDemoMyProfile.clone();
     }
@@ -40,13 +61,55 @@ class ProfileService {
     // to match on username stored in user metadata or email prefix.
     try {
       final byId = await _client.from('profiles').select().eq('id', user.id).maybeSingle() as Map<String, dynamic>?;
-      if (byId != null) return _mapRowToProfile(byId);
+      if (byId != null) {
+        final profile = _mapRowToProfile(byId);
+        // Load the user's posts from Supabase (live data, no mock).
+        final posts = await PostService.fetchPostsByUser(profile.username);
+        profile.posts = posts
+            .map((p) => ProfilePost(
+                  id: p.id,
+                  kind: p.type == PostType.photo ? ProfilePostKind.image : ProfilePostKind.text,
+                  text: p.text ?? p.caption ?? '',
+                  images: p.image != null ? [p.image!] : [],
+                  createdAt: p.createdAt ?? DateTime.now(),
+                  likeCount: p.likes,
+                  commentCount: p.comments,
+                  repostCount: p.shares,
+                  viewCount: p.views,
+                  authorUsername: p.user,
+                  authorFullName: profile.fullName,
+                  authorAvatar: p.avatar,
+                ))
+            .toList();
+        return profile;
+      }
 
       final metadata = user.userMetadata ?? <String, dynamic>{};
       final username = (metadata['username'] as String?) ?? (user.email?.split('@').first);
       if (username != null) {
         final byName = await _client.from('profiles').select().eq('username', username).maybeSingle() as Map<String, dynamic>?;
-        if (byName != null) return _mapRowToProfile(byName);
+        if (byName != null) {
+          final profile = _mapRowToProfile(byName);
+          // Load the user's posts from Supabase (live data, no mock).
+          final posts = await PostService.fetchPostsByUser(profile.username);
+          profile.posts = posts
+              .map((p) => ProfilePost(
+                    id: p.id,
+                    kind: p.type == PostType.photo ? ProfilePostKind.image : ProfilePostKind.text,
+                    text: p.text ?? p.caption ?? '',
+                    images: p.image != null ? [p.image!] : [],
+                    createdAt: p.createdAt ?? DateTime.now(),
+                    likeCount: p.likes,
+                    commentCount: p.comments,
+                    repostCount: p.shares,
+                    viewCount: p.views,
+                    authorUsername: p.user,
+                    authorFullName: profile.fullName,
+                    authorAvatar: p.avatar,
+                  ))
+              .toList();
+          return profile;
+        }
       }
     } catch (_) {
       // fallthrough to demo

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:blink/config/theme.dart';
-import 'market_categories.dart';
+import '../market_categories.dart';
 
 class MarketFilters {
   final String? category;

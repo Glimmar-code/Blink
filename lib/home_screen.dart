@@ -49,6 +49,11 @@ class _HomeScreenState extends State<HomeScreen> {
   // stale seller doesn't keep popping open.
   String? _pendingChatUsername;
 
+  // Tracks whether the Messages tab currently has an open conversation.
+  // When true, the bottom navigation bar is hidden so the chat UI can use
+  // the full screen.
+  bool _isConversationOpen = false;
+
   void _openChatWithSeller(String username) {
     setState(() {
       _pendingChatUsername = username;
@@ -121,7 +126,16 @@ class _HomeScreenState extends State<HomeScreen> {
       SearchScreen(isDark: _isDark),
       LeaderboardScreen(isDark: _isDark),
       MarketScreen(isDark: _isDark, onSnack: _showSnack, onMessageSeller: _openChatWithSeller),
-      MessagesScreen(isDark: _isDark, onSnack: _showSnack, openWithUsername: _pendingChatUsername),
+      MessagesScreen(
+        isDark: _isDark,
+        onSnack: _showSnack,
+        openWithUsername: _pendingChatUsername,
+        onConversationChanged: (isOpen) {
+          if (mounted) {
+            setState(() => _isConversationOpen = isOpen);
+          }
+        },
+      ),
     ];
   }
 
@@ -166,60 +180,62 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       extendBody: true,
-      bottomNavigationBar: SafeArea(
-        top: false,
-        minimum: const EdgeInsets.only(bottom: 16),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
-            decoration: BoxDecoration(
-              color: _isDark ? const Color(0xE6141018) : Colors.white.withOpacity(0.96),
-              borderRadius: BorderRadius.circular(100),
-              border: Border.all(
-                color: _isDark ? const Color(0x33FFFFFF) : BlinkColors.lightBorder,
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 20, offset: const Offset(0, 8)),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: List.generate(_items.length, (i) {
-                final item = _items[i];
-                final selected = i == _index;
-                return GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => setState(() {
-                    _index = i;
-                    _pendingChatUsername = null;
-                  }),
-                  child: AnimatedContainer(
-                    duration: 220.ms,
-                    curve: Curves.easeOutCubic,
-                    width: 42,
-                    height: 42,
-                    decoration: BoxDecoration(
-                      color: selected ? BlinkColors.brandPink : Colors.transparent,
-                      shape: BoxShape.circle,
+      bottomNavigationBar: _isConversationOpen && _index == 4
+          ? null
+          : SafeArea(
+              top: false,
+              minimum: const EdgeInsets.only(bottom: 16),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 28),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+                  decoration: BoxDecoration(
+                    color: _isDark ? const Color(0xE6141018) : Colors.white.withOpacity(0.96),
+                    borderRadius: BorderRadius.circular(100),
+                    border: Border.all(
+                      color: _isDark ? const Color(0x33FFFFFF) : BlinkColors.lightBorder,
+                      width: 1,
                     ),
-                    child: Center(
-                      child: PhosphorIcon(
-                        selected ? item.filledIcon : item.icon,
-                        size: 22,
-                        color: selected
-                            ? Colors.white
-                            : (_isDark ? BlinkColors.mutedDark : BlinkColors.mutedLight),
-                      ),
-                    ),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.25), blurRadius: 20, offset: const Offset(0, 8)),
+                    ],
                   ),
-                );
-              }),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: List.generate(_items.length, (i) {
+                      final item = _items[i];
+                      final selected = i == _index;
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => setState(() {
+                          _index = i;
+                          _pendingChatUsername = null;
+                        }),
+                        child: AnimatedContainer(
+                          duration: 220.ms,
+                          curve: Curves.easeOutCubic,
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: selected ? BlinkColors.brandPink : Colors.transparent,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: PhosphorIcon(
+                              selected ? item.filledIcon : item.icon,
+                              size: 22,
+                              color: selected
+                                  ? Colors.white
+                                  : (_isDark ? BlinkColors.mutedDark : BlinkColors.mutedLight),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

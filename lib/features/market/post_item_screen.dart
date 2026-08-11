@@ -44,9 +44,12 @@ class _PostItemScreenState extends State<PostItemScreen> {
       _category != null;
 
   Future<void> _pickImages() async {
-    final picked = await _picker.pickMultiImage(imageQuality: 85, limit: 8);
+    final picked = await _picker.pickMultiImage(imageQuality: 85);
     if (picked.isEmpty) return;
-    setState(() => _images.addAll(picked));
+    setState(() {
+      _images.addAll(picked);
+      if (_images.length > 8) _images.removeRange(8, _images.length);
+    });
   }
 
   void _addTag(String raw) {

@@ -478,7 +478,7 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                                 String? uploadedUrl;
                                 if (_picked != null) {
                                   setSheetState(() => _uploading = true);
-                                  uploadedUrl = await PostService.uploadPostAsset(_picked!, bucket: 'posts');
+                                  uploadedUrl = await PostService.uploadPostAsset(_picked!, bucket: 'post-media');
                                   setSheetState(() => _uploading = false);
                                   if (uploadedUrl == null) {
                                     widget.onSnack('Image upload failed — check your Supabase storage bucket');

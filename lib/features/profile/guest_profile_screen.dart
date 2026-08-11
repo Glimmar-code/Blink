@@ -49,6 +49,7 @@ class _GuestProfileScreenState extends State<GuestProfileScreen> {
         widget.profile.followingCount = followingCount;
         widget.profile.followersPreview = followersPreview;
         widget.profile.followingPreview = followingPreview;
+        widget.profile.posts = p.posts;
         _loading = false;
       });
     } catch (_) {

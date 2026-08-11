@@ -4,6 +4,8 @@ import '../../post_model.dart';
 import 'faculty_badge.dart';
 import 'rich_text_highlight.dart';
 
+String _resolveImageUrl(String url) => url.startsWith('http') ? url : unsplash(url);
+
 String fmtNum(int n) {
   if (n >= 1000000) {
     final v = n / 1000000;
@@ -96,7 +98,8 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                         backgroundColor: BlinkColors.accent,
                         child: CircleAvatar(
                           radius: 17,
-                          backgroundImage: NetworkImage(unsplash(p.avatar)),
+                          backgroundImage: p.avatar.isNotEmpty ? NetworkImage(_resolveImageUrl(p.avatar)) : null,
+                          child: p.avatar.isEmpty ? const Icon(Icons.person, size: 16) : null,
                         ),
                       ),
                       if (p.type == PostType.photo)
@@ -147,7 +150,7 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
             p.image != null && p.image!.isNotEmpty
               ? AspectRatio(
                   aspectRatio: 4 / 5,
-                  child: Image.network(unsplash(p.image!), width: double.infinity, fit: BoxFit.cover),
+                  child: Image.network(_resolveImageUrl(p.image!), width: double.infinity, fit: BoxFit.cover),
                 )
               : const SizedBox.shrink(),
             Padding(
@@ -219,6 +222,14 @@ class _PostCardState extends State<PostCard> with SingleTickerProviderStateMixin
                       Text(fmtNum(p.shares), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: muted)),
                     ],
                   ),
+                ),
+                const Spacer(),
+                Row(
+                  children: [
+                    Icon(Icons.visibility_outlined, size: 18, color: muted),
+                    const SizedBox(width: 5),
+                    Text(fmtNum(p.views), style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: muted)),
+                  ],
                 ),
               ],
             ),

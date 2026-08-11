@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/theme.dart';
 import '../post_model.dart';
 import '../widgets/comment_sheet.dart';
@@ -37,14 +38,31 @@ class _FeedScreenState extends State<FeedScreen> {
   bool _liked = false;
   bool _saved = false;
   List<FeedPost> _posts = [];
+  RealtimeChannel? _feedChannel;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(milliseconds: 1400), () {
-      if (mounted) setState(() => _loading = false);
-    });
     _loadPosts();
+    _subscribeToFeed();
+  }
+
+  @override
+  void dispose() {
+    _feedChannel?.unsubscribe();
+    super.dispose();
+  }
+
+  void _subscribeToFeed() {
+    _feedChannel = PostService.subscribeToFeed(
+      onUpdate: (posts) {
+        if (!mounted) return;
+        setState(() {
+          _posts = posts;
+          _loading = false;
+        });
+      },
+    );
   }
 
   Future<void> _loadPosts() async {
@@ -58,7 +76,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
   Future<void> _refresh() async {
     setState(() => _refreshing = true);
-    await Future.delayed(const Duration(milliseconds: 1200));
+    await _loadPosts();
     if (!mounted) return;
     setState(() => _refreshing = false);
     widget.onSnack('Feed updated');

@@ -49,6 +49,7 @@ class FeedPost {
   final String avatar;
   final String? faculty;
   final String time;
+  final DateTime? createdAt;
   final String? text; // text-gradient posts
   final List<String>? gradient; // hex strings, text posts only
   final String? image; // photo posts
@@ -56,6 +57,7 @@ class FeedPost {
   int likes;
   final int comments;
   final int shares;
+  final int views;
   bool liked;
 
   FeedPost({
@@ -65,6 +67,7 @@ class FeedPost {
     required this.avatar,
     this.faculty,
     required this.time,
+    this.createdAt,
     this.text,
     this.gradient,
     this.image,
@@ -72,64 +75,10 @@ class FeedPost {
     required this.likes,
     required this.comments,
     required this.shares,
+    this.views = 0,
     this.liked = false,
   });
 }
-
-final feedPosts = <FeedPost>[
-  FeedPost(
-    id: 'g1',
-    type: PostType.text,
-    user: 'sophia_kim',
-    avatar: 'photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop',
-    faculty: 'SIMME',
-    time: '3m',
-    text: "Late nights in the studio hit different when you're building something that actually matters. #grind @marco_v knows.",
-    gradient: const ['#1a0033', '#4a0080', '#ff006e'],
-    likes: 4820,
-    comments: 134,
-    shares: 89,
-  ),
-  FeedPost(
-    id: 'g2',
-    type: PostType.text,
-    user: 'dr.osei',
-    avatar: 'photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop',
-    faculty: 'SBMS',
-    time: '12m',
-    text: 'Clinical rotation week 4. Sleep is a privilege. Coffee is a necessity. #medlife #SBMS',
-    gradient: const ['#003333', '#006666', '#00ccaa'],
-    likes: 2100,
-    comments: 61,
-    shares: 44,
-  ),
-  FeedPost(
-    id: 'p1',
-    type: PostType.photo,
-    user: 'zara.editorial',
-    avatar: 'photo-1509631179647-0177331693ae?w=80&h=80&fit=crop',
-    faculty: null,
-    time: '25m',
-    image: 'photo-1483985988355-763728e1935b?w=600&h=500&fit=crop',
-    caption: 'Autumn collection drops tonight ✦ #fashion @luna',
-    likes: 12000,
-    comments: 561,
-    shares: 24000,
-  ),
-  FeedPost(
-    id: 'p2',
-    type: PostType.photo,
-    user: 'luna.style',
-    avatar: 'photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop',
-    faculty: null,
-    time: '1h',
-    image: 'photo-1515886657613-9f3515b0c78f?w=600&h=500&fit=crop',
-    caption: 'Golden hour never misses ✨ @zara.editorial',
-    likes: 8400,
-    comments: 212,
-    shares: 3100,
-  ),
-];
 
 // ─── Leaderboard ────────────────────────────────────────────────────────────
 
@@ -211,9 +160,15 @@ class MarketItem {
   final bool isPromoted;
   final int viewCount;
   final int chatCount;
-  final DateTime postedAt;
+  final DateTime? _postedAtRaw;
 
-  const MarketItem({
+  /// Falls back to a fixed date if no explicit `postedAt` was supplied —
+  /// none of the seed items below set one, so "Newest" sort treats them
+  /// as tied until real posts (with real timestamps) come from Supabase.
+  DateTime get postedAt => _postedAtRaw ?? _fallbackPostedAt;
+  static final DateTime _fallbackPostedAt = DateTime(2026, 1, 1);
+
+  MarketItem({
     required this.id,
     required this.title,
     required this.price,
@@ -231,10 +186,8 @@ class MarketItem {
     this.isPromoted = false,
     this.viewCount = 0,
     this.chatCount = 0,
-    this.postedAt = _epoch,
-  });
-
-  static final DateTime _epoch = DateTime(2026, 1, 1);
+    DateTime? postedAt,
+  }) : _postedAtRaw = postedAt;
 
   /// Old-style display string, e.g. "₵280". Keep using ₦ elsewhere in the
   /// UI where the copy explicitly talks about Naira/Paystack fees.
@@ -263,7 +216,7 @@ class MarketItem {
       isPromoted: isPromoted ?? this.isPromoted,
       viewCount: viewCount ?? this.viewCount,
       chatCount: chatCount ?? this.chatCount,
-      postedAt: postedAt,
+      postedAt: _postedAtRaw,
     );
   }
 }

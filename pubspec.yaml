@@ -21,6 +21,7 @@ dependencies:
   phosphoricons_flutter: ^1.0.0
   flutter_dotenv: ^6.0.1
   image_picker: ^0.8.7+5
+  flutter_paystack_plus: ^2.5.0
 
 dev_dependencies:
   flutter_test:
